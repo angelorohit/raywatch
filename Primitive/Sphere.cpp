@@ -46,14 +46,23 @@ void Sphere::SetRadius(const float &radius)
     _oneOverRadius = 1 / _radius;
 }
 
-const float Sphere::GetLongitudeAt(const Vector<float> &position) const
+void Sphere::GetPolarCoordinatesAt(
+    const Vector<float> &position,
+    float &longitude,
+    float &latitude ) const
 {
-    return acos( Maths::Bound<float>( (position.x - _centre.x) * _oneOverRadius, -1, 1 ) ) / Maths::Pi;
-}
+    const Vector<float> vn( 0, 1, 0 );
+    const Vector<float> ve( 0, 0, -1 );
 
-const float Sphere::GetLatitudeAt(const Vector<float> &position) const
-{
-    return acos( Maths::Bound<float>( (position.y - _centre.y) * _oneOverRadius, -1, 1 ) ) / Maths::Pi;
+    const Vector<float> vp = (position - _centre) * _oneOverRadius;
+
+    // Compute latitude
+    const float phi = acos( Maths::Bound<float>( vp.Dot( vn ), -1, 1 ) );
+    latitude = phi * (1 / Maths::Pi);
+
+    // Compute longitude
+    const float theta = acos( Maths::Bound<float>( vp.Dot( ve ) / sin( phi ), -1, 1 ) ) * (1 / (Maths::Pi * 2));
+    longitude = ( vp.Dot( vn.Cross( ve ) ) > 0 )? (theta): (1 - theta);
 }
 
 // Primitive's functions
@@ -72,8 +81,7 @@ const bool Sphere::Intersects(const Ray &ray, IntersectionInfo &intersectionInfo
         if( intersectionInfo._dist > 0.01f )
         {
             intersectionInfo._point = ray.Origin() + ray.Direction() * intersectionInfo._dist;
-            intersectionInfo._tU = GetLongitudeAt( intersectionInfo._point );
-            intersectionInfo._tV = GetLatitudeAt( intersectionInfo._point );
+            GetPolarCoordinatesAt( intersectionInfo._point, intersectionInfo._tU, intersectionInfo._tV );
             intersectionInfo._bOnEntry = true;
             return true;
         }
@@ -82,8 +90,7 @@ const bool Sphere::Intersects(const Ray &ray, IntersectionInfo &intersectionInfo
         if( intersectionInfo._dist > 0.01f )
         {
             intersectionInfo._point = ray.Origin() + ray.Direction() * intersectionInfo._dist;
-            intersectionInfo._tU = GetLongitudeAt( intersectionInfo._point );
-            intersectionInfo._tV = GetLatitudeAt( intersectionInfo._point );
+            GetPolarCoordinatesAt( intersectionInfo._point, intersectionInfo._tU, intersectionInfo._tV );
             intersectionInfo._bOnEntry = false;
             return true;
         }

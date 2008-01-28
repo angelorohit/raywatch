@@ -38,8 +38,10 @@ public:
 
 // Functions
 private:
-    const float GetLongitudeAt(const Vector<float> &position) const;
-    const float GetLatitudeAt(const Vector<float> &position) const;
+    void GetPolarCoordinatesAt(
+        const Vector<float> &position,
+        float &longitude,
+        float &latitude ) const;
 
 public:
     void SetCentre(const Vector<float> &centre);
