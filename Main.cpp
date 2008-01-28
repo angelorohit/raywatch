@@ -36,9 +36,9 @@ int main(int /*argc*/, char * /*argv*/[])
     //// Seed the random number generator
     //srand( (unsigned int)time( 0 ) );
 
-    Examples::CornellBox( "CornellBox.bmp" );
-    Examples::Example1( "Example1.bmp" );
-    Examples::Example2( "Example2.bmp" );
+    Examples::CornellBox( "Output/CornellBox.bmp" );
+    Examples::Example1( "Output/Example1.bmp" );
+    Examples::Example2( "Output/Example2.bmp" );
 
     return 0;
 }
