@@ -1,1 +1,23 @@
-TODO:
+
+RayWatch (http://sourceforge.net/projects/raywatch/) is a simple cross-platform
+RayTracer written in C++, for educational purposes.
+
+It uses the SDL library (http://www.libsdl.org/) for loading images.
+
+Currently implemented features:
+-> Simple backward ray tracing
+-> Basic primitives: Quad, Triangle, Sphere
+-> Reflection and Fuzzy Reflection
+-> Refraction with Beer's Law
+-> Phong Illumination Model
+-> Point Lights
+-> Rectangular and Spherical Area Lights
+-> Texture Mapping for Quads and Spheres
+
+Planned features:
+-> Texture Mapping for Triangles
+-> Loading/Saving Scene data from/to file
+-> Spatial Subdivision for improving performance
+-> ...
+
+RayWatch is right now heavily Work In Progress.
