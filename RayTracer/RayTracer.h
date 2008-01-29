@@ -29,7 +29,8 @@ class Image;
 class RayTracer
 {
 // Members
-private:
+public:
+    static bool _bRayTraceShadows;
 
 public:
 // Constructor

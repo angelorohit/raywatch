@@ -108,21 +108,21 @@ void AreaLight::AccumulateIlluminationAtSurface(
         if( lightRayLength > _range )
             continue;
 
-        // See if this light is occluded or not
-        const Ray lightRay( ray.Origin(), lightRayDirection, Ray::RootGeneration() );   // Note: Use of RootGeneration() is allowed here because
-                                                                                        // the temporary ray is being created only for intersection
-                                                                                        // testing purposes, not for recursive ray-tracing.
-        if( scene.IsOccluded(lightRay, lightRayLength) )
+        // The illumination from this light
+        const Ray lightRay( ray.Origin(), lightRayDirection, ray );
+        const Color illuminationFromLight = Illumination( lightRay, lightRayLength, scene );
+
+        if( illuminationFromLight.Magnitude2() < Maths::Tolerance )
             continue;
 
         // Calculate the illumination at the point on the surface
-        const Color illumination = _illumination * ( 1 - lightRayLength * _oneOverRange );
+        const Color illumination = illuminationFromLight * ( 1 - lightRayLength * _oneOverRange );
 
         // Accumulate the diffuse
         areaLightDiffuse += illumination * Maths::Max<float>(0, surfaceNormal.Dot( lightRayDirection ));
 
         // Accumulate the specular
-        areaLightSpecular += _illumination * powf( Maths::Max<float>(0, ray.Direction().Dot( lightRayDirection.Reflect( surfaceNormal ) ) ), surfaceRoughness );
+        areaLightSpecular += illuminationFromLight * powf( Maths::Max<float>(0, ray.Direction().Dot( lightRayDirection.Reflect( surfaceNormal ) ) ), surfaceRoughness );
     }
 
     diffuse += areaLightDiffuse * (1.0f / _positions.size());

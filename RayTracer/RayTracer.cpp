@@ -24,6 +24,9 @@
 #include "Maths.h"
 #include <iostream>
 
+// Initialize the static members
+bool RayTracer::_bRayTraceShadows = false;
+
 // Constructor
 RayTracer::RayTracer()
 {

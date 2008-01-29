@@ -16,13 +16,15 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Light.h"
+#include "RayTracer.h"
+#include "Scene.h"
 
 // Constructor
 Light::Light() :
     _color( 1 ),
     _intensity( 1 ),
-    _range( 0 ),
     _illumination( 1 ),
+    _range( 0 ),
     _oneOverRange( 0 )
 {
 }
@@ -33,6 +35,17 @@ Light::~Light()
 }
 
 // Functions
+
+const Color Light::Illumination(const Ray &lightRay, const float &lightRayLength, const Scene &scene ) const
+{
+    if( RayTracer::_bRayTraceShadows )
+        return RayTracer::GetIllumination( lightRay, scene );
+
+    if( scene.IsOccluded( lightRay, lightRayLength ) )
+        return Color( 0 );
+
+    return _illumination;
+}
 
 // Accessors
 const Color &Light::Illumination() const

@@ -27,14 +27,14 @@ class Scene;
 class Light
 {
 // Members
-protected:
+private:
     Color   _color;
     float   _intensity;
-    float   _range;
+    Color   _illumination;  // _color * _intensity; (Auxiliary)
 
-    // Auxiliaries
-    Color   _illumination;  // _color * _intensity;
-    float   _oneOverRange;
+protected:
+    float   _range;
+    float   _oneOverRange;  // (Auxiliary)
 
 public:
 // Constructor
@@ -43,6 +43,9 @@ public:
     virtual ~Light();
 
 // Functions
+protected:
+    const Color Illumination(const Ray &lightRay, const float &lightRayLength, const Scene &scene ) const;
+
 public:
     // Accessors
     const Color &Illumination() const;
