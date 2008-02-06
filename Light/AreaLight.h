@@ -25,7 +25,7 @@ class AreaLight : public Light
 {
 // Members
 private:
-    typedef std::vector<Vector<float>>  VectorList;
+    typedef std::vector<Vector<float> >  VectorList;
     VectorList  _positions;
 
 public:
