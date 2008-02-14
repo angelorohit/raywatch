@@ -93,7 +93,7 @@ const bool RayTracer::Render(const Camera &camera, const Scene &scene, Image &im
         }
 
         // Display the no. of the row just completed
-        std::cout << y << std::endl;
+        std::cout << ".";
     }
 
     return true;

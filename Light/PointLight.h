@@ -1,6 +1,8 @@
 
 //  RayWatch - A simple cross-platform RayTracer.
-//  Copyright (C) 2008  Angelo Rohit Joseph Pulikotil
+//  Copyright (C) 2008
+//      Angelo Rohit Joseph Pulikotil,
+//      Francis Xavier Joseph Pulikotil
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -42,6 +44,10 @@ public:
         const Scene         &scene,
         Color &diffuse,
         Color &specular ) const;
+
+    // Serializable's functions
+    virtual const bool Read(std::istream &stream);
+    virtual const bool Write(std::ostream &stream) const;
 };
 
 #endif

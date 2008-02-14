@@ -1,6 +1,8 @@
 
 //  RayWatch - A simple cross-platform RayTracer.
-//  Copyright (C) 2008  Angelo Rohit Joseph Pulikotil
+//  Copyright (C) 2008
+//      Angelo Rohit Joseph Pulikotil,
+//      Francis Xavier Joseph Pulikotil
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -21,13 +23,14 @@
 #include "Color.h"
 #include "IntersectionInfo.h"
 #include "Pixel.h"
+#include "Serializable.h"
 
 // Forward Declarations
 class Ray;
 class Scene;
 class Image;
 
-class Material
+class Material : public Serializable
 {
 // Members
 private:
@@ -36,7 +39,7 @@ private:
 
     float   _opacity;                   // Value ranges from 0 to 1; 0 being fully transparent and 1 being fully opaque.
     float   _reflectivity;              // Value ranges from 0 to 1; 0 being not reflective at all and 1 being fully reflective.
-    float   _fuzzyReflectivity;         // Fuzzy reflection radius; 0 for perfect (non-fuzzy) reflections and >0 for increasingly fuzzy reflections
+    float   _fuzzyReflectionRadius;     // Fuzzy reflection radius; 0 for perfect (non-fuzzy) reflections and >0 for increasingly fuzzy reflections
     int     _fuzzyReflectionSamples;    // Number of samples to take for fuzzy reflections
     float   _specularity;               // Value ranges from 0 to 1; 0 being not specular at all and 1 having full specular.
     float   _roughness;                 // Smaller values give larger specular highlights, larger values give smaller sharper specular highlights
@@ -78,7 +81,7 @@ public:
     void SetColor(const float &r, const float &g, const float &b);
     void SetOpacity(const float &opacity);
     void SetReflectivity(const float &reflectivity);
-    void SetFuzzyReflectivity(const float &fuzzyReflectivity);
+    void SetFuzzyReflectionRadius(const float &fuzzyReflectionRadius);
     void SetFuzzyReflectionSamples(const int &fuzzyReflectionSamples);
     void SetSpecularity(const float &specularity);
     void SetRoughness(const float &roughness);
@@ -94,6 +97,10 @@ public:
         const Vector<float>     &surfaceNormal,
         const Scene             &scene,
         const IntersectionInfo  &intersectionInfo ) const;
+
+    // Serializable's functions
+    virtual const bool Read(std::istream &stream);
+    virtual const bool Write(std::ostream &stream) const;
 };
 
 #endif

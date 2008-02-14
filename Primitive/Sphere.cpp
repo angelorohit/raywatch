@@ -1,6 +1,8 @@
 
 //  RayWatch - A simple cross-platform RayTracer.
-//  Copyright (C) 2008  Angelo Rohit Joseph Pulikotil
+//  Copyright (C) 2008
+//      Angelo Rohit Joseph Pulikotil,
+//      Francis Xavier Joseph Pulikotil
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -18,7 +20,11 @@
 #include "Sphere.h"
 #include "Ray.h"
 #include "Maths.h"
+#include "ObjectFactory.h"
 #include <math.h>
+
+// Register with the ObjectFactory
+ObjectFactory_Register(Serializable, Sphere);
 
 // Constructor
 Sphere::Sphere() :
@@ -114,4 +120,45 @@ const bool Sphere::Intersects(const Ray &ray, float &intersectionDist) const
 const Vector<float> Sphere::GetSurfaceNormal(const Vector<float> &position) const
 {
     return (position - _centre) * _oneOverRadius;
+}
+
+// Serializable's functions
+const bool Sphere::Read(std::istream &stream)
+{
+    // Read the base
+    if( !ReadObjectHeader( stream, "Primitive" ) || !Primitive::Read( stream ) )
+        return false;
+
+    Vector<float> centre;
+    float         radius;
+
+    if( !ReadVariable( stream, "centre", centre ) ||
+        !ReadVariable( stream, "radius", radius ) )
+        return false;
+
+    SetCentre( centre );
+    SetRadius( radius );
+
+    return true;
+}
+
+const bool Sphere::Write(std::ostream &stream) const
+{
+    // Write the header
+    if( !WriteVariable( stream, "object", "Sphere" ) )
+        return false;
+
+    Indent();
+    {
+        // Write the base
+        if( !Primitive::Write( stream ) )
+            return false;
+
+        if( !WriteVariable( stream, "centre", _centre ) ||
+            !WriteVariable( stream, "radius", _radius ) )
+            return false;
+    }
+    Unindent();
+
+    return true;
 }

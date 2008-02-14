@@ -1,6 +1,8 @@
 
 //  RayWatch - A simple cross-platform RayTracer.
-//  Copyright (C) 2008  Angelo Rohit Joseph Pulikotil
+//  Copyright (C) 2008
+//      Angelo Rohit Joseph Pulikotil,
+//      Francis Xavier Joseph Pulikotil
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -18,6 +20,10 @@
 #include "Quad.h"
 #include "Ray.h"
 #include "Maths.h"
+#include "ObjectFactory.h"
+
+// Register with the ObjectFactory
+ObjectFactory_Register(Serializable, Quad);
 
 // Constructor
 Quad::Quad()
@@ -77,6 +83,8 @@ const Vector<float> Quad::GetSurfaceNormal(const Vector<float> &/*position*/) co
 void Quad::SetVertices(const Vector<float> &v1, const Vector<float> &v2, const Vector<float> &v3)
 {
     _topLeft = v1;
+    _v2      = v2;  // Only for Serializing later
+    _v3      = v3;  // Only for Serializing later
 
     _surfaceNormal = (v3 - v2).Cross( v1 - v2 );
     _surfaceNormal.Normalize();
@@ -89,4 +97,44 @@ void Quad::SetVertices(const Vector<float> &v1, const Vector<float> &v2, const V
 
     _width = (v3 - v2).Magnitude();
     _height = (v2 - v1).Magnitude();
+}
+
+// Serializable's functions
+const bool Quad::Read(std::istream &stream)
+{
+    // Read the base
+    if( !ReadObjectHeader( stream, "Primitive" ) || !Primitive::Read( stream ) )
+        return false;
+
+    Vector<float> vertex1, vertex2, vertex3;
+    if( !ReadVariable( stream, "vertex1", vertex1 ) ||
+        !ReadVariable( stream, "vertex2", vertex2 ) ||
+        !ReadVariable( stream, "vertex3", vertex3 ) )
+        return false;
+
+    SetVertices( vertex1, vertex2, vertex3 );
+
+    return true;
+}
+
+const bool Quad::Write(std::ostream &stream) const
+{
+    // Write the header
+    if( !WriteVariable( stream, "object", "Quad" ) )
+        return false;
+
+    Indent();
+    {
+        // Write the base
+        if( !Primitive::Write( stream ) )
+            return false;
+
+        if( !WriteVariable( stream, "vertex1", _topLeft )   ||
+            !WriteVariable( stream, "vertex2", _v2 )        ||
+            !WriteVariable( stream, "vertex3", _v3 )        )
+            return false;
+    }
+    Unindent();
+
+    return true;
 }

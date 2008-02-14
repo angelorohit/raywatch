@@ -1,6 +1,8 @@
 
 //  RayWatch - A simple cross-platform RayTracer.
-//  Copyright (C) 2008  Angelo Rohit Joseph Pulikotil
+//  Copyright (C) 2008
+//      Angelo Rohit Joseph Pulikotil,
+//      Francis Xavier Joseph Pulikotil
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -69,4 +71,49 @@ void Light::SetRange(const float &range)
 {
     _range = range;
     _oneOverRange = 1 / _range;
+}
+
+// Serializable's functions
+const bool Light::Read(std::istream &stream)
+{
+    // Read the base
+    if( !ReadObjectHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
+        return false;
+
+    Color   color;
+    float   intensity;
+    float   range;
+
+    if( !ReadVariable( stream, "color", color )         ||
+        !ReadVariable( stream, "intensity", intensity ) ||
+        !ReadVariable( stream, "range", range )         )
+        return false;
+
+    SetColor( color );
+    SetIntensity( intensity );
+    SetRange( range );
+
+    return true;
+}
+
+const bool Light::Write(std::ostream &stream) const
+{
+    // Write the header
+    if( !WriteVariable( stream, "object", "Light" ) )
+        return false;
+
+    Indent();
+    {
+        // Write the base
+        if( !Serializable::Write( stream ) )
+            return false;
+
+        if( !WriteVariable( stream, "color", _color )           ||
+            !WriteVariable( stream, "intensity", _intensity )   ||
+            !WriteVariable( stream, "range", _range )           )
+            return false;
+    }
+    Unindent();
+
+    return true;
 }

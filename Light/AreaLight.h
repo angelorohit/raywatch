@@ -1,6 +1,8 @@
 
 //  RayWatch - A simple cross-platform RayTracer.
-//  Copyright (C) 2008  Angelo Rohit Joseph Pulikotil
+//  Copyright (C) 2008
+//      Angelo Rohit Joseph Pulikotil,
+//      Francis Xavier Joseph Pulikotil
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -28,6 +30,13 @@ private:
     typedef std::vector<Vector<float> >  VectorList;
     VectorList  _positions;
 
+    // For Serializing
+    Vector<float>   _v1;
+    Vector<float>   _v2;
+    Vector<float>   _v3;
+    int             _numHorizontalSamples;
+    int             _numVerticalSamples;
+
 public:
 // Constructor
     explicit AreaLight();
@@ -43,10 +52,12 @@ public:
         const int           &numHorizontalSamples,
         const int           &numVerticalSamples );
 
-    void SetSphericalArea(
-        const Vector<float> &centre,
-        const float         &radius,
-        const int           &numSamples );
+    // Note: This functionality should be moved into another class (could be SphericalAreaLight)
+    //       Right now, it's not completely clear how to serialize two types of functionalities
+    //void SetSphericalArea(
+    //    const Vector<float> &centre,
+    //    const float         &radius,
+    //    const int           &numSamples );
 
     // Light's Functions
     virtual void AccumulateIlluminationAtSurface(
@@ -56,6 +67,10 @@ public:
         const Scene         &scene,
         Color &diffuse,
         Color &specular ) const;
+
+    // Serializable's functions
+    virtual const bool Read(std::istream &stream);
+    virtual const bool Write(std::ostream &stream) const;
 };
 
 #endif

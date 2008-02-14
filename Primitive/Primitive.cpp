@@ -1,6 +1,8 @@
 
 //  RayWatch - A simple cross-platform RayTracer.
-//  Copyright (C) 2008  Angelo Rohit Joseph Pulikotil
+//  Copyright (C) 2008
+//      Angelo Rohit Joseph Pulikotil,
+//      Francis Xavier Joseph Pulikotil
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -16,6 +18,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Primitive.h"
+#include "Light.h"
+#include "Deserializer.h"
 
 // Constructor
 Primitive::Primitive() :
@@ -27,4 +31,53 @@ Primitive::Primitive() :
 // Destructor
 Primitive::~Primitive()
 {
+}
+
+// Serializable's functions
+const bool Primitive::Read(std::istream &stream)
+{
+    // Read the base
+    if( !ReadObjectHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
+        return false;
+
+    // Read the material
+    if( !ReadObjectHeader( stream, "Material" ) || !_material.Read( stream ) )
+        return false;
+
+    // Read the light pointer
+    if( !ReadVariable( stream, "light", _pLight ) )
+        return false;
+
+    return true;
+}
+
+const bool Primitive::Write(std::ostream &stream) const
+{
+    // Write the header
+    if( !WriteVariable( stream, "object", "Primitive" ) )
+        return false;
+
+    Indent();
+    {
+        // Write the base
+        if( !Serializable::Write( stream ) )
+            return false;
+
+        if( !_material.Write( stream ) )
+            return false;
+
+        if( !WriteVariable( stream, "light", _pLight ) )
+            return false;
+    }
+    Unindent();
+
+    return true;
+}
+
+const bool Primitive::RestorePointers()
+{
+    if( !Deserializer::TranslateAddress( _pLight ) )
+        return false;
+
+    return true;
 }

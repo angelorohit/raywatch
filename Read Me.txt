@@ -13,10 +13,10 @@ Currently implemented features:
 -> Point Lights
 -> Rectangular and Spherical Area Lights
 -> Texture Mapping for Quads and Spheres
+-> Loading/Saving Scene data from/to file (TODO: serialization support for textures is pending)
 
 Planned features:
 -> Texture Mapping for Triangles
--> Loading/Saving Scene data from/to file
 -> Spatial Subdivision for improving performance
 -> ...
 

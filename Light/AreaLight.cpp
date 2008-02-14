@@ -1,6 +1,8 @@
 
 //  RayWatch - A simple cross-platform RayTracer.
-//  Copyright (C) 2008  Angelo Rohit Joseph Pulikotil
+//  Copyright (C) 2008
+//      Angelo Rohit Joseph Pulikotil,
+//      Francis Xavier Joseph Pulikotil
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -19,6 +21,10 @@
 #include "Ray.h"
 #include "Scene.h"
 #include "Maths.h"
+#include "ObjectFactory.h"
+
+// Register with the ObjectFactory
+ObjectFactory_Register(Serializable, AreaLight);
 
 // Constructor
 AreaLight::AreaLight() :
@@ -40,6 +46,12 @@ void AreaLight::SetRectangularArea(
     const int           &numHorizontalSamples,
     const int           &numVerticalSamples )
 {
+    _v1                     = v1;                   // Only for Serializing later
+    _v2                     = v2;                   // Only for Serializing later
+    _v3                     = v3;                   // Only for Serializing later
+    _numHorizontalSamples   = numHorizontalSamples; // Only for Serializing later
+    _numVerticalSamples     = numVerticalSamples;   // Only for Serializing later
+
     Vector<float> nx = v3 - v2;
     const float width = nx.Normalize();
 
@@ -60,26 +72,28 @@ void AreaLight::SetRectangularArea(
     }
 }
 
-void AreaLight::SetSphericalArea(
-    const Vector<float> &centre,
-    const float         &radius,
-    const int           &numSamples )
-{
-    // Clear any existing positions
-    _positions.clear();
-
-    // Create the positions along the surface of the sphere (randomly)
-    for(int i=0; i < numSamples; ++i)
-    {
-        Vector<float> rndVec(
-            Maths::GenerateRandomValue() - 0.5f,
-            Maths::GenerateRandomValue() - 0.5f,
-            Maths::GenerateRandomValue() - 0.5f );
-        rndVec.Normalize();
-
-        _positions.push_back( centre + rndVec * radius );
-    }
-}
+// Note: This functionality should be moved into another class (could be SphericalAreaLight)
+//       Right now, it's not completely clear how to serialize two types of functionalities
+//void AreaLight::SetSphericalArea(
+//    const Vector<float> &centre,
+//    const float         &radius,
+//    const int           &numSamples )
+//{
+//    // Clear any existing positions
+//    _positions.clear();
+//
+//    // Create the positions along the surface of the sphere (randomly)
+//    for(int i=0; i < numSamples; ++i)
+//    {
+//        Vector<float> rndVec(
+//            Maths::GenerateRandomValue() - 0.5f,
+//            Maths::GenerateRandomValue() - 0.5f,
+//            Maths::GenerateRandomValue() - 0.5f );
+//        rndVec.Normalize();
+//
+//        _positions.push_back( centre + rndVec * radius );
+//    }
+//}
 
 // Light's Functions
 void AreaLight::AccumulateIlluminationAtSurface(
@@ -127,4 +141,49 @@ void AreaLight::AccumulateIlluminationAtSurface(
 
     diffuse += areaLightDiffuse * (1.0f / _positions.size());
     specular += areaLightSpecular * (1.0f / _positions.size());
+}
+
+// Serializable's functions
+const bool AreaLight::Read(std::istream &stream)
+{
+    // Read the base
+    if( !ReadObjectHeader( stream, "Light" ) || !Light::Read( stream ) )
+        return false;
+
+    Vector<float> vertex1, vertex2, vertex3;
+    int numHorizontalSamples, numVerticalSamples;
+    if( !ReadVariable( stream, "vertex1", vertex1 )                             ||
+        !ReadVariable( stream, "vertex2", vertex2 )                             ||
+        !ReadVariable( stream, "vertex3", vertex3 )                             ||
+        !ReadVariable( stream, "numHorizontalSamples", numHorizontalSamples )   ||
+        !ReadVariable( stream, "numVerticalSamples", numVerticalSamples )       )
+        return false;
+
+    SetRectangularArea( vertex1, vertex2, vertex3, numHorizontalSamples, numVerticalSamples );
+
+    return true;
+}
+
+const bool AreaLight::Write(std::ostream &stream) const
+{
+    // Write the header
+    if( !WriteVariable( stream, "object", "AreaLight" ) )
+        return false;
+
+    Indent();
+    {
+        // Write the base
+        if( !Light::Write( stream ) )
+            return false;
+
+        if( !WriteVariable( stream, "vertex1", _v1 )                                ||
+            !WriteVariable( stream, "vertex2", _v2 )                                ||
+            !WriteVariable( stream, "vertex3", _v3 )                                ||
+            !WriteVariable( stream, "numHorizontalSamples", _numHorizontalSamples ) ||
+            !WriteVariable( stream, "numVerticalSamples", _numVerticalSamples )     )
+            return false;
+    }
+    Unindent();
+
+    return true;
 }

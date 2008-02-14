@@ -70,7 +70,7 @@ void Examples::Example1(const std::string &fileName)
         pSphere->_material.SetReflectivity( 0.25f );
         pSphere->_material.SetSpecularity( 0.5f );
         pSphere->_material.SetRoughness( 20 );
-        pSphere->_material.SetFuzzyReflectivity( 0.2f );
+        pSphere->_material.SetFuzzyReflectionRadius( 0.2f );
         pSphere->_material.SetFuzzyReflectionSamples( 50 );
 
         scene.AddPrimitive( pSphere );

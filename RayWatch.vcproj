@@ -261,7 +261,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Misc\Deserializer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Misc\Deserializer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Misc\ObjectFactory.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Misc\SafeDelete.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Misc\Serializable.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Misc\Serializable.h"
 				>
 			</File>
 			<File

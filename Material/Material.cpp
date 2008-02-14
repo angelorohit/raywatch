@@ -1,6 +1,8 @@
 
 //  RayWatch - A simple cross-platform RayTracer.
-//  Copyright (C) 2008  Angelo Rohit Joseph Pulikotil
+//  Copyright (C) 2008
+//      Angelo Rohit Joseph Pulikotil,
+//      Francis Xavier Joseph Pulikotil
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,7 +29,7 @@ Material::Material() :
     _color( 1 ),
     _opacity( 1 ),
     _reflectivity( 0 ),
-    _fuzzyReflectivity( 0 ),
+    _fuzzyReflectionRadius( 0 ),
     _fuzzyReflectionSamples( 1 ),
     _specularity( 0 ),
     _roughness( 20 ),
@@ -65,14 +67,14 @@ void Material::SetReflectivity(const float &reflectivity)
     _reflectivity = Maths::Bound<float>( reflectivity, 0, 1 );
 }
 
-void Material::SetFuzzyReflectivity(const float &fuzzyReflectivity)
+void Material::SetFuzzyReflectionRadius(const float &fuzzyReflectionRadius)
 {
-    _fuzzyReflectivity = Maths::Max<float>(0, fuzzyReflectivity);
+    _fuzzyReflectionRadius = Maths::Max<float>( 0, fuzzyReflectionRadius );
 }
 
 void Material::SetFuzzyReflectionSamples(const int &fuzzyReflectionSamples)
 {
-    _fuzzyReflectionSamples = Maths::Max<int>(1, fuzzyReflectionSamples );
+    _fuzzyReflectionSamples = Maths::Max<int>( 1, fuzzyReflectionSamples );
 }
 
 void Material::SetSpecularity(const float &specularity)
@@ -82,22 +84,22 @@ void Material::SetSpecularity(const float &specularity)
 
 void Material::SetRoughness(const float &roughness)
 {
-    _roughness = roughness;
+    _roughness = Maths::Max<float>( 0, roughness );
 }
 
 void Material::SetRefractiveIndex(const float &refractiveIndex)
 {
-    _refractiveIndex = refractiveIndex;
+    _refractiveIndex = Maths::Max<float>( 1, refractiveIndex );
 }
 
 void Material::SetAbsorption(const float &absorption)
 {
-    _absorption = absorption;
+    _absorption = Maths::Max<float>( 0, absorption );
 }
 
 void Material::SetConcentration(const float &concentration)
 {
-    _concentration = concentration;
+    _concentration = Maths::Max<float>( 0, concentration );
 }
 
 void Material::SetTexture(const Image *const pTexture)
@@ -143,7 +145,7 @@ const Color Material::GetReflectedIllumination(
 {
     const Vector<float> r = incidentRay.Direction().Reflect( surfaceNormal );
 
-    if( _fuzzyReflectivity > 0          &&  // If there's come fuzziness in the reflection
+    if( _fuzzyReflectionRadius > 0      &&  // If there's come fuzziness in the reflection
         incidentRay.Generation() <= 2   )   // TODO: Make this hard-coded cap on the generation configurable.
     {
         Color color( 0 );
@@ -156,7 +158,7 @@ const Color Material::GetReflectedIllumination(
 
             Vector<float> rVec = rndVec - r * rndVec.Dot( r );
             rVec.Normalize();
-            rVec *= _fuzzyReflectivity * Maths::GenerateRandomValue();
+            rVec *= _fuzzyReflectionRadius * Maths::GenerateRandomValue();
 
             Vector<float> fuzzyR = r + rVec;
             fuzzyR.Normalize();
@@ -205,4 +207,77 @@ const Color Material::GetIllumination(
 
     // return the illumination not absorbed by this material
     return diffuse * _color * texelColor + specular * _specularity;
+}
+
+// Serializable's functions
+const bool Material::Read(std::istream &stream)
+{
+    // Read the base
+    if( !ReadObjectHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
+        return false;
+
+    Color   color;
+    float   opacity;
+    float   reflectivity;
+    float   fuzzyReflectionRadius;
+    int     fuzzyReflectionSamples;
+    float   specularity;
+    float   roughness;
+    float   refractiveIndex;
+    float   absorption;
+    float   concentration;
+
+    if( !ReadVariable( stream, "color", color )                                     ||
+        !ReadVariable( stream, "opacity", opacity )                                 ||
+        !ReadVariable( stream, "reflectivity", reflectivity )                       ||
+        !ReadVariable( stream, "fuzzyReflectionRadius", fuzzyReflectionRadius )     ||
+        !ReadVariable( stream, "fuzzyReflectionSamples", fuzzyReflectionSamples )   ||
+        !ReadVariable( stream, "specularity", specularity )                         ||
+        !ReadVariable( stream, "roughness", roughness )                             ||
+        !ReadVariable( stream, "refractiveIndex", refractiveIndex )                 ||
+        !ReadVariable( stream, "absorption", absorption )                           ||
+        !ReadVariable( stream, "concentration", concentration )                     )
+        return false;
+
+    SetColor( color.x, color.y, color.z );
+    SetOpacity( opacity );
+    SetReflectivity( reflectivity );
+    SetFuzzyReflectionRadius( fuzzyReflectionRadius );
+    SetFuzzyReflectionSamples( fuzzyReflectionSamples );
+    SetSpecularity( specularity );
+    SetRoughness( roughness );
+    SetRefractiveIndex( refractiveIndex );
+    SetAbsorption( absorption );
+    SetConcentration( concentration );
+
+    return true;
+}
+
+const bool Material::Write(std::ostream &stream) const
+{
+    // Write the header
+    if( !WriteVariable( stream, "object", "Material" ) )
+        return false;
+
+    Indent();
+    {
+        // Write the base
+        if( !Serializable::Write( stream ) )
+            return false;
+
+        if( !WriteVariable( stream, "color", _color )                                   ||
+            !WriteVariable( stream, "opacity", _opacity )                               ||
+            !WriteVariable( stream, "reflectivity", _reflectivity )                     ||
+            !WriteVariable( stream, "fuzzyReflectionRadius", _fuzzyReflectionRadius )   ||
+            !WriteVariable( stream, "fuzzyReflectionSamples", _fuzzyReflectionSamples ) ||
+            !WriteVariable( stream, "specularity", _specularity )                       ||
+            !WriteVariable( stream, "roughness", _roughness )                           ||
+            !WriteVariable( stream, "refractiveIndex", _refractiveIndex )               ||
+            !WriteVariable( stream, "absorption", _absorption )                         ||
+            !WriteVariable( stream, "concentration", _concentration )                   )
+            return false;
+    }
+    Unindent();
+
+    return true;
 }

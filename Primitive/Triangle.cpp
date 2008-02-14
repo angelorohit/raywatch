@@ -1,6 +1,8 @@
 
 //  RayWatch - A simple cross-platform RayTracer.
-//  Copyright (C) 2008  Angelo Rohit Joseph Pulikotil
+//  Copyright (C) 2008
+//      Angelo Rohit Joseph Pulikotil,
+//      Francis Xavier Joseph Pulikotil
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -18,6 +20,10 @@
 #include "Triangle.h"
 #include "Ray.h"
 #include "Maths.h"
+#include "ObjectFactory.h"
+
+// Register with the ObjectFactory
+ObjectFactory_Register(Serializable, Triangle);
 
 // Constructor
 Triangle::Triangle()
@@ -88,4 +94,44 @@ void Triangle::SetVertices(const Vector<float> &v1, const Vector<float> &v2, con
 
     _edge3Normal = (_v1 - _v3).Cross( _surfaceNormal );
     _edge3Normal.Normalize();
+}
+
+// Serializable's functions
+const bool Triangle::Read(std::istream &stream)
+{
+    // Read the base
+    if( !ReadObjectHeader( stream, "Primitive" ) || !Primitive::Read( stream ) )
+        return false;
+
+    Vector<float> vertex1, vertex2, vertex3;
+    if( !ReadVariable( stream, "vertex1", vertex1 ) ||
+        !ReadVariable( stream, "vertex2", vertex2 ) ||
+        !ReadVariable( stream, "vertex3", vertex3 ) )
+        return false;
+
+    SetVertices( vertex1, vertex2, vertex3 );
+
+    return true;
+}
+
+const bool Triangle::Write(std::ostream &stream) const
+{
+    // Write the header
+    if( !WriteVariable( stream, "object", "Triangle" ) )
+        return false;
+
+    Indent();
+    {
+        // Write the base
+        if( !Primitive::Write( stream ) )
+            return false;
+
+        if( !WriteVariable( stream, "vertex1", _v1 )    ||
+            !WriteVariable( stream, "vertex2", _v2 )    ||
+            !WriteVariable( stream, "vertex3", _v3 )    )
+            return false;
+    }
+    Unindent();
+
+    return true;
 }

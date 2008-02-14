@@ -1,6 +1,8 @@
 
 //  RayWatch - A simple cross-platform RayTracer.
-//  Copyright (C) 2008  Angelo Rohit Joseph Pulikotil
+//  Copyright (C) 2008
+//      Angelo Rohit Joseph Pulikotil,
+//      Francis Xavier Joseph Pulikotil
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -19,6 +21,10 @@
 #include "Ray.h"
 #include "Scene.h"
 #include "Maths.h"
+#include "ObjectFactory.h"
+
+// Register with the ObjectFactory
+ObjectFactory_Register(Serializable, PointLight);
 
 // Constructor
 PointLight::PointLight() :
@@ -64,4 +70,37 @@ void PointLight::AccumulateIlluminationAtSurface(
 
     // Accumulate the specular
     specular += illuminationFromLight * powf( Maths::Max<float>(0, ray.Direction().Dot( lightRayDirection.Reflect( surfaceNormal ) ) ), surfaceRoughness );
+}
+
+// Serializable's functions
+const bool PointLight::Read(std::istream &stream)
+{
+    // Read the base
+    if( !ReadObjectHeader( stream, "Light" ) || !Light::Read( stream ) )
+        return false;
+
+    if( !ReadVariable( stream, "position", _position ) )
+        return false;
+
+    return true;
+}
+
+const bool PointLight::Write(std::ostream &stream) const
+{
+    // Write the header
+    if( !WriteVariable( stream, "object", "PointLight" ) )
+        return false;
+
+    Indent();
+    {
+        // Write the base
+        if( !Light::Write( stream ) )
+            return false;
+
+        if( !WriteVariable( stream, "position", _position ) )
+            return false;
+    }
+    Unindent();
+
+    return true;
 }

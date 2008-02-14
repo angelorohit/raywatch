@@ -1,6 +1,8 @@
 
 //  RayWatch - A simple cross-platform RayTracer.
-//  Copyright (C) 2008  Angelo Rohit Joseph Pulikotil
+//  Copyright (C) 2008
+//      Angelo Rohit Joseph Pulikotil,
+//      Francis Xavier Joseph Pulikotil
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -20,21 +22,23 @@
 
 #include "Material.h"
 #include "IntersectionInfo.h"
+#include "Serializable.h"
 
 // Forward Declarations
 class Ray;
 class Light;
 
-class Primitive
+class Primitive : public Serializable
 {
 // Members
 public:
-    Material     _material;
-    Light       *_pLight;
+    Material        _material;
+    const Light    *_pLight;
 
-public:
+protected:
 // Constructor
     explicit Primitive();
+public:
 // Destructor
     virtual ~Primitive();
 
@@ -43,6 +47,11 @@ public:
     virtual const bool Intersects(const Ray &ray, IntersectionInfo &intersectionInfo) const = 0;
     virtual const bool Intersects(const Ray &ray, float &intersectionDist) const = 0;
     virtual const Vector<float> GetSurfaceNormal(const Vector<float> &position) const = 0;
+
+    // Serializable's functions
+    virtual const bool Read(std::istream &stream) =0;
+    virtual const bool Write(std::ostream &stream) const =0;
+    virtual const bool RestorePointers();
 };
 
 #endif

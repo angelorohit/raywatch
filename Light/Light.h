@@ -1,6 +1,8 @@
 
 //  RayWatch - A simple cross-platform RayTracer.
-//  Copyright (C) 2008  Angelo Rohit Joseph Pulikotil
+//  Copyright (C) 2008
+//      Angelo Rohit Joseph Pulikotil,
+//      Francis Xavier Joseph Pulikotil
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -19,12 +21,13 @@
 #define LIGHT_HEADER
 
 #include "Color.h"
+#include "Serializable.h"
 
 // Forward Declarations
 class Ray;
 class Scene;
 
-class Light
+class Light : public Serializable
 {
 // Members
 private:
@@ -36,9 +39,10 @@ protected:
     float   _range;
     float   _oneOverRange;  // (Auxiliary)
 
-public:
+protected:
 // Constructor
     explicit Light();
+public:
 // Destructor
     virtual ~Light();
 
@@ -48,7 +52,7 @@ protected:
 
 public:
     // Accessors
-    const Color &Illumination() const;
+    const Color &Illumination() const;  // Get
 
     void SetColor(const Color &color);
     void SetIntensity(const float &intensity);
@@ -61,6 +65,10 @@ public:
         const Scene         &scene,
         Color &diffuse,
         Color &specular ) const = 0;
+
+    // Serializable's functions
+    virtual const bool Read(std::istream &stream) =0;
+    virtual const bool Write(std::ostream &stream) const =0;
 };
 
 #endif

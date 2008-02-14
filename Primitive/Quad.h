@@ -1,6 +1,8 @@
 
 //  RayWatch - A simple cross-platform RayTracer.
-//  Copyright (C) 2008  Angelo Rohit Joseph Pulikotil
+//  Copyright (C) 2008
+//      Angelo Rohit Joseph Pulikotil,
+//      Francis Xavier Joseph Pulikotil
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -33,6 +35,10 @@ private:
     float           _width;
     float           _height;
 
+    // For Serializing
+    Vector<float>   _v2;
+    Vector<float>   _v3;
+
 public:
 // Constructor
     explicit Quad();
@@ -47,6 +53,10 @@ public:
     virtual const Vector<float> GetSurfaceNormal(const Vector<float> &position) const;
 
     void SetVertices(const Vector<float> &v1, const Vector<float> &v2, const Vector<float> &v3);
+
+    // Serializable's functions
+    virtual const bool Read(std::istream &stream);
+    virtual const bool Write(std::ostream &stream) const;
 };
 
 #endif
