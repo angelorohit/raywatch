@@ -48,8 +48,10 @@ private:
     static const bool RestoreAllPointers();
 
 public:
-    // Parses a variable of the format: <variable> = <value>;
-    static const bool ParseVariable(std::istream &stream, const std::string &variable, std::string &value, const bool &bOptional);
+    // Parses an unknown variable of the format: <variable> = <value>;
+    static const bool ParseVariable(std::istream &stream, std::string &variable, std::string &value);
+    // Parses a known variable of the format: <variable> = <value>;
+    static const bool ParseVariable(std::istream &stream, const std::string &variable, std::string &value);
 
     // Registers a Serializable and it's old address for restoration of pointers later.
     static const bool Register(const int &oldAddress, Serializable *const pSerializable);

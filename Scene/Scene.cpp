@@ -23,6 +23,7 @@
 #include "SafeDelete.h"
 #include "Maths.h"
 #include "ObjectFactory.h"
+#include "Deserializer.h"
 #include <algorithm>
 #include <limits>
 
@@ -150,7 +151,7 @@ void Scene::GetSurfaceIllumination(
 const bool Scene::Read(std::istream &stream)
 {
     // Read the base
-    if( !ReadObjectHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
+    if( !ReadHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
         return false;
 
     if( !ReadVariable( stream, "ambientLight", _ambientLight ) )
@@ -163,10 +164,26 @@ const bool Scene::Read(std::istream &stream)
     bool bReadResult = true;
     for(;;)
     {
-        // Read the next Object's type
+        // Read the next variable
+        std::string variable;
         std::string objectType;
-        if( !ReadVariable( stream, "object", objectType, true ) )
+        if( !Deserializer::ParseVariable( stream, variable, objectType ) )
+        {
+            bReadResult = false;
             break;
+        }
+
+        // See if we've reached the end of the Scene
+        if( (variable.compare( "end" ) == 0) && (objectType.compare( "Scene" ) == 0) )
+            break;
+
+        // See if it's the beginning of an object
+        if( variable.compare( "begin" ) != 0 )
+        {
+            std::cout << "Error: Variable 'begin' was expected; but Variable '" << variable << "' (with Value '" << objectType << "') was found instead." << std::endl;
+            bReadResult = false;
+            break;
+        }
 
         // Create the object
         Serializable *pSerializable = ObjectFactory<Serializable>::Create( objectType );
@@ -218,8 +235,7 @@ const bool Scene::Read(std::istream &stream)
 
 const bool Scene::Write(std::ostream &stream) const
 {
-    // Write the header
-    if( !WriteVariable( stream, "object", "Scene" ) )
+    if( !WriteHeader( stream, "Scene" ) )
         return false;
 
     Indent();
@@ -249,6 +265,9 @@ const bool Scene::Write(std::ostream &stream) const
         }
     }
     Unindent();
+
+    if( !WriteFooter( stream, "Scene" ) )
+        return false;
 
     return true;
 }

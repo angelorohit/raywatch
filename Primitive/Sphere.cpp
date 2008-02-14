@@ -126,7 +126,7 @@ const Vector<float> Sphere::GetSurfaceNormal(const Vector<float> &position) cons
 const bool Sphere::Read(std::istream &stream)
 {
     // Read the base
-    if( !ReadObjectHeader( stream, "Primitive" ) || !Primitive::Read( stream ) )
+    if( !ReadHeader( stream, "Primitive" ) || !Primitive::Read( stream ) )
         return false;
 
     Vector<float> centre;
@@ -139,13 +139,15 @@ const bool Sphere::Read(std::istream &stream)
     SetCentre( centre );
     SetRadius( radius );
 
+    if( !ReadFooter( stream, "Sphere" ) )
+        return false;
+
     return true;
 }
 
 const bool Sphere::Write(std::ostream &stream) const
 {
-    // Write the header
-    if( !WriteVariable( stream, "object", "Sphere" ) )
+    if( !WriteHeader( stream, "Sphere" ) )
         return false;
 
     Indent();
@@ -159,6 +161,9 @@ const bool Sphere::Write(std::ostream &stream) const
             return false;
     }
     Unindent();
+
+    if( !WriteFooter( stream, "Sphere" ) )
+        return false;
 
     return true;
 }

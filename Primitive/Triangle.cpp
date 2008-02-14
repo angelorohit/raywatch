@@ -100,7 +100,7 @@ void Triangle::SetVertices(const Vector<float> &v1, const Vector<float> &v2, con
 const bool Triangle::Read(std::istream &stream)
 {
     // Read the base
-    if( !ReadObjectHeader( stream, "Primitive" ) || !Primitive::Read( stream ) )
+    if( !ReadHeader( stream, "Primitive" ) || !Primitive::Read( stream ) )
         return false;
 
     Vector<float> vertex1, vertex2, vertex3;
@@ -111,13 +111,15 @@ const bool Triangle::Read(std::istream &stream)
 
     SetVertices( vertex1, vertex2, vertex3 );
 
+    if( !ReadFooter( stream, "Triangle" ) )
+        return false;
+
     return true;
 }
 
 const bool Triangle::Write(std::ostream &stream) const
 {
-    // Write the header
-    if( !WriteVariable( stream, "object", "Triangle" ) )
+    if( !WriteHeader( stream, "Triangle" ) )
         return false;
 
     Indent();
@@ -132,6 +134,9 @@ const bool Triangle::Write(std::ostream &stream) const
             return false;
     }
     Unindent();
+
+    if( !WriteFooter( stream, "Triangle" ) )
+        return false;
 
     return true;
 }

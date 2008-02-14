@@ -48,24 +48,9 @@ void Serializable::Unindent()
     _indentation -= 4;
 }
 
-const bool Serializable::ReadObjectHeader(std::istream &stream, const std::string &objectName) const
+const bool Serializable::ReadVariable(std::istream &stream, const std::string &variable, std::string &value) const
 {
-    std::string readObjectName;
-    if( !ReadVariable( stream, "object", readObjectName ) )
-        return false;
-
-    if( objectName.compare( readObjectName ) != 0 )
-    {
-        std::cout << "Error: Object '" << objectName << "' was expected, but '" << readObjectName << "' was found instead." << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-const bool Serializable::ReadVariable(std::istream &stream, const std::string &variable, std::string &value, const bool &bOptional) const
-{
-    return Deserializer::ParseVariable( stream, variable, value, bOptional );
+    return Deserializer::ParseVariable( stream, variable, value );
 }
 
 const bool Serializable::ReadVariable(std::istream &stream, const std::string &variable, int &value) const
@@ -143,6 +128,38 @@ const bool Serializable::ReadVariable(std::istream &stream, const std::string &v
     return true;
 }
 
+// Reads an object header of the form: begin = <objectName>;
+const bool Serializable::ReadHeader(std::istream &stream, const std::string &objectName) const
+{
+    std::string readObjectName;
+    if( !ReadVariable( stream, "begin", readObjectName ) )
+        return false;
+
+    if( objectName.compare( readObjectName ) != 0 )
+    {
+        std::cout << "Error: Begin of object '" << objectName << "' was expected, but '" << readObjectName << "' was found instead." << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+// Reads an object footer of the form: end = <objectName>;
+const bool Serializable::ReadFooter(std::istream &stream, const std::string &objectName) const
+{
+    std::string readObjectName;
+    if( !ReadVariable( stream, "end", readObjectName ) )
+        return false;
+
+    if( objectName.compare( readObjectName ) != 0 )
+    {
+        std::cout << "Error: End of object '" << objectName << "' was expected, but '" << readObjectName << "' was found instead." << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 const bool Serializable::WriteVariable(std::ostream &stream, const std::string &variable, const std::string &value) const
 {
     return (stream << std::string( _indentation, ' ' ) << variable << " = " << value << ";" << std::endl).good();
@@ -181,6 +198,18 @@ const bool Serializable::WriteVariable(std::ostream &stream, const std::string &
     return WriteVariable( stream, variable, (int)value );
 }
 
+// Helper function to write an object header in the form: begin = <object>;
+const bool Serializable::WriteHeader(std::ostream &stream, const std::string &objectName) const
+{
+    return WriteVariable( stream, "begin", objectName );
+}
+
+// Helper function to write an object footer in the form: end = <object>;
+const bool Serializable::WriteFooter(std::ostream &stream, const std::string &objectName) const
+{
+    return WriteVariable( stream, "end", objectName );
+}
+
 const bool Serializable::Read(std::istream &stream)
 {
     int oldAddress;
@@ -190,13 +219,15 @@ const bool Serializable::Read(std::istream &stream)
     if( !Deserializer::Register( oldAddress, this ) )
         return false;
 
+    if( !ReadFooter( stream, "Serializable" ) )
+        return false;
+
     return true;
 }
 
 const bool Serializable::Write(std::ostream &stream) const
 {
-    // Write the header
-    if( !WriteVariable( stream, "object", "Serializable" ) )
+    if( !WriteHeader( stream, "Serializable" ) )
         return false;
 
     Indent();
@@ -205,6 +236,9 @@ const bool Serializable::Write(std::ostream &stream) const
             return false;
     }
     Unindent();
+
+    if( !WriteFooter( stream, "Serializable" ) )
+        return false;
 
     return true;
 }

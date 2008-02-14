@@ -26,39 +26,27 @@
 // Initialize static members
 Deserializer::AssocMap Deserializer::_associations;
 
-const bool Deserializer::ParseVariable(
-    std::istream        &stream,
-    const std::string   &variable,
-    std::string         &value,
-    const bool          &bOptional )
+// Parses an unknown variable of the format: <variable> = <value>;
+const bool Deserializer::ParseVariable(std::istream &stream, std::string &variable, std::string &value)
 {
     // Get the variable
     for(;;)
     {
-        std::string variableRead;
-        getline(stream, variableRead, '=');
-        Utility::String::TrimWhiteSpaces( variableRead );
+        getline(stream, variable, '=');
+        Utility::String::TrimWhiteSpaces( variable );
 
         // If we've reached the end of file
         if( stream.eof() )
         {
-            if( !bOptional )
-                std::cout << "Error: Variable '" << variable << "' was expected, but EndOfFile was reached." << std::endl;
+            std::cout << "Error: A Variable was expected, but EndOfFile was reached." << std::endl;
             return false;
         }
 
         // If this is a comment
-        if( variableRead.compare( "//" ) == 0 )
+        if( variable.compare( "//" ) == 0 )
         {
             getline(stream, value, ';'); // Read upto the end of the comment
             continue;
-        }
-
-        // See if the variable read is what is expected
-        if( variableRead.compare( variable ) != 0 )
-        {
-            std::cout << "Error: Variable '" << variable << "' was expected, but '" << variableRead << "' was found instead." << std::endl;
-            return false;
         }
 
         // We got the variable we wanted
@@ -79,6 +67,23 @@ const bool Deserializer::ParseVariable(
     return true;
 }
 
+// Parses a known variable of the format: <variable> = <value>;
+const bool Deserializer::ParseVariable(std::istream &stream, const std::string &variable, std::string &value)
+{
+    std::string variableRead;
+    if( !ParseVariable( stream, variableRead, value ) )
+        return false;
+
+    // See if the variable read is what is expected
+    if( variableRead.compare( variable ) != 0 )
+    {
+        std::cout << "Error: Variable '" << variable << "' was expected, but '" << variableRead << "' was found instead." << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 const bool Deserializer::Register(const int &oldAddress, Serializable *const pSerializable)
 {
     return _associations.insert( AssocMap::value_type( oldAddress, pSerializable ) ).second;
@@ -92,7 +97,7 @@ Serializable *const Deserializer::Read(std::istream &stream)
     {
         // Read the first Object's type
         std::string objectType;
-        if( !ParseVariable( stream, "object", objectType, true ) )
+        if( !ParseVariable( stream, "begin", objectType ) )
             break;
 
         // Create the object

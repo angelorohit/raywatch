@@ -147,7 +147,7 @@ void AreaLight::AccumulateIlluminationAtSurface(
 const bool AreaLight::Read(std::istream &stream)
 {
     // Read the base
-    if( !ReadObjectHeader( stream, "Light" ) || !Light::Read( stream ) )
+    if( !ReadHeader( stream, "Light" ) || !Light::Read( stream ) )
         return false;
 
     Vector<float> vertex1, vertex2, vertex3;
@@ -161,13 +161,15 @@ const bool AreaLight::Read(std::istream &stream)
 
     SetRectangularArea( vertex1, vertex2, vertex3, numHorizontalSamples, numVerticalSamples );
 
+    if( !ReadFooter( stream, "AreaLight" ) )
+        return false;
+
     return true;
 }
 
 const bool AreaLight::Write(std::ostream &stream) const
 {
-    // Write the header
-    if( !WriteVariable( stream, "object", "AreaLight" ) )
+    if( !WriteHeader( stream, "AreaLight" ) )
         return false;
 
     Indent();
@@ -184,6 +186,9 @@ const bool AreaLight::Write(std::ostream &stream) const
             return false;
     }
     Unindent();
+
+    if( !WriteFooter( stream, "AreaLight" ) )
+        return false;
 
     return true;
 }

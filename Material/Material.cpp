@@ -213,7 +213,7 @@ const Color Material::GetIllumination(
 const bool Material::Read(std::istream &stream)
 {
     // Read the base
-    if( !ReadObjectHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
+    if( !ReadHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
         return false;
 
     Color   color;
@@ -250,13 +250,15 @@ const bool Material::Read(std::istream &stream)
     SetAbsorption( absorption );
     SetConcentration( concentration );
 
+    if( !ReadFooter( stream, "Material" ) )
+        return false;
+
     return true;
 }
 
 const bool Material::Write(std::ostream &stream) const
 {
-    // Write the header
-    if( !WriteVariable( stream, "object", "Material" ) )
+    if( !WriteHeader( stream, "Material" ) )
         return false;
 
     Indent();
@@ -278,6 +280,9 @@ const bool Material::Write(std::ostream &stream) const
             return false;
     }
     Unindent();
+
+    if( !WriteFooter( stream, "Material" ) )
+        return false;
 
     return true;
 }

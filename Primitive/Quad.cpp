@@ -103,7 +103,7 @@ void Quad::SetVertices(const Vector<float> &v1, const Vector<float> &v2, const V
 const bool Quad::Read(std::istream &stream)
 {
     // Read the base
-    if( !ReadObjectHeader( stream, "Primitive" ) || !Primitive::Read( stream ) )
+    if( !ReadHeader( stream, "Primitive" ) || !Primitive::Read( stream ) )
         return false;
 
     Vector<float> vertex1, vertex2, vertex3;
@@ -114,13 +114,15 @@ const bool Quad::Read(std::istream &stream)
 
     SetVertices( vertex1, vertex2, vertex3 );
 
+    if( !ReadFooter( stream, "Quad" ) )
+        return false;
+
     return true;
 }
 
 const bool Quad::Write(std::ostream &stream) const
 {
-    // Write the header
-    if( !WriteVariable( stream, "object", "Quad" ) )
+    if( !WriteHeader( stream, "Quad" ) )
         return false;
 
     Indent();
@@ -135,6 +137,9 @@ const bool Quad::Write(std::ostream &stream) const
             return false;
     }
     Unindent();
+
+    if( !WriteFooter( stream, "Quad" ) )
+        return false;
 
     return true;
 }

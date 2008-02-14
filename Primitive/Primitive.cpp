@@ -37,15 +37,18 @@ Primitive::~Primitive()
 const bool Primitive::Read(std::istream &stream)
 {
     // Read the base
-    if( !ReadObjectHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
+    if( !ReadHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
         return false;
 
     // Read the material
-    if( !ReadObjectHeader( stream, "Material" ) || !_material.Read( stream ) )
+    if( !ReadHeader( stream, "Material" ) || !_material.Read( stream ) )
         return false;
 
     // Read the light pointer
     if( !ReadVariable( stream, "light", _pLight ) )
+        return false;
+
+    if( !ReadFooter( stream, "Primitive" ) )
         return false;
 
     return true;
@@ -53,8 +56,7 @@ const bool Primitive::Read(std::istream &stream)
 
 const bool Primitive::Write(std::ostream &stream) const
 {
-    // Write the header
-    if( !WriteVariable( stream, "object", "Primitive" ) )
+    if( !WriteHeader( stream, "Primitive" ) )
         return false;
 
     Indent();
@@ -70,6 +72,9 @@ const bool Primitive::Write(std::ostream &stream) const
             return false;
     }
     Unindent();
+
+    if( !WriteFooter( stream, "Primitive" ) )
+        return false;
 
     return true;
 }

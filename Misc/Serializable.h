@@ -44,16 +44,18 @@ protected:
     static void Indent();
     static void Unindent();
 
-    // Reads an expected object header of the form: object = <objectName>;
-    const bool ReadObjectHeader(std::istream &stream, const std::string &objectName) const;
-
     // Helper functions to read various data types
-    const bool ReadVariable(std::istream &stream, const std::string &variable, std::string &value, const bool &bOptional = false) const;
+    const bool ReadVariable(std::istream &stream, const std::string &variable, std::string &value) const;
     const bool ReadVariable(std::istream &stream, const std::string &variable, int &value) const;
     const bool ReadVariable(std::istream &stream, const std::string &variable, float &value) const;
     const bool ReadVariable(std::istream &stream, const std::string &variable, bool &value) const;
     const bool ReadVariable(std::istream &stream, const std::string &variable, Vector<float> &value) const;
-    
+
+    // Reads an object header of the form: begin = <objectName>;
+    const bool ReadHeader(std::istream &stream, const std::string &objectName) const;
+    // Reads an object footer of the form: end = <objectName>;
+    const bool ReadFooter(std::istream &stream, const std::string &objectName) const;
+
     // Templated function to read any pointer type
     template <typename T>
     const bool ReadVariable(std::istream &stream, const std::string &variable, T* &pPointer) const
@@ -75,6 +77,11 @@ protected:
     const bool WriteVariable(std::ostream &stream, const std::string &variable, const bool &value) const;
     const bool WriteVariable(std::ostream &stream, const std::string &variable, const Vector<float> &value) const;
     const bool WriteVariable(std::ostream &stream, const std::string &variable, const Serializable *const value) const;
+
+    // Helper function to write an object header in the form: begin = <objectName>;
+    const bool WriteHeader(std::ostream &stream, const std::string &objectName) const;
+    // Helper function to write an object footer in the form: end = <objectName>;
+    const bool WriteFooter(std::ostream &stream, const std::string &objectName) const;
 
 public:
     virtual const bool Read(std::istream &stream) =0;

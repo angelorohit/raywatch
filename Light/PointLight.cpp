@@ -76,10 +76,13 @@ void PointLight::AccumulateIlluminationAtSurface(
 const bool PointLight::Read(std::istream &stream)
 {
     // Read the base
-    if( !ReadObjectHeader( stream, "Light" ) || !Light::Read( stream ) )
+    if( !ReadHeader( stream, "Light" ) || !Light::Read( stream ) )
         return false;
 
     if( !ReadVariable( stream, "position", _position ) )
+        return false;
+
+    if( !ReadFooter( stream, "PointLight" ) )
         return false;
 
     return true;
@@ -87,8 +90,7 @@ const bool PointLight::Read(std::istream &stream)
 
 const bool PointLight::Write(std::ostream &stream) const
 {
-    // Write the header
-    if( !WriteVariable( stream, "object", "PointLight" ) )
+    if( !WriteHeader( stream, "PointLight" ) )
         return false;
 
     Indent();
@@ -101,6 +103,9 @@ const bool PointLight::Write(std::ostream &stream) const
             return false;
     }
     Unindent();
+
+    if( !WriteFooter( stream, "PointLight" ) )
+        return false;
 
     return true;
 }

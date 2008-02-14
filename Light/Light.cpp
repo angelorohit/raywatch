@@ -77,7 +77,7 @@ void Light::SetRange(const float &range)
 const bool Light::Read(std::istream &stream)
 {
     // Read the base
-    if( !ReadObjectHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
+    if( !ReadHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
         return false;
 
     Color   color;
@@ -93,13 +93,15 @@ const bool Light::Read(std::istream &stream)
     SetIntensity( intensity );
     SetRange( range );
 
+    if( !ReadFooter( stream, "Light" ) )
+        return false;
+
     return true;
 }
 
 const bool Light::Write(std::ostream &stream) const
 {
-    // Write the header
-    if( !WriteVariable( stream, "object", "Light" ) )
+    if( !WriteHeader( stream, "Light" ) )
         return false;
 
     Indent();
@@ -114,6 +116,9 @@ const bool Light::Write(std::ostream &stream) const
             return false;
     }
     Unindent();
+
+    if( !WriteFooter( stream, "Light" ) )
+        return false;
 
     return true;
 }
