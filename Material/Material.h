@@ -28,7 +28,7 @@
 // Forward Declarations
 class Ray;
 class Scene;
-class Image;
+class Texture;
 
 class Material : public Serializable
 {
@@ -47,8 +47,11 @@ private:
     float   _absorption;                // The amount of light absorbed by the material
     float   _concentration;             // The concentration of the material; density of the material.
 
-    const Image *_pTexture;             // Texture to apply on the material
-    float        _oneOverTextureScale;  // 1 / scale to be applied to the texture
+    const Texture   *_pTexture;             // Texture to apply on the material
+    float            _oneOverTextureScale;  // 1 / scale to be applied to the texture
+
+    // For Serializing
+    float   _textureScale;
 
 public:
 // Constructor
@@ -88,8 +91,7 @@ public:
     void SetRefractiveIndex(const float &refractiveIndex);
     void SetAbsorption(const float &absorption);
     void SetConcentration(const float &concentration);
-
-    void SetTexture(const Image *const pTexture);
+    void SetTexture(const Texture *const pTexture);
     void SetTextureScale(const float &scale);
 
     const Color GetIllumination(
@@ -101,6 +103,7 @@ public:
     // Serializable's functions
     virtual const bool Read(std::istream &stream);
     virtual const bool Write(std::ostream &stream) const;
+    virtual const bool RestorePointers();
 };
 
 #endif

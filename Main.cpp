@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
     Scene *pScene = dynamic_cast<Scene *>( Deserializer::Read( stream ) );
     if( !pScene )
     {
-        std::cout << "Error: The specified input file is not a valid Scene file: " << argv[1] << std::endl;
+        std::cout << "Error: Failed to load Scene from file: " << argv[1] << std::endl;
         return -1;
     }
 

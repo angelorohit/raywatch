@@ -20,6 +20,7 @@
 #include "Scene.h"
 #include "Primitive.h"
 #include "Light.h"
+#include "Texture.h"
 #include "SafeDelete.h"
 #include "Maths.h"
 #include "ObjectFactory.h"
@@ -34,6 +35,7 @@ ObjectFactory_Register(Serializable, Scene);
 Scene::Scene() :
     _primitiveList(),
     _lightList(),
+    _textureList(),
     _ambientLight( 0 ),
     _maxRayGenerations( 3 )
 {
@@ -48,6 +50,10 @@ Scene::~Scene()
 
     // Delete all the Lights
     for(LightList::iterator itr = _lightList.begin(); itr != _lightList.end(); ++itr)
+        SAFE_DELETE_SCALAR( *itr );
+
+    // Delete all the Textures
+    for(TextureList::iterator itr = _textureList.begin(); itr != _textureList.end(); ++itr)
         SAFE_DELETE_SCALAR( *itr );
 }
 
@@ -85,6 +91,23 @@ void Scene::AddLight(Light *const pLight)
 void Scene::RemoveLight(Light *const pLight)
 {
     _lightList.remove( pLight );
+}
+
+void Scene::AddTexture(Texture *const pTexture)
+{
+    if( !pTexture )
+        return;
+
+    // If the Texture is already in the list, then don't do anything.
+    if( std::find(_textureList.begin(), _textureList.end(), pTexture) != _textureList.end() )
+        return;
+
+    _textureList.push_back( pTexture );
+}
+
+void Scene::RemoveTexture(Texture *const pTexture)
+{
+    _textureList.remove( pTexture );
 }
 
 const Primitive *const Scene::FindClosestIntersection(const Ray &ray, IntersectionInfo &closestIntersectionInfo) const
@@ -145,6 +168,35 @@ void Scene::GetSurfaceIllumination(
         // Accumulate the diffuse and specular contribution from this light
         pLight->AccumulateIlluminationAtSurface( ray, surfaceNormal, surfaceRoughness, *this, diffuse, specular );
     }
+}
+
+Texture *const Scene::LoadTexture(const std::string &fileName)
+{
+    // See if this texture is already in our list.
+    for(TextureList::const_iterator itr = _textureList.begin(); itr != _textureList.end(); ++itr)
+    {
+        Texture *const pTexture = (*itr);
+
+        if( pTexture->FileName().compare( fileName ) == 0 )
+            return pTexture;
+    }
+
+    // It's not, so we'll have to create it.
+    Texture *pTexture = new Texture();
+    if( !pTexture )
+        return 0;
+
+    // Load the texture
+    if( !pTexture->Load( fileName ) )
+    {
+        SAFE_DELETE_SCALAR( pTexture );
+        return 0;
+    }
+
+    // Push it into our list of textures
+    AddTexture( pTexture );
+
+    return pTexture;
 }
 
 // Serializable's functions
@@ -220,9 +272,17 @@ const bool Scene::Read(std::istream &stream)
                 continue;
             }
 
+            // See if it's a Texture
+            Texture *pTexture = dynamic_cast<Texture *>(pSerializable);
+            if( pTexture )
+            {
+                AddTexture( pTexture );
+                continue;
+            }
+
             // We don't know what type of object this is
             {
-                std::cout << "Error: Object '" << objectType << "' is not a 'Primitive' or a 'Light'" << std::endl;
+                std::cout << "Error: Object '" << objectType << "' cannot be inserted directly into the Scene." << std::endl;
                 SAFE_DELETE_SCALAR( pSerializable );
                 bReadResult = false;
                 break;
@@ -259,6 +319,13 @@ const bool Scene::Write(std::ostream &stream) const
 
         // Write all the Lights
         for(LightList::const_iterator itr = _lightList.begin(); itr != _lightList.end(); ++itr)
+        {
+            if( !(*itr)->Write( stream ) )
+                return false;
+        }
+
+        // Write all the Textures
+        for(TextureList::const_iterator itr = _textureList.begin(); itr != _textureList.end(); ++itr)
         {
             if( !(*itr)->Write( stream ) )
                 return false;

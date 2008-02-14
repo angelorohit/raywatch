@@ -35,11 +35,8 @@ void Examples::Example2(const std::string &fileName)
     scene._ambientLight.Set( 0.1f );
 
     // Create textures
-    Image texture1;
-    texture1.SDL_Load( "Textures/Checks.jpg" );
-
-    Image texture2;
-    texture2.SDL_Load( "Textures/Strands.png" );
+    Texture *pTexture1 = scene.LoadTexture( "Textures/Checks.jpg" );
+    Texture *pTexture2 = scene.LoadTexture( "Textures/Strands.png" );
 
     // Bottom Quad
     {
@@ -49,7 +46,7 @@ void Examples::Example2(const std::string &fileName)
             Vector<float>( -2, -1, -2),
             Vector<float>(  2, -1, -2) );
         pQuad->_material.SetColor(1, 1, 1);
-        pQuad->_material.SetTexture( &texture1 );
+        pQuad->_material.SetTexture( pTexture1 );
         pQuad->_material.SetTextureScale( 0.25f );
 
         scene.AddPrimitive( pQuad );
@@ -76,7 +73,7 @@ void Examples::Example2(const std::string &fileName)
         pSphere->_material.SetRefractiveIndex( 1.05f );
         pSphere->_material.SetAbsorption( 3 );
 
-        pSphere->_material.SetTexture( &texture2 );
+        pSphere->_material.SetTexture( pTexture2 );
 
         scene.AddPrimitive( pSphere );
     }
@@ -93,7 +90,7 @@ void Examples::Example2(const std::string &fileName)
         pSphere->_material.SetRefractiveIndex( 1.05f );
         pSphere->_material.SetAbsorption( 3 );
 
-        pSphere->_material.SetTexture( &texture2 );
+        pSphere->_material.SetTexture( pTexture2 );
 
         scene.AddPrimitive( pSphere );
     }

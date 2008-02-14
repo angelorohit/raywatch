@@ -188,6 +188,14 @@
 				RelativePath=".\Image\Pixel.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Image\Texture.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Image\Texture.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Light"

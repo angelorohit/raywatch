@@ -22,7 +22,8 @@
 #include "Maths.h"
 #include "Scene.h"
 #include "RayTracer.h"
-#include "Image.h"
+#include "Texture.h"
+#include "Deserializer.h"
 
 // Constructor
 Material::Material() :
@@ -37,7 +38,8 @@ Material::Material() :
     _absorption( 0 ),
     _concentration( 1 ),
     _pTexture( 0 ),
-    _oneOverTextureScale( 1 )
+    _oneOverTextureScale( 1 ),
+    _textureScale( 1 )
 {
 }
 
@@ -102,13 +104,14 @@ void Material::SetConcentration(const float &concentration)
     _concentration = Maths::Max<float>( 0, concentration );
 }
 
-void Material::SetTexture(const Image *const pTexture)
+void Material::SetTexture(const Texture *const pTexture)
 {
     _pTexture = pTexture;
 }
 
 void Material::SetTextureScale(const float &scale)
 {
+    _textureScale = scale;
     _oneOverTextureScale = 1 / scale;
 }
 
@@ -216,16 +219,18 @@ const bool Material::Read(std::istream &stream)
     if( !ReadHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
         return false;
 
-    Color   color;
-    float   opacity;
-    float   reflectivity;
-    float   fuzzyReflectionRadius;
-    int     fuzzyReflectionSamples;
-    float   specularity;
-    float   roughness;
-    float   refractiveIndex;
-    float   absorption;
-    float   concentration;
+    Color           color;
+    float           opacity;
+    float           reflectivity;
+    float           fuzzyReflectionRadius;
+    int             fuzzyReflectionSamples;
+    float           specularity;
+    float           roughness;
+    float           refractiveIndex;
+    float           absorption;
+    float           concentration;
+    const Texture  *pTexture = 0;
+    float           textureScale;
 
     if( !ReadVariable( stream, "color", color )                                     ||
         !ReadVariable( stream, "opacity", opacity )                                 ||
@@ -236,7 +241,9 @@ const bool Material::Read(std::istream &stream)
         !ReadVariable( stream, "roughness", roughness )                             ||
         !ReadVariable( stream, "refractiveIndex", refractiveIndex )                 ||
         !ReadVariable( stream, "absorption", absorption )                           ||
-        !ReadVariable( stream, "concentration", concentration )                     )
+        !ReadVariable( stream, "concentration", concentration )                     ||
+        !ReadVariable( stream, "texture", pTexture )                                ||
+        !ReadVariable( stream, "textureScale", textureScale )                       )
         return false;
 
     SetColor( color.x, color.y, color.z );
@@ -249,6 +256,8 @@ const bool Material::Read(std::istream &stream)
     SetRefractiveIndex( refractiveIndex );
     SetAbsorption( absorption );
     SetConcentration( concentration );
+    SetTexture( pTexture );
+    SetTextureScale( textureScale );
 
     if( !ReadFooter( stream, "Material" ) )
         return false;
@@ -276,12 +285,22 @@ const bool Material::Write(std::ostream &stream) const
             !WriteVariable( stream, "roughness", _roughness )                           ||
             !WriteVariable( stream, "refractiveIndex", _refractiveIndex )               ||
             !WriteVariable( stream, "absorption", _absorption )                         ||
-            !WriteVariable( stream, "concentration", _concentration )                   )
+            !WriteVariable( stream, "concentration", _concentration )                   ||
+            !WriteVariable( stream, "texture", _pTexture )                              ||
+            !WriteVariable( stream, "textureScale", _textureScale )                     )
             return false;
     }
     Unindent();
 
     if( !WriteFooter( stream, "Material" ) )
+        return false;
+
+    return true;
+}
+
+const bool Material::RestorePointers()
+{
+    if( !Deserializer::TranslateAddress( _pTexture ) )
         return false;
 
     return true;

@@ -35,8 +35,7 @@ void Examples::Example1(const std::string &fileName)
     scene._ambientLight.Set( 0 );
 
     // Create a texture
-    Image texture;
-    texture.SDL_Load( "Textures/Checks.jpg" );
+    Texture *pTexture = scene.LoadTexture( "Textures/Checks.jpg" );
 
     // Bottom Quad
     {
@@ -46,7 +45,7 @@ void Examples::Example1(const std::string &fileName)
             Vector<float>( -2, -1, -2),
             Vector<float>(  2, -1, -2) );
         pQuad->_material.SetColor(1, 1, 1);
-        pQuad->_material.SetTexture( &texture );
+        pQuad->_material.SetTexture( pTexture );
         pQuad->_material.SetTextureScale( 0.25f );
 
         scene.AddPrimitive( pQuad );

@@ -29,6 +29,7 @@
 class Ray;
 class Primitive;
 class Light;
+class Texture;
 
 class Scene : public Serializable
 {
@@ -36,11 +37,13 @@ class Scene : public Serializable
 public:
     typedef std::list<Primitive *>  PrimitiveList;
     typedef std::list<Light *>      LightList;
+    typedef std::list<Texture *>    TextureList;
 
 // Members
 private:
     PrimitiveList   _primitiveList;
     LightList       _lightList;
+    TextureList     _textureList;
 
 public:
     Color           _ambientLight;
@@ -65,6 +68,9 @@ public:
     void AddLight(Light *const pLight);
     void RemoveLight(Light *const pLight);
 
+    void AddTexture(Texture *const pTexture);
+    void RemoveTexture(Texture *const pTexture);
+
     const Primitive *const FindClosestIntersection(const Ray &ray, IntersectionInfo &closestIntersectionInfo) const;
 
     const bool IsOccluded(const Ray &ray, const float &rayLength) const;
@@ -75,6 +81,8 @@ public:
         const float         &surfaceRoughness,
         Color &diffuse,
         Color &specular ) const;
+
+    Texture *const LoadTexture(const std::string &fileName);
 
     // Serializable's functions
     virtual const bool Read(std::istream &stream);
