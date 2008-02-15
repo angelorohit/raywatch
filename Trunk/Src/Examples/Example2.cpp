@@ -36,8 +36,8 @@ const bool Examples::Example2(const std::string &fileName)
     scene._ambientLight.Set( 0.1f );
 
     // Create textures
-    Texture *pTexture1 = scene.LoadTexture( "Textures/Checks.jpg" );
-    Texture *pTexture2 = scene.LoadTexture( "Textures/Strands.png" );
+    Texture *pTexture1 = scene.LoadTexture( "Media/Textures/Checks.jpg" );
+    Texture *pTexture2 = scene.LoadTexture( "Media/Textures/Strands.png" );
     if( !(pTexture1 && pTexture2) )
     {
         std::cout << "Error: Failed to create Scene" << std::endl;
