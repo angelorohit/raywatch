@@ -24,9 +24,9 @@ class Examples
 {
 // Functions
 public:
-    static void CornellBox(const std::string &fileName);
-    static void Example1(const std::string &fileName);
-    static void Example2(const std::string &fileName);
+    static const bool CornellBox(const std::string &fileName);
+    static const bool Example1(const std::string &fileName);
+    static const bool Example2(const std::string &fileName);
 };
 
 #endif

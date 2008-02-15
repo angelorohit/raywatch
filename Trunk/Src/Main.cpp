@@ -31,6 +31,7 @@
 #include "RayTracer.h"
 #include "SafeDelete.h"
 #include "Utility.h"
+#include "Examples.h"
 #include <iostream>
 #include <fstream>
 //#include <time.h>
@@ -58,9 +59,39 @@ int main(int argc, char *argv[])
 
     if( argc < 3 )
     {
-        std::cout << "Insufficient arguments" << std::endl;
-        std::cout << "Syntax: " << argv[0] << " <input scene filename> <output bitmap filename> [width] [height]" << std::endl;
+        std::cout << "Insufficient arguments" << std::endl << std::endl;
+        std::cout << "Syntax (to render a Scene file):" << std::endl << argv[0] << " <input scene filename> <output bitmap filename> [width] [height]" << std::endl << std::endl;
+        std::cout << "Syntax (to generate a sample file): " << std::endl << argv[0] << " --gen:<sample name> <output scene filename>" << std::endl << std::endl;
+        std::cout << "Currently supported samples are CornellBox, Example1, Example2" << std::endl;
         return -1;
+    }
+
+    // If we're supposed to generate a sample file
+    if( Utility::String::CaseInsensitiveCompare( std::string( argv[1] ).substr(0, 6), "--gen:" ) == 0 )
+    {
+        const std::string sampleName = std::string( argv[1] ).substr( 6 );
+
+        bool bResult = false;
+        if( Utility::String::CaseInsensitiveCompare( sampleName, "CornellBox" ) == 0 )
+        {
+            bResult = Examples::CornellBox( argv[2] );
+        }
+        else if( Utility::String::CaseInsensitiveCompare( sampleName, "Example1" ) == 0 )
+        {
+            bResult = Examples::Example1( argv[2] );
+        }
+        else if( Utility::String::CaseInsensitiveCompare( sampleName, "Example2" ) == 0 )
+        {
+            bResult = Examples::Example2( argv[2] );
+        }
+        else  // We don't have this sample
+            std::cout << "Error: Unknown sample name: " << sampleName << std::endl;
+
+        if( !bResult )
+            return -1;
+
+        std::cout << "Sample '" << sampleName << "' written to file: " << argv[2] << std::endl;
+        return 0;
     }
 
     // Get the required width

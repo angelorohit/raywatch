@@ -26,8 +26,9 @@
 #include "Camera.h"
 #include "Image.h"
 #include "RayTracer.h"
+#include <fstream>
 
-void Examples::Example2(const std::string &fileName)
+const bool Examples::Example2(const std::string &fileName)
 {
     // Create a Scene
     Scene scene;
@@ -37,6 +38,11 @@ void Examples::Example2(const std::string &fileName)
     // Create textures
     Texture *pTexture1 = scene.LoadTexture( "Textures/Checks.jpg" );
     Texture *pTexture2 = scene.LoadTexture( "Textures/Strands.png" );
+    if( !(pTexture1 && pTexture2) )
+    {
+        std::cout << "Error: Failed to create Scene" << std::endl;
+        return false;
+    }
 
     // Bottom Quad
     {
@@ -147,20 +153,21 @@ void Examples::Example2(const std::string &fileName)
         scene.AddPrimitive( pQuad );
     }
 
-    // Create a Camera
-    Camera camera;
-    camera._position    .Set( 0, 0, 0 );
-    camera._hFov        = 45;
-    camera._vFov        = 45;
+    // Create the file
+    std::fstream stream;
+    stream.open( fileName.c_str(), std::ios_base::out | std::ios_base::trunc );
+    if( !stream.is_open() )
+    {
+        std::cout << "Error: Failed to create file: " << fileName << std::endl;
+        return false;
+    }
 
-    // Create an Image
-    Image image;
-    image.Create( 500, 500 );
+    // Serialize the scene
+    if( !scene.Write( stream ) )
+    {
+        std::cout << "Error: Failed to write Scene" << std::endl;
+        return false;
+    }
 
-    // Create a RayTracer and ray trace the scene
-    RayTracer rayTracer;
-    rayTracer.Render( camera, scene, image );
-
-    // Save the image to a file for inspection.
-    image.Save( fileName );
+    return true;
 }
