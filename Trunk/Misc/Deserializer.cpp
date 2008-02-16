@@ -86,7 +86,13 @@ const bool Deserializer::ParseVariable(std::istream &stream, const std::string &
 
 const bool Deserializer::Register(const int &oldAddress, Serializable *const pSerializable)
 {
-    return _associations.insert( AssocMap::value_type( oldAddress, pSerializable ) ).second;
+    // Try to insert this address into the map
+    if( _associations.insert( AssocMap::value_type( oldAddress, pSerializable ) ).second )
+        return true;
+
+    // We couldn't insert it
+    std::cout << "Error: Failed to Register address [" << oldAddress << "] with Deserializer" << std::endl;
+    return false;
 }
 
 Serializable *const Deserializer::Read(std::istream &stream)
