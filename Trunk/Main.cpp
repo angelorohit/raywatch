@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
     // Create a Camera
     Camera camera;
     camera._position    .Set( 0, 0, 0 );
-    camera._hFov        = 45;
+    camera._hFov        = 45 * (width / (float)height);
     camera._vFov        = 45;
 
     // Create an Image
