@@ -25,6 +25,7 @@
 #include "Maths.h"
 #include "ObjectFactory.h"
 #include "Deserializer.h"
+#include "DeserializerHelper.h"
 #include <algorithm>
 #include <limits>
 
@@ -202,95 +203,79 @@ Texture *const Scene::LoadTexture(const std::string &fileName)
 // Serializable's functions
 const bool Scene::Read(std::istream &stream)
 {
-    // Read the base
-    if( !ReadHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
-        return false;
-
-    if( !ReadVariable( stream, "ambientLight", _ambientLight ) )
-        return false;
-
-    if( !ReadVariable( stream, "maxRayGenerations", _maxRayGenerations ) )
-        return false;
-
-    // Read all the objects in the scene
-    bool bReadResult = true;
-    for(;;)
+    DESERIALIZE_OBJECT( object, stream, Scene )
     {
-        // Read the next variable
-        std::string variable;
-        std::string objectType;
-        if( !Deserializer::ParseVariable( stream, variable, objectType ) )
-        {
-            bReadResult = false;
-            break;
-        }
-
-        // See if we've reached the end of the Scene
-        if( (variable.compare( "end" ) == 0) && (objectType.compare( "Scene" ) == 0) )
+        // Read the base
+        if( !Serializable::Read( stream ) )
             break;
 
-        // See if it's the beginning of an object
-        if( variable.compare( "begin" ) != 0 )
-        {
-            std::cout << "Error: Variable 'begin' was expected; but Variable '" << variable << "' (with Value '" << objectType << "') was found instead." << std::endl;
-            bReadResult = false;
+        if( !Deserializer::ReadVariable( stream, "ambientLight", _ambientLight )            ||
+            !Deserializer::ReadVariable( stream, "maxRayGenerations", _maxRayGenerations )  )
             break;
-        }
 
-        // Create the object
-        Serializable *pSerializable = ObjectFactory<Serializable>::Create( objectType );
-        if( !pSerializable )
+        // Read the children
+        DESERIALIZE_LIST( children, stream, "Children" )
         {
-            std::cout << "Error: Unknown Object found: " << objectType << std::endl;
-            bReadResult = false;
-            break;
-        }
+            // Peek the next object header
+            std::string objectType;
+            if( !Deserializer::PeekHeader( stream, objectType ) )
+                break;
 
-        // Load the object
-        if( !pSerializable->Read( stream ) )
-        {
-            SAFE_DELETE_SCALAR( pSerializable );
-            bReadResult = false;
-            break;
-        }
-
-        // Depending on the type of object it is, push it into the appropriate list
-        {
-            // See if it's a Primitive
-            Primitive *pPrimitive = dynamic_cast<Primitive *>(pSerializable);
-            if( pPrimitive )
+            // Create the object
+            Serializable *pSerializable = ObjectFactory<Serializable>::Create( objectType );
+            if( !pSerializable )
             {
-                AddPrimitive( pPrimitive );
-                continue;
-            }
-
-            // See if it's a Light
-            Light *pLight = dynamic_cast<Light *>(pSerializable);
-            if( pLight )
-            {
-                AddLight( pLight );
-                continue;
-            }
-
-            // See if it's a Texture
-            Texture *pTexture = dynamic_cast<Texture *>(pSerializable);
-            if( pTexture )
-            {
-                AddTexture( pTexture );
-                continue;
-            }
-
-            // We don't know what type of object this is
-            {
-                std::cout << "Error: Object '" << objectType << "' cannot be inserted directly into the Scene." << std::endl;
-                SAFE_DELETE_SCALAR( pSerializable );
-                bReadResult = false;
+                std::cout << "Error: Unknown Object found: " << objectType << std::endl;
                 break;
             }
-        }
-    } // for(;;)
 
-    return bReadResult;
+            // Load the object
+            if( !pSerializable->Read( stream ) )
+            {
+                SAFE_DELETE_SCALAR( pSerializable );
+                break;
+            }
+
+            // Depending on the type of object it is, push it into the appropriate list
+            {
+                // See if it's a Primitive
+                Primitive *pPrimitive = dynamic_cast<Primitive *>(pSerializable);
+                if( pPrimitive )
+                {
+                    AddPrimitive( pPrimitive );
+                    continue;
+                }
+
+                // See if it's a Light
+                Light *pLight = dynamic_cast<Light *>(pSerializable);
+                if( pLight )
+                {
+                    AddLight( pLight );
+                    continue;
+                }
+
+                // See if it's a Texture
+                Texture *pTexture = dynamic_cast<Texture *>(pSerializable);
+                if( pTexture )
+                {
+                    AddTexture( pTexture );
+                    continue;
+                }
+
+                // We don't know what type of object this is
+                {
+                    std::cout << "Error: Object '" << objectType << "' cannot be inserted directly into the Scene." << std::endl;
+                    SAFE_DELETE_SCALAR( pSerializable );
+                    break;
+                }
+            }
+        }
+
+        if( children.ReadFailed() )
+            break;
+    }
+
+    return object.ReadResult();
 }
 
 const bool Scene::Write(std::ostream &stream) const
@@ -310,24 +295,37 @@ const bool Scene::Write(std::ostream &stream) const
         if( !WriteVariable( stream, "maxRayGenerations", _maxRayGenerations ) )
             return false;
 
-        // Write all the Primitives
-        for(PrimitiveList::const_iterator itr = _primitiveList.begin(); itr != _primitiveList.end(); ++itr)
+        // Write all the children
         {
-            if( !(*itr)->Write( stream ) )
+            if( !WriteHeader( stream, "Children" ) )
                 return false;
-        }
 
-        // Write all the Lights
-        for(LightList::const_iterator itr = _lightList.begin(); itr != _lightList.end(); ++itr)
-        {
-            if( !(*itr)->Write( stream ) )
-                return false;
-        }
+            Indent();
+            {
+                // Write all the Primitives
+                for(PrimitiveList::const_iterator itr = _primitiveList.begin(); itr != _primitiveList.end(); ++itr)
+                {
+                    if( !(*itr)->Write( stream ) )
+                        return false;
+                }
 
-        // Write all the Textures
-        for(TextureList::const_iterator itr = _textureList.begin(); itr != _textureList.end(); ++itr)
-        {
-            if( !(*itr)->Write( stream ) )
+                // Write all the Lights
+                for(LightList::const_iterator itr = _lightList.begin(); itr != _lightList.end(); ++itr)
+                {
+                    if( !(*itr)->Write( stream ) )
+                        return false;
+                }
+
+                // Write all the Textures
+                for(TextureList::const_iterator itr = _textureList.begin(); itr != _textureList.end(); ++itr)
+                {
+                    if( !(*itr)->Write( stream ) )
+                        return false;
+                }
+            }
+            Unindent();
+
+            if( !WriteFooter( stream, "Children" ) )
                 return false;
         }
     }

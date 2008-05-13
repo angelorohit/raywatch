@@ -18,10 +18,7 @@
 #include "Serializable.h"
 #include "Utility.h"
 #include "Deserializer.h"
-
-#ifdef _WIN32
-    #pragma warning( disable : 4311 )
-#endif
+#include "DeserializerHelper.h"
 
 // Initialize static members
 int Serializable::_indentation( 0 );
@@ -46,118 +43,6 @@ void Serializable::Indent()
 void Serializable::Unindent()
 {
     _indentation -= 4;
-}
-
-const bool Serializable::ReadVariable(std::istream &stream, const std::string &variable, std::string &value) const
-{
-    return Deserializer::ParseVariable( stream, variable, value );
-}
-
-const bool Serializable::ReadVariable(std::istream &stream, const std::string &variable, int &value) const
-{
-    // Read the value
-    std::string valueRead;
-    if( !ReadVariable( stream, variable, valueRead ) )
-        return false;
-
-    // Convert the value from string to the required type
-    if( !Utility::String::FromString( value, valueRead ) )
-    {
-        std::cout << "Error: '" << valueRead << "' is not a valid int." << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-const bool Serializable::ReadVariable(std::istream &stream, const std::string &variable, float &value) const
-{
-    // Read the value
-    std::string valueRead;
-    if( !ReadVariable( stream, variable, valueRead ) )
-        return false;
-
-    // Convert the value from string to the required type
-    if( !Utility::String::FromString( value, valueRead ) )
-    {
-        std::cout << "Error: '" << valueRead << "' is not a valid float." << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-const bool Serializable::ReadVariable(std::istream &stream, const std::string &variable, bool &value) const
-{
-    // Read the value
-    std::string valueRead;
-    if( !ReadVariable( stream, variable, valueRead ) )
-        return false;
-
-    if( valueRead.compare( "true" ) == 0 )
-    {
-        value = true;
-        return true;
-    }
-
-    if( valueRead.compare( "false" ) == 0 )
-    {
-        value = false;
-        return true;
-    }
-
-    std::cout << "Error: '" << valueRead << "' is not a valid bool." << std::endl;
-    return false;
-}
-
-const bool Serializable::ReadVariable(std::istream &stream, const std::string &variable, Vector<float> &value) const
-{
-    // Read the value
-    std::string valueRead;
-    if( !ReadVariable( stream, variable, valueRead ) )
-        return false;
-
-    std::istringstream iss(valueRead);
-    std::string separator;
-    if( (iss >> std::dec >> value.x >> separator >> value.y >> separator >> value.z).fail() )
-    {
-        std::cout << "Error: '" << valueRead << "' is not a valid Vector<float>." << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-// Reads an object header of the form: begin = <objectName>;
-const bool Serializable::ReadHeader(std::istream &stream, const std::string &objectName) const
-{
-    std::string readObjectName;
-    if( !ReadVariable( stream, "begin", readObjectName ) )
-        return false;
-
-    if( objectName.compare( readObjectName ) != 0 )
-    {
-        std::cout << "Error: Begin of object '" << objectName << "' was expected, but '" << readObjectName << "' was found instead." << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-// Reads an object footer of the form: end = <objectName>;
-const bool Serializable::ReadFooter(std::istream &stream, const std::string &objectName) const
-{
-    std::string readObjectName;
-    if( !ReadVariable( stream, "end", readObjectName ) )
-        return false;
-
-    if( objectName.compare( readObjectName ) != 0 )
-    {
-        std::cout << "Error: End of object '" << objectName << "' was expected, but '" << readObjectName << "' was found instead." << std::endl;
-        return false;
-    }
-
-    return true;
 }
 
 const bool Serializable::WriteVariable(std::ostream &stream, const std::string &variable, const std::string &value) const
@@ -186,16 +71,29 @@ const bool Serializable::WriteVariable(std::ostream &stream, const std::string &
     return WriteVariable( stream, variable, strValue );
 }
 
+const bool Serializable::WriteVariable(std::ostream &stream, const std::string &variable, const Vector<int> &value) const
+{
+    const std::string strValue =
+        Utility::String::ToString(value.x) + ", " +
+        Utility::String::ToString(value.y) + ", " +
+        Utility::String::ToString(value.z);
+    
+    return WriteVariable( stream, variable, strValue );
+}
+
 const bool Serializable::WriteVariable(std::ostream &stream, const std::string &variable, const Vector<float> &value) const
 {
     const std::string strValue =
-        Utility::String::ToString(value.x) + ", " + Utility::String::ToString(value.y) + ", " + Utility::String::ToString(value.z);
+        Utility::String::ToString(value.x) + ", " +
+        Utility::String::ToString(value.y) + ", " +
+        Utility::String::ToString(value.z);
+    
     return WriteVariable( stream, variable, strValue );
 }
 
 const bool Serializable::WriteVariable(std::ostream &stream, const std::string &variable, const Serializable *const value) const
 {
-    return WriteVariable( stream, variable, (int)value );
+    return WriteVariable( stream, variable, reinterpret_cast<int>(value) );
 }
 
 // Helper function to write an object header in the form: begin = <object>;
@@ -212,17 +110,17 @@ const bool Serializable::WriteFooter(std::ostream &stream, const std::string &ob
 
 const bool Serializable::Read(std::istream &stream)
 {
-    int oldAddress;
-    if( !ReadVariable( stream, "address", oldAddress ) )
-        return false;
+    DESERIALIZE_OBJECT( object, stream, Serializable )
+    {
+        int oldAddress;
+        if( !Deserializer::ReadVariable( stream, "address", oldAddress ) )
+            break;
 
-    if( !Deserializer::Register( oldAddress, this ) )
-        return false;
+        if( !Deserializer::Register( oldAddress, this ) )
+            break;
+    }
 
-    if( !ReadFooter( stream, "Serializable" ) )
-        return false;
-
-    return true;
+    return object.ReadResult();
 }
 
 const bool Serializable::Write(std::ostream &stream) const

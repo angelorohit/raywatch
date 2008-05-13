@@ -24,6 +24,7 @@
 #include "RayTracer.h"
 #include "Texture.h"
 #include "Deserializer.h"
+#include "DeserializerHelper.h"
 
 // Constructor
 Material::Material() :
@@ -215,54 +216,54 @@ const Color Material::GetIllumination(
 // Serializable's functions
 const bool Material::Read(std::istream &stream)
 {
-    // Read the base
-    if( !ReadHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
-        return false;
+    DESERIALIZE_OBJECT( object, stream, Material )
+    {
+        // Read the base
+        if( !Serializable::Read( stream ) )
+            break;
 
-    Color           color;
-    float           opacity;
-    float           reflectivity;
-    float           fuzzyReflectionRadius;
-    int             fuzzyReflectionSamples;
-    float           specularity;
-    float           roughness;
-    float           refractiveIndex;
-    float           absorption;
-    float           concentration;
-    const Texture  *pTexture = 0;
-    float           textureScale;
+        Color           color;
+        float           opacity;
+        float           reflectivity;
+        float           fuzzyReflectionRadius;
+        int             fuzzyReflectionSamples;
+        float           specularity;
+        float           roughness;
+        float           refractiveIndex;
+        float           absorption;
+        float           concentration;
+        const Texture  *pTexture = 0;
+        float           textureScale;
 
-    if( !ReadVariable( stream, "color", color )                                     ||
-        !ReadVariable( stream, "opacity", opacity )                                 ||
-        !ReadVariable( stream, "reflectivity", reflectivity )                       ||
-        !ReadVariable( stream, "fuzzyReflectionRadius", fuzzyReflectionRadius )     ||
-        !ReadVariable( stream, "fuzzyReflectionSamples", fuzzyReflectionSamples )   ||
-        !ReadVariable( stream, "specularity", specularity )                         ||
-        !ReadVariable( stream, "roughness", roughness )                             ||
-        !ReadVariable( stream, "refractiveIndex", refractiveIndex )                 ||
-        !ReadVariable( stream, "absorption", absorption )                           ||
-        !ReadVariable( stream, "concentration", concentration )                     ||
-        !ReadVariable( stream, "texture", pTexture )                                ||
-        !ReadVariable( stream, "textureScale", textureScale )                       )
-        return false;
+        if( !Deserializer::ReadVariable( stream, "color", color )                                     ||
+            !Deserializer::ReadVariable( stream, "opacity", opacity )                                 ||
+            !Deserializer::ReadVariable( stream, "reflectivity", reflectivity )                       ||
+            !Deserializer::ReadVariable( stream, "fuzzyReflectionRadius", fuzzyReflectionRadius )     ||
+            !Deserializer::ReadVariable( stream, "fuzzyReflectionSamples", fuzzyReflectionSamples )   ||
+            !Deserializer::ReadVariable( stream, "specularity", specularity )                         ||
+            !Deserializer::ReadVariable( stream, "roughness", roughness )                             ||
+            !Deserializer::ReadVariable( stream, "refractiveIndex", refractiveIndex )                 ||
+            !Deserializer::ReadVariable( stream, "absorption", absorption )                           ||
+            !Deserializer::ReadVariable( stream, "concentration", concentration )                     ||
+            !Deserializer::ReadVariable( stream, "texture", pTexture )                                ||
+            !Deserializer::ReadVariable( stream, "textureScale", textureScale )                       )
+            return false;
 
-    SetColor( color.x, color.y, color.z );
-    SetOpacity( opacity );
-    SetReflectivity( reflectivity );
-    SetFuzzyReflectionRadius( fuzzyReflectionRadius );
-    SetFuzzyReflectionSamples( fuzzyReflectionSamples );
-    SetSpecularity( specularity );
-    SetRoughness( roughness );
-    SetRefractiveIndex( refractiveIndex );
-    SetAbsorption( absorption );
-    SetConcentration( concentration );
-    SetTexture( pTexture );
-    SetTextureScale( textureScale );
+        SetColor( color.x, color.y, color.z );
+        SetOpacity( opacity );
+        SetReflectivity( reflectivity );
+        SetFuzzyReflectionRadius( fuzzyReflectionRadius );
+        SetFuzzyReflectionSamples( fuzzyReflectionSamples );
+        SetSpecularity( specularity );
+        SetRoughness( roughness );
+        SetRefractiveIndex( refractiveIndex );
+        SetAbsorption( absorption );
+        SetConcentration( concentration );
+        SetTexture( pTexture );
+        SetTextureScale( textureScale );
+    }
 
-    if( !ReadFooter( stream, "Material" ) )
-        return false;
-
-    return true;
+    return object.ReadResult();
 }
 
 const bool Material::Write(std::ostream &stream) const

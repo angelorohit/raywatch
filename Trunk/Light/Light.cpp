@@ -20,6 +20,8 @@
 #include "Light.h"
 #include "RayTracer.h"
 #include "Scene.h"
+#include "Deserializer.h"
+#include "DeserializerHelper.h"
 
 // Constructor
 Light::Light() :
@@ -76,27 +78,27 @@ void Light::SetRange(const float &range)
 // Serializable's functions
 const bool Light::Read(std::istream &stream)
 {
-    // Read the base
-    if( !ReadHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
-        return false;
+    DESERIALIZE_OBJECT( object, stream, Light )
+    {
+        // Read the base
+        if( !Serializable::Read( stream ) )
+            break;
 
-    Color   color;
-    float   intensity;
-    float   range;
+        Color   color;
+        float   intensity;
+        float   range;
 
-    if( !ReadVariable( stream, "color", color )         ||
-        !ReadVariable( stream, "intensity", intensity ) ||
-        !ReadVariable( stream, "range", range )         )
-        return false;
+        if( !Deserializer::ReadVariable( stream, "color", color )         ||
+            !Deserializer::ReadVariable( stream, "intensity", intensity ) ||
+            !Deserializer::ReadVariable( stream, "range", range )         )
+            break;
 
-    SetColor( color );
-    SetIntensity( intensity );
-    SetRange( range );
+        SetColor( color );
+        SetIntensity( intensity );
+        SetRange( range );
+    }
 
-    if( !ReadFooter( stream, "Light" ) )
-        return false;
-
-    return true;
+    return object.ReadResult();
 }
 
 const bool Light::Write(std::ostream &stream) const

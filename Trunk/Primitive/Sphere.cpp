@@ -21,6 +21,8 @@
 #include "Ray.h"
 #include "Maths.h"
 #include "ObjectFactory.h"
+#include "Deserializer.h"
+#include "DeserializerHelper.h"
 #include <math.h>
 
 // Register with the ObjectFactory
@@ -125,24 +127,24 @@ const Vector<float> Sphere::GetSurfaceNormal(const Vector<float> &position) cons
 // Serializable's functions
 const bool Sphere::Read(std::istream &stream)
 {
-    // Read the base
-    if( !ReadHeader( stream, "Primitive" ) || !Primitive::Read( stream ) )
-        return false;
+    DESERIALIZE_OBJECT( object, stream, Sphere )
+    {
+        // Read the base
+        if( !Primitive::Read( stream ) )
+            break;
 
-    Vector<float> centre;
-    float         radius;
+        Vector<float> centre;
+        float         radius;
 
-    if( !ReadVariable( stream, "centre", centre ) ||
-        !ReadVariable( stream, "radius", radius ) )
-        return false;
+        if( !Deserializer::ReadVariable( stream, "centre", centre ) ||
+            !Deserializer::ReadVariable( stream, "radius", radius ) )
+            break;
 
-    SetCentre( centre );
-    SetRadius( radius );
+        SetCentre( centre );
+        SetRadius( radius );
+    }
 
-    if( !ReadFooter( stream, "Sphere" ) )
-        return false;
-
-    return true;
+    return object.ReadResult();
 }
 
 const bool Sphere::Write(std::ostream &stream) const

@@ -277,6 +277,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Misc\DeserializerHelper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Misc\ForEach.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Misc\ObjectFactory.h"
 				>
 			</File>

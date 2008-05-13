@@ -1,6 +1,24 @@
 
+//  RayWatch - A simple cross-platform RayTracer.
+//  Copyright (C) 2008  Francis Xavier Joseph Pulikotil
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "Texture.h"
 #include "ObjectFactory.h"
+#include "Deserializer.h"
+#include "DeserializerHelper.h"
 
 // Register with the ObjectFactory
 ObjectFactory_Register(Serializable, Texture);
@@ -53,24 +71,24 @@ const Pixel<float> Texture::GetPixel(const float &tu, const float &tv) const
 
 const bool Texture::Read(std::istream &stream)
 {
-    // Read the base
-    if( !ReadHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
-        return false;
-
-    // Read the texture fileName
+    DESERIALIZE_OBJECT( object, stream, Texture )
     {
-        std::string fileName;
-        if( !ReadVariable( stream, "fileName", fileName ) )
-            return false;
+        // Read the base
+        if( !Serializable::Read( stream ) )
+            break;
 
-        if( !Load( fileName ) )
-            return false;
+        // Read the texture fileName
+        {
+            std::string fileName;
+            if( !Deserializer::ReadVariable( stream, "fileName", fileName ) )
+                break;
+
+            if( !Load( fileName ) )
+                break;
+        }
     }
 
-    if( !ReadFooter( stream, "Texture" ) )
-        return false;
-
-    return true;
+    return object.ReadResult();
 }
 
 const bool Texture::Write(std::ostream &stream) const

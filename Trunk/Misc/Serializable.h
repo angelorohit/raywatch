@@ -22,10 +22,6 @@
 #include <iostream>
 #include <string>
 
-#ifdef _WIN32
-    #pragma warning( disable : 4311 4312 )
-#endif
-
 class Serializable
 {
 // Members
@@ -44,37 +40,13 @@ protected:
     static void Indent();
     static void Unindent();
 
-    // Helper functions to read various data types
-    const bool ReadVariable(std::istream &stream, const std::string &variable, std::string &value) const;
-    const bool ReadVariable(std::istream &stream, const std::string &variable, int &value) const;
-    const bool ReadVariable(std::istream &stream, const std::string &variable, float &value) const;
-    const bool ReadVariable(std::istream &stream, const std::string &variable, bool &value) const;
-    const bool ReadVariable(std::istream &stream, const std::string &variable, Vector<float> &value) const;
-
-    // Reads an object header of the form: begin = <objectName>;
-    const bool ReadHeader(std::istream &stream, const std::string &objectName) const;
-    // Reads an object footer of the form: end = <objectName>;
-    const bool ReadFooter(std::istream &stream, const std::string &objectName) const;
-
-    // Templated function to read any pointer type
-    template <typename T>
-    const bool ReadVariable(std::istream &stream, const std::string &variable, T* &pPointer) const
-    {
-        // Read the value
-        int valueRead;
-        if( !ReadVariable( stream, variable, valueRead ) )
-            return false;
-
-        pPointer = (T*)valueRead;
-        return true;
-    }
-
     // Helper functions to write various data types
     const bool WriteVariable(std::ostream &stream, const std::string &variable, const std::string &value) const;
     const bool WriteVariable(std::ostream &stream, const std::string &variable, const char *const value) const;
     const bool WriteVariable(std::ostream &stream, const std::string &variable, const int &value) const;
     const bool WriteVariable(std::ostream &stream, const std::string &variable, const float &value) const;
     const bool WriteVariable(std::ostream &stream, const std::string &variable, const bool &value) const;
+    const bool WriteVariable(std::ostream &stream, const std::string &variable, const Vector<int> &value) const;
     const bool WriteVariable(std::ostream &stream, const std::string &variable, const Vector<float> &value) const;
     const bool WriteVariable(std::ostream &stream, const std::string &variable, const Serializable *const value) const;
 

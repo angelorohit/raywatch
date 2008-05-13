@@ -18,8 +18,13 @@
 #ifndef DESERIALIZER_HEADER
 #define DESERIALIZER_HEADER
 
+#include "Vector.h"
 #include <iostream>
 #include <map>
+
+#ifdef _WIN32
+    #pragma warning( disable : 4311 4312 )
+#endif
 
 // Forward Declarations
 class Serializable;
@@ -49,9 +54,42 @@ private:
 
 public:
     // Parses an unknown variable of the format: <variable> = <value>;
-    static const bool ParseVariable(std::istream &stream, std::string &variable, std::string &value);
-    // Parses a known variable of the format: <variable> = <value>;
-    static const bool ParseVariable(std::istream &stream, const std::string &variable, std::string &value);
+    static const bool ParseVariable(
+        std::istream    &stream,
+        std::string     &variable,
+        std::string     &value,
+        const bool      &bPeek = false );
+
+    // Helper functions to read various data types
+    static const bool ReadVariable(std::istream &stream, const std::string &variable, std::string &value);
+    static const bool ReadVariable(std::istream &stream, const std::string &variable, int &value);
+    static const bool ReadVariable(std::istream &stream, const std::string &variable, float &value);
+    static const bool ReadVariable(std::istream &stream, const std::string &variable, bool &value);
+    static const bool ReadVariable(std::istream &stream, const std::string &variable, Vector<int> &value);
+    static const bool ReadVariable(std::istream &stream, const std::string &variable, Vector<float> &value);
+
+    // Templated function to read any pointer type
+    template <typename T>
+    static const bool ReadVariable(std::istream &stream, const std::string &variable, T* &pPointer)
+    {
+        // Read the value
+        int valueRead;
+        if( !ReadVariable( stream, variable, valueRead ) )
+            return false;
+
+        pPointer = reinterpret_cast<T*>(valueRead);
+        return true;
+    }
+
+    // Reads an object header of the form: begin = <objectName>;
+    static const bool ReadHeader(std::istream &stream, const std::string &objectName);
+    // Reads an object footer of the form: end = <objectName>;
+    static const bool ReadFooter(std::istream &stream, const std::string &objectName);
+
+    // Peeks whether we've reached an object header, but doesn't remove anything.
+    static const bool PeekHeader(std::istream &stream, std::string &objectName);
+    // Peeks whether we've reached an object footer, and removes it if we have.
+    static const bool PeekFooter(std::istream &stream, const std::string &objectName);
 
     // Registers a Serializable and it's old address for restoration of pointers later.
     static const bool Register(const int &oldAddress, Serializable *const pSerializable);
@@ -64,7 +102,7 @@ public:
         if( !pPointer )
             return true;
 
-        const int oldAddress = (int)pPointer;
+        const int oldAddress = reinterpret_cast<int>(pPointer);
 
         AssocMap::const_iterator itr = _associations.find( oldAddress );
         if( itr == _associations.end() )

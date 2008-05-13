@@ -21,6 +21,8 @@
 #include "Ray.h"
 #include "Maths.h"
 #include "ObjectFactory.h"
+#include "Deserializer.h"
+#include "DeserializerHelper.h"
 
 // Register with the ObjectFactory
 ObjectFactory_Register(Serializable, Quad);
@@ -102,22 +104,22 @@ void Quad::SetVertices(const Vector<float> &v1, const Vector<float> &v2, const V
 // Serializable's functions
 const bool Quad::Read(std::istream &stream)
 {
-    // Read the base
-    if( !ReadHeader( stream, "Primitive" ) || !Primitive::Read( stream ) )
-        return false;
+    DESERIALIZE_OBJECT( object, stream, Quad )
+    {
+        // Read the base
+        if( !Primitive::Read( stream ) )
+            break;
 
-    Vector<float> vertex1, vertex2, vertex3;
-    if( !ReadVariable( stream, "vertex1", vertex1 ) ||
-        !ReadVariable( stream, "vertex2", vertex2 ) ||
-        !ReadVariable( stream, "vertex3", vertex3 ) )
-        return false;
+        Vector<float> vertex1, vertex2, vertex3;
+        if( !Deserializer::ReadVariable( stream, "vertex1", vertex1 ) ||
+            !Deserializer::ReadVariable( stream, "vertex2", vertex2 ) ||
+            !Deserializer::ReadVariable( stream, "vertex3", vertex3 ) )
+            break;
 
-    SetVertices( vertex1, vertex2, vertex3 );
+        SetVertices( vertex1, vertex2, vertex3 );
+    }
 
-    if( !ReadFooter( stream, "Quad" ) )
-        return false;
-
-    return true;
+    return object.ReadResult();
 }
 
 const bool Quad::Write(std::ostream &stream) const

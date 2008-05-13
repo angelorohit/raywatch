@@ -22,6 +22,8 @@
 #include "Scene.h"
 #include "Maths.h"
 #include "ObjectFactory.h"
+#include "Deserializer.h"
+#include "DeserializerHelper.h"
 
 // Register with the ObjectFactory
 ObjectFactory_Register(Serializable, PointLight);
@@ -75,17 +77,17 @@ void PointLight::AccumulateIlluminationAtSurface(
 // Serializable's functions
 const bool PointLight::Read(std::istream &stream)
 {
-    // Read the base
-    if( !ReadHeader( stream, "Light" ) || !Light::Read( stream ) )
-        return false;
+    DESERIALIZE_OBJECT( object, stream, PointLight )
+    {
+        // Read the base
+        if( !Light::Read( stream ) )
+            break;
 
-    if( !ReadVariable( stream, "position", _position ) )
-        return false;
+        if( !Deserializer::ReadVariable( stream, "position", _position ) )
+            break;
+    }
 
-    if( !ReadFooter( stream, "PointLight" ) )
-        return false;
-
-    return true;
+    return object.ReadResult();
 }
 
 const bool PointLight::Write(std::ostream &stream) const

@@ -20,6 +20,7 @@
 #include "Primitive.h"
 #include "Light.h"
 #include "Deserializer.h"
+#include "DeserializerHelper.h"
 
 // Constructor
 Primitive::Primitive() :
@@ -36,22 +37,22 @@ Primitive::~Primitive()
 // Serializable's functions
 const bool Primitive::Read(std::istream &stream)
 {
-    // Read the base
-    if( !ReadHeader( stream, "Serializable" ) || !Serializable::Read( stream ) )
-        return false;
+    DESERIALIZE_OBJECT( object, stream, Primitive )
+    {
+        // Read the base
+        if( !Serializable::Read( stream ) )
+            break;
 
-    // Read the material
-    if( !ReadHeader( stream, "Material" ) || !_material.Read( stream ) )
-        return false;
+        // Read the material
+        if( !_material.Read( stream ) )
+            break;
 
-    // Read the light pointer
-    if( !ReadVariable( stream, "light", _pLight ) )
-        return false;
+        // Read the light pointer
+        if( !Deserializer::ReadVariable( stream, "light", _pLight ) )
+            break;
+    }
 
-    if( !ReadFooter( stream, "Primitive" ) )
-        return false;
-
-    return true;
+    return object.ReadResult();
 }
 
 const bool Primitive::Write(std::ostream &stream) const

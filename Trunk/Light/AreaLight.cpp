@@ -22,6 +22,8 @@
 #include "Scene.h"
 #include "Maths.h"
 #include "ObjectFactory.h"
+#include "Deserializer.h"
+#include "DeserializerHelper.h"
 
 // Register with the ObjectFactory
 ObjectFactory_Register(Serializable, AreaLight);
@@ -146,25 +148,25 @@ void AreaLight::AccumulateIlluminationAtSurface(
 // Serializable's functions
 const bool AreaLight::Read(std::istream &stream)
 {
-    // Read the base
-    if( !ReadHeader( stream, "Light" ) || !Light::Read( stream ) )
-        return false;
+    DESERIALIZE_OBJECT( object, stream, AreaLight )
+    {
+        // Read the base
+        if( !Light::Read( stream ) )
+            break;
 
-    Vector<float> vertex1, vertex2, vertex3;
-    int numHorizontalSamples, numVerticalSamples;
-    if( !ReadVariable( stream, "vertex1", vertex1 )                             ||
-        !ReadVariable( stream, "vertex2", vertex2 )                             ||
-        !ReadVariable( stream, "vertex3", vertex3 )                             ||
-        !ReadVariable( stream, "numHorizontalSamples", numHorizontalSamples )   ||
-        !ReadVariable( stream, "numVerticalSamples", numVerticalSamples )       )
-        return false;
+        Vector<float> vertex1, vertex2, vertex3;
+        int numHorizontalSamples, numVerticalSamples;
+        if( !Deserializer::ReadVariable( stream, "vertex1", vertex1 )                             ||
+            !Deserializer::ReadVariable( stream, "vertex2", vertex2 )                             ||
+            !Deserializer::ReadVariable( stream, "vertex3", vertex3 )                             ||
+            !Deserializer::ReadVariable( stream, "numHorizontalSamples", numHorizontalSamples )   ||
+            !Deserializer::ReadVariable( stream, "numVerticalSamples", numVerticalSamples )       )
+            break;
 
-    SetRectangularArea( vertex1, vertex2, vertex3, numHorizontalSamples, numVerticalSamples );
+        SetRectangularArea( vertex1, vertex2, vertex3, numHorizontalSamples, numVerticalSamples );
+    }
 
-    if( !ReadFooter( stream, "AreaLight" ) )
-        return false;
-
-    return true;
+    return object.ReadResult();
 }
 
 const bool AreaLight::Write(std::ostream &stream) const
