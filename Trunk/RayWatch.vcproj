@@ -301,6 +301,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Misc\SerializerHelper.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Misc\Utility.cpp"
 				>
 			</File>

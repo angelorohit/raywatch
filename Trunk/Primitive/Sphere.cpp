@@ -23,6 +23,7 @@
 #include "ObjectFactory.h"
 #include "Deserializer.h"
 #include "DeserializerHelper.h"
+#include "SerializerHelper.h"
 #include <math.h>
 
 // Register with the ObjectFactory
@@ -149,23 +150,16 @@ const bool Sphere::Read(std::istream &stream)
 
 const bool Sphere::Write(std::ostream &stream) const
 {
-    if( !WriteHeader( stream, "Sphere" ) )
-        return false;
-
-    Indent();
+    SERIALIZE_OBJECT( object, stream, Sphere )
     {
         // Write the base
         if( !Primitive::Write( stream ) )
-            return false;
+            break;
 
         if( !WriteVariable( stream, "centre", _centre ) ||
             !WriteVariable( stream, "radius", _radius ) )
-            return false;
+            break;
     }
-    Unindent();
 
-    if( !WriteFooter( stream, "Sphere" ) )
-        return false;
-
-    return true;
+    return object.WriteResult();
 }

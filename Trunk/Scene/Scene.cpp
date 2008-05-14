@@ -26,6 +26,8 @@
 #include "ObjectFactory.h"
 #include "Deserializer.h"
 #include "DeserializerHelper.h"
+#include "SerializerHelper.h"
+#include "ForEach.h"
 #include <algorithm>
 #include <limits>
 
@@ -280,59 +282,44 @@ const bool Scene::Read(std::istream &stream)
 
 const bool Scene::Write(std::ostream &stream) const
 {
-    if( !WriteHeader( stream, "Scene" ) )
-        return false;
-
-    Indent();
+    SERIALIZE_OBJECT( object, stream, Scene )
     {
         // Write the base
         if( !Serializable::Write( stream ) )
-            return false;
+            break;
 
-        if( !WriteVariable( stream, "ambientLight", _ambientLight ) )
-            return false;
-
-        if( !WriteVariable( stream, "maxRayGenerations", _maxRayGenerations ) )
-            return false;
+        if( !WriteVariable( stream, "ambientLight", _ambientLight )             ||
+            !WriteVariable( stream, "maxRayGenerations", _maxRayGenerations )   )
+            break;
 
         // Write all the children
+        SERIALIZE_LIST( children, stream, "Children" )
         {
-            if( !WriteHeader( stream, "Children" ) )
-                return false;
-
-            Indent();
+            // Write all the Primitives
+            FOR_EACH( itr, PrimitiveList, _primitiveList )
             {
-                // Write all the Primitives
-                for(PrimitiveList::const_iterator itr = _primitiveList.begin(); itr != _primitiveList.end(); ++itr)
-                {
-                    if( !(*itr)->Write( stream ) )
-                        return false;
-                }
-
-                // Write all the Lights
-                for(LightList::const_iterator itr = _lightList.begin(); itr != _lightList.end(); ++itr)
-                {
-                    if( !(*itr)->Write( stream ) )
-                        return false;
-                }
-
-                // Write all the Textures
-                for(TextureList::const_iterator itr = _textureList.begin(); itr != _textureList.end(); ++itr)
-                {
-                    if( !(*itr)->Write( stream ) )
-                        return false;
-                }
+                if( !(*itr)->Write( stream ) )
+                    break;
             }
-            Unindent();
 
-            if( !WriteFooter( stream, "Children" ) )
-                return false;
+            // Write all the Lights
+            FOR_EACH( itr, LightList, _lightList )
+            {
+                if( !(*itr)->Write( stream ) )
+                    break;
+            }
+
+            // Write all the Textures
+            FOR_EACH( itr, TextureList, _textureList )
+            {
+                if( !(*itr)->Write( stream ) )
+                    break;
+            }
         }
+
+        if( children.WriteFailed() )
+            break;
     }
-    Unindent();
 
-    if( !WriteFooter( stream, "Scene" ) )
-        return false;
-
-    return true;
+    return object.WriteResult();
 }

@@ -24,6 +24,7 @@
 #include "ObjectFactory.h"
 #include "Deserializer.h"
 #include "DeserializerHelper.h"
+#include "SerializerHelper.h"
 
 // Register with the ObjectFactory
 ObjectFactory_Register(Serializable, AreaLight);
@@ -171,26 +172,19 @@ const bool AreaLight::Read(std::istream &stream)
 
 const bool AreaLight::Write(std::ostream &stream) const
 {
-    if( !WriteHeader( stream, "AreaLight" ) )
-        return false;
-
-    Indent();
+    SERIALIZE_OBJECT( object, stream, AreaLight )
     {
         // Write the base
         if( !Light::Write( stream ) )
-            return false;
+            break;
 
         if( !WriteVariable( stream, "vertex1", _v1 )                                ||
             !WriteVariable( stream, "vertex2", _v2 )                                ||
             !WriteVariable( stream, "vertex3", _v3 )                                ||
             !WriteVariable( stream, "numHorizontalSamples", _numHorizontalSamples ) ||
             !WriteVariable( stream, "numVerticalSamples", _numVerticalSamples )     )
-            return false;
+            break;
     }
-    Unindent();
 
-    if( !WriteFooter( stream, "AreaLight" ) )
-        return false;
-
-    return true;
+    return object.WriteResult();
 }

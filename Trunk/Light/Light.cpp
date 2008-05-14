@@ -22,6 +22,7 @@
 #include "Scene.h"
 #include "Deserializer.h"
 #include "DeserializerHelper.h"
+#include "SerializerHelper.h"
 
 // Constructor
 Light::Light() :
@@ -103,24 +104,17 @@ const bool Light::Read(std::istream &stream)
 
 const bool Light::Write(std::ostream &stream) const
 {
-    if( !WriteHeader( stream, "Light" ) )
-        return false;
-
-    Indent();
+    SERIALIZE_OBJECT( object, stream, Light )
     {
         // Write the base
         if( !Serializable::Write( stream ) )
-            return false;
+            break;
 
         if( !WriteVariable( stream, "color", _color )           ||
             !WriteVariable( stream, "intensity", _intensity )   ||
             !WriteVariable( stream, "range", _range )           )
-            return false;
+            break;
     }
-    Unindent();
 
-    if( !WriteFooter( stream, "Light" ) )
-        return false;
-
-    return true;
+    return object.WriteResult();
 }

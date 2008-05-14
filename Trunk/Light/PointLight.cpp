@@ -24,6 +24,7 @@
 #include "ObjectFactory.h"
 #include "Deserializer.h"
 #include "DeserializerHelper.h"
+#include "SerializerHelper.h"
 
 // Register with the ObjectFactory
 ObjectFactory_Register(Serializable, PointLight);
@@ -92,22 +93,15 @@ const bool PointLight::Read(std::istream &stream)
 
 const bool PointLight::Write(std::ostream &stream) const
 {
-    if( !WriteHeader( stream, "PointLight" ) )
-        return false;
-
-    Indent();
+    SERIALIZE_OBJECT( object, stream, PointLight )
     {
         // Write the base
         if( !Light::Write( stream ) )
-            return false;
+            break;
 
         if( !WriteVariable( stream, "position", _position ) )
-            return false;
+            break;
     }
-    Unindent();
 
-    if( !WriteFooter( stream, "PointLight" ) )
-        return false;
-
-    return true;
+    return object.WriteResult();
 }

@@ -19,6 +19,7 @@
 #include "ObjectFactory.h"
 #include "Deserializer.h"
 #include "DeserializerHelper.h"
+#include "SerializerHelper.h"
 
 // Register with the ObjectFactory
 ObjectFactory_Register(Serializable, Texture);
@@ -93,22 +94,15 @@ const bool Texture::Read(std::istream &stream)
 
 const bool Texture::Write(std::ostream &stream) const
 {
-    if( !WriteHeader( stream, "Texture" ) )
-        return false;
-
-    Indent();
+    SERIALIZE_OBJECT( object, stream, Texture )
     {
         // Write the base
         if( !Serializable::Write( stream ) )
-            return false;
+            break;
 
         if( !WriteVariable( stream, "fileName", _fileName ) )
-            return false;
+            break;
     }
-    Unindent();
 
-    if( !WriteFooter( stream, "Texture" ) )
-        return false;
-
-    return true;
+    return object.WriteResult();
 }

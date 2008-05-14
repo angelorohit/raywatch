@@ -25,6 +25,7 @@
 #include "Texture.h"
 #include "Deserializer.h"
 #include "DeserializerHelper.h"
+#include "SerializerHelper.h"
 
 // Constructor
 Material::Material() :
@@ -268,14 +269,11 @@ const bool Material::Read(std::istream &stream)
 
 const bool Material::Write(std::ostream &stream) const
 {
-    if( !WriteHeader( stream, "Material" ) )
-        return false;
-
-    Indent();
+    SERIALIZE_OBJECT( object, stream, Material )
     {
         // Write the base
         if( !Serializable::Write( stream ) )
-            return false;
+            break;
 
         if( !WriteVariable( stream, "color", _color )                                   ||
             !WriteVariable( stream, "opacity", _opacity )                               ||
@@ -289,14 +287,10 @@ const bool Material::Write(std::ostream &stream) const
             !WriteVariable( stream, "concentration", _concentration )                   ||
             !WriteVariable( stream, "texture", _pTexture )                              ||
             !WriteVariable( stream, "textureScale", _textureScale )                     )
-            return false;
+            break;
     }
-    Unindent();
 
-    if( !WriteFooter( stream, "Material" ) )
-        return false;
-
-    return true;
+    return object.WriteResult();
 }
 
 const bool Material::RestorePointers()

@@ -21,6 +21,7 @@
 #include "Light.h"
 #include "Deserializer.h"
 #include "DeserializerHelper.h"
+#include "SerializerHelper.h"
 
 // Constructor
 Primitive::Primitive() :
@@ -57,27 +58,20 @@ const bool Primitive::Read(std::istream &stream)
 
 const bool Primitive::Write(std::ostream &stream) const
 {
-    if( !WriteHeader( stream, "Primitive" ) )
-        return false;
-
-    Indent();
+    SERIALIZE_OBJECT( object, stream, Primitive )
     {
         // Write the base
         if( !Serializable::Write( stream ) )
-            return false;
+            break;
 
         if( !_material.Write( stream ) )
-            return false;
+            break;
 
         if( !WriteVariable( stream, "light", _pLight ) )
-            return false;
+            break;
     }
-    Unindent();
 
-    if( !WriteFooter( stream, "Primitive" ) )
-        return false;
-
-    return true;
+    return object.WriteResult();
 }
 
 const bool Primitive::RestorePointers()

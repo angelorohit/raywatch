@@ -23,6 +23,7 @@
 #include "ObjectFactory.h"
 #include "Deserializer.h"
 #include "DeserializerHelper.h"
+#include "SerializerHelper.h"
 
 // Register with the ObjectFactory
 ObjectFactory_Register(Serializable, Quad);
@@ -124,24 +125,17 @@ const bool Quad::Read(std::istream &stream)
 
 const bool Quad::Write(std::ostream &stream) const
 {
-    if( !WriteHeader( stream, "Quad" ) )
-        return false;
-
-    Indent();
+    SERIALIZE_OBJECT( object, stream, Quad )
     {
         // Write the base
         if( !Primitive::Write( stream ) )
-            return false;
+            break;
 
         if( !WriteVariable( stream, "vertex1", _topLeft )   ||
             !WriteVariable( stream, "vertex2", _v2 )        ||
             !WriteVariable( stream, "vertex3", _v3 )        )
-            return false;
+            break;
     }
-    Unindent();
 
-    if( !WriteFooter( stream, "Quad" ) )
-        return false;
-
-    return true;
+    return object.WriteResult();
 }

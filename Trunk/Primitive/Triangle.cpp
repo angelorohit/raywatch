@@ -23,6 +23,7 @@
 #include "ObjectFactory.h"
 #include "Deserializer.h"
 #include "DeserializerHelper.h"
+#include "SerializerHelper.h"
 
 // Register with the ObjectFactory
 ObjectFactory_Register(Serializable, Triangle);
@@ -121,24 +122,17 @@ const bool Triangle::Read(std::istream &stream)
 
 const bool Triangle::Write(std::ostream &stream) const
 {
-    if( !WriteHeader( stream, "Triangle" ) )
-        return false;
-
-    Indent();
+    SERIALIZE_OBJECT( object, stream, Triangle )
     {
         // Write the base
         if( !Primitive::Write( stream ) )
-            return false;
+            break;
 
         if( !WriteVariable( stream, "vertex1", _v1 )    ||
             !WriteVariable( stream, "vertex2", _v2 )    ||
             !WriteVariable( stream, "vertex3", _v3 )    )
-            return false;
+            break;
     }
-    Unindent();
 
-    if( !WriteFooter( stream, "Triangle" ) )
-        return false;
-
-    return true;
+    return object.WriteResult();
 }

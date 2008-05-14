@@ -36,24 +36,24 @@ public:
     virtual ~Serializable();
 
 // Functions
-protected:
+public:
     static void Indent();
     static void Unindent();
 
     // Helper functions to write various data types
-    const bool WriteVariable(std::ostream &stream, const std::string &variable, const std::string &value) const;
-    const bool WriteVariable(std::ostream &stream, const std::string &variable, const char *const value) const;
-    const bool WriteVariable(std::ostream &stream, const std::string &variable, const int &value) const;
-    const bool WriteVariable(std::ostream &stream, const std::string &variable, const float &value) const;
-    const bool WriteVariable(std::ostream &stream, const std::string &variable, const bool &value) const;
-    const bool WriteVariable(std::ostream &stream, const std::string &variable, const Vector<int> &value) const;
-    const bool WriteVariable(std::ostream &stream, const std::string &variable, const Vector<float> &value) const;
-    const bool WriteVariable(std::ostream &stream, const std::string &variable, const Serializable *const value) const;
+    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const std::string &value);
+    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const char *const value);
+    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const int &value);
+    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const float &value);
+    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const bool &value);
+    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const Vector<int> &value);
+    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const Vector<float> &value);
+    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const Serializable *const value);
 
     // Helper function to write an object header in the form: begin = <objectName>;
-    const bool WriteHeader(std::ostream &stream, const std::string &objectName) const;
+    static const bool WriteHeader(std::ostream &stream, const std::string &objectName);
     // Helper function to write an object footer in the form: end = <objectName>;
-    const bool WriteFooter(std::ostream &stream, const std::string &objectName) const;
+    static const bool WriteFooter(std::ostream &stream, const std::string &objectName);
 
 public:
     virtual const bool Read(std::istream &stream) =0;
