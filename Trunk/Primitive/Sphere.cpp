@@ -128,7 +128,7 @@ const Vector<float> Sphere::GetSurfaceNormal(const Vector<float> &position) cons
 // Serializable's functions
 const bool Sphere::Read(std::istream &stream)
 {
-    DESERIALIZE_OBJECT( object, stream, Sphere )
+    DESERIALIZE_CLASS( object, stream, Sphere )
     {
         // Read the base
         if( !Primitive::Read( stream ) )
@@ -150,14 +150,14 @@ const bool Sphere::Read(std::istream &stream)
 
 const bool Sphere::Write(std::ostream &stream) const
 {
-    SERIALIZE_OBJECT( object, stream, Sphere )
+    SERIALIZE_CLASS( object, stream, Sphere )
     {
         // Write the base
         if( !Primitive::Write( stream ) )
             break;
 
-        if( !WriteVariable( stream, "centre", _centre ) ||
-            !WriteVariable( stream, "radius", _radius ) )
+        if( !Serializer::WriteVariable( stream, "centre", _centre ) ||
+            !Serializer::WriteVariable( stream, "radius", _radius ) )
             break;
     }
 

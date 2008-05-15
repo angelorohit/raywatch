@@ -149,7 +149,7 @@ void AreaLight::AccumulateIlluminationAtSurface(
 // Serializable's functions
 const bool AreaLight::Read(std::istream &stream)
 {
-    DESERIALIZE_OBJECT( object, stream, AreaLight )
+    DESERIALIZE_CLASS( object, stream, AreaLight )
     {
         // Read the base
         if( !Light::Read( stream ) )
@@ -172,17 +172,17 @@ const bool AreaLight::Read(std::istream &stream)
 
 const bool AreaLight::Write(std::ostream &stream) const
 {
-    SERIALIZE_OBJECT( object, stream, AreaLight )
+    SERIALIZE_CLASS( object, stream, AreaLight )
     {
         // Write the base
         if( !Light::Write( stream ) )
             break;
 
-        if( !WriteVariable( stream, "vertex1", _v1 )                                ||
-            !WriteVariable( stream, "vertex2", _v2 )                                ||
-            !WriteVariable( stream, "vertex3", _v3 )                                ||
-            !WriteVariable( stream, "numHorizontalSamples", _numHorizontalSamples ) ||
-            !WriteVariable( stream, "numVerticalSamples", _numVerticalSamples )     )
+        if( !Serializer::WriteVariable( stream, "vertex1", _v1 )                                ||
+            !Serializer::WriteVariable( stream, "vertex2", _v2 )                                ||
+            !Serializer::WriteVariable( stream, "vertex3", _v3 )                                ||
+            !Serializer::WriteVariable( stream, "numHorizontalSamples", _numHorizontalSamples ) ||
+            !Serializer::WriteVariable( stream, "numVerticalSamples", _numVerticalSamples )     )
             break;
     }
 

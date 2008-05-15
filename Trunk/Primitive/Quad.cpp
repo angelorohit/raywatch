@@ -105,7 +105,7 @@ void Quad::SetVertices(const Vector<float> &v1, const Vector<float> &v2, const V
 // Serializable's functions
 const bool Quad::Read(std::istream &stream)
 {
-    DESERIALIZE_OBJECT( object, stream, Quad )
+    DESERIALIZE_CLASS( object, stream, Quad )
     {
         // Read the base
         if( !Primitive::Read( stream ) )
@@ -125,15 +125,15 @@ const bool Quad::Read(std::istream &stream)
 
 const bool Quad::Write(std::ostream &stream) const
 {
-    SERIALIZE_OBJECT( object, stream, Quad )
+    SERIALIZE_CLASS( object, stream, Quad )
     {
         // Write the base
         if( !Primitive::Write( stream ) )
             break;
 
-        if( !WriteVariable( stream, "vertex1", _topLeft )   ||
-            !WriteVariable( stream, "vertex2", _v2 )        ||
-            !WriteVariable( stream, "vertex3", _v3 )        )
+        if( !Serializer::WriteVariable( stream, "vertex1", _topLeft )   ||
+            !Serializer::WriteVariable( stream, "vertex2", _v2 )        ||
+            !Serializer::WriteVariable( stream, "vertex3", _v3 )        )
             break;
     }
 

@@ -18,16 +18,16 @@
 #ifndef SERIALIZERHELPER_HEADER
 #define SERIALIZERHELPER_HEADER
 
-#include "Serializable.h"
+#include "Serializer.h"
 
 // Helper Macros
 
-#define SERIALIZE_OBJECT(Identifier,Stream,ClassName)   \
+#define SERIALIZE_CLASS(Identifier,Stream,ClassName)    \
     ObjectSerializer Identifier( Stream, #ClassName );  \
     for( sizeof(ClassName); Identifier; ++Identifier )
 
-#define SERIALIZE_LIST(Identifier,Stream,ListName)   \
-    ObjectSerializer Identifier( Stream, ListName );  \
+#define SERIALIZE_OBJECT(Identifier,Stream,ObjectName)  \
+    ObjectSerializer Identifier( Stream, ObjectName );  \
     for( ; Identifier; ++Identifier )
 
 
@@ -49,10 +49,10 @@ public:
         _bError( false ),
         _bFinished( false )
     {
-        if( !Serializable::WriteHeader( _stream, _name ) )
+        if( !Serializer::WriteHeader( _stream, _name ) )
             _bError = true;
 
-        Serializable::Indent();
+        Serializer::Indent();
     }
 
 private:
@@ -71,9 +71,9 @@ public:
     // See if we've reached the end of the object or not
     void operator ++ ()
     {
-        Serializable::Unindent();
+        Serializer::Unindent();
 
-        if( Serializable::WriteFooter( _stream, _name ) )
+        if( Serializer::WriteFooter( _stream, _name ) )
             _bFinished = true;
         else
             _bError = true;

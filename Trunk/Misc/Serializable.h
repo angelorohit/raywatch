@@ -18,16 +18,10 @@
 #ifndef SERIALIZABLE_HEADER
 #define SERIALIZABLE_HEADER
 
-#include "Vector.h"
 #include <iostream>
-#include <string>
 
 class Serializable
 {
-// Members
-private:
-    static int _indentation;
-
 protected:
 // Constructor
     explicit Serializable();
@@ -36,25 +30,6 @@ public:
     virtual ~Serializable();
 
 // Functions
-public:
-    static void Indent();
-    static void Unindent();
-
-    // Helper functions to write various data types
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const std::string &value);
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const char *const value);
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const int &value);
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const float &value);
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const bool &value);
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const Vector<int> &value);
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const Vector<float> &value);
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const Serializable *const value);
-
-    // Helper function to write an object header in the form: begin = <objectName>;
-    static const bool WriteHeader(std::ostream &stream, const std::string &objectName);
-    // Helper function to write an object footer in the form: end = <objectName>;
-    static const bool WriteFooter(std::ostream &stream, const std::string &objectName);
-
 public:
     virtual const bool Read(std::istream &stream) =0;
     virtual const bool Write(std::ostream &stream) const =0;

@@ -38,7 +38,7 @@ Primitive::~Primitive()
 // Serializable's functions
 const bool Primitive::Read(std::istream &stream)
 {
-    DESERIALIZE_OBJECT( object, stream, Primitive )
+    DESERIALIZE_CLASS( object, stream, Primitive )
     {
         // Read the base
         if( !Serializable::Read( stream ) )
@@ -58,7 +58,7 @@ const bool Primitive::Read(std::istream &stream)
 
 const bool Primitive::Write(std::ostream &stream) const
 {
-    SERIALIZE_OBJECT( object, stream, Primitive )
+    SERIALIZE_CLASS( object, stream, Primitive )
     {
         // Write the base
         if( !Serializable::Write( stream ) )
@@ -67,7 +67,7 @@ const bool Primitive::Write(std::ostream &stream) const
         if( !_material.Write( stream ) )
             break;
 
-        if( !WriteVariable( stream, "light", _pLight ) )
+        if( !Serializer::WriteVariable( stream, "light", _pLight ) )
             break;
     }
 

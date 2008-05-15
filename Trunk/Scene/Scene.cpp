@@ -27,7 +27,6 @@
 #include "Deserializer.h"
 #include "DeserializerHelper.h"
 #include "SerializerHelper.h"
-#include "ForEach.h"
 #include <algorithm>
 #include <limits>
 
@@ -205,7 +204,7 @@ Texture *const Scene::LoadTexture(const std::string &fileName)
 // Serializable's functions
 const bool Scene::Read(std::istream &stream)
 {
-    DESERIALIZE_OBJECT( object, stream, Scene )
+    DESERIALIZE_CLASS( object, stream, Scene )
     {
         // Read the base
         if( !Serializable::Read( stream ) )
@@ -282,37 +281,52 @@ const bool Scene::Read(std::istream &stream)
 
 const bool Scene::Write(std::ostream &stream) const
 {
-    SERIALIZE_OBJECT( object, stream, Scene )
+    SERIALIZE_CLASS( object, stream, Scene )
     {
         // Write the base
         if( !Serializable::Write( stream ) )
             break;
 
-        if( !WriteVariable( stream, "ambientLight", _ambientLight )             ||
-            !WriteVariable( stream, "maxRayGenerations", _maxRayGenerations )   )
+        if( !Serializer::WriteVariable( stream, "ambientLight", _ambientLight )             ||
+            !Serializer::WriteVariable( stream, "maxRayGenerations", _maxRayGenerations )   )
             break;
 
         // Write all the children
-        SERIALIZE_LIST( children, stream, "Children" )
+        SERIALIZE_OBJECT( children, stream, "Children" )
         {
             // Write all the Primitives
-            FOR_EACH( itr, PrimitiveList, _primitiveList )
             {
-                if( !(*itr)->Write( stream ) )
+                PrimitiveList::const_iterator itr;
+                for(itr = _primitiveList.begin(); itr != _primitiveList.end(); ++itr)
+                {
+                    if( !(*itr)->Write( stream ) )
+                        break;
+                }
+                if( itr != _primitiveList.end() )
                     break;
             }
 
             // Write all the Lights
-            FOR_EACH( itr, LightList, _lightList )
             {
-                if( !(*itr)->Write( stream ) )
+                LightList::const_iterator itr;
+                for(itr = _lightList.begin(); itr != _lightList.end(); ++itr)
+                {
+                    if( !(*itr)->Write( stream ) )
+                        break;
+                }
+                if( itr != _lightList.end() )
                     break;
             }
 
             // Write all the Textures
-            FOR_EACH( itr, TextureList, _textureList )
             {
-                if( !(*itr)->Write( stream ) )
+                TextureList::const_iterator itr;
+                for(itr = _textureList.begin(); itr != _textureList.end(); ++itr)
+                {
+                    if( !(*itr)->Write( stream ) )
+                        break;
+                }
+                if( itr != _textureList.end() )
                     break;
             }
         }

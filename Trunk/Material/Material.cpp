@@ -217,7 +217,7 @@ const Color Material::GetIllumination(
 // Serializable's functions
 const bool Material::Read(std::istream &stream)
 {
-    DESERIALIZE_OBJECT( object, stream, Material )
+    DESERIALIZE_CLASS( object, stream, Material )
     {
         // Read the base
         if( !Serializable::Read( stream ) )
@@ -269,24 +269,24 @@ const bool Material::Read(std::istream &stream)
 
 const bool Material::Write(std::ostream &stream) const
 {
-    SERIALIZE_OBJECT( object, stream, Material )
+    SERIALIZE_CLASS( object, stream, Material )
     {
         // Write the base
         if( !Serializable::Write( stream ) )
             break;
 
-        if( !WriteVariable( stream, "color", _color )                                   ||
-            !WriteVariable( stream, "opacity", _opacity )                               ||
-            !WriteVariable( stream, "reflectivity", _reflectivity )                     ||
-            !WriteVariable( stream, "fuzzyReflectionRadius", _fuzzyReflectionRadius )   ||
-            !WriteVariable( stream, "fuzzyReflectionSamples", _fuzzyReflectionSamples ) ||
-            !WriteVariable( stream, "specularity", _specularity )                       ||
-            !WriteVariable( stream, "roughness", _roughness )                           ||
-            !WriteVariable( stream, "refractiveIndex", _refractiveIndex )               ||
-            !WriteVariable( stream, "absorption", _absorption )                         ||
-            !WriteVariable( stream, "concentration", _concentration )                   ||
-            !WriteVariable( stream, "texture", _pTexture )                              ||
-            !WriteVariable( stream, "textureScale", _textureScale )                     )
+        if( !Serializer::WriteVariable( stream, "color", _color )                                   ||
+            !Serializer::WriteVariable( stream, "opacity", _opacity )                               ||
+            !Serializer::WriteVariable( stream, "reflectivity", _reflectivity )                     ||
+            !Serializer::WriteVariable( stream, "fuzzyReflectionRadius", _fuzzyReflectionRadius )   ||
+            !Serializer::WriteVariable( stream, "fuzzyReflectionSamples", _fuzzyReflectionSamples ) ||
+            !Serializer::WriteVariable( stream, "specularity", _specularity )                       ||
+            !Serializer::WriteVariable( stream, "roughness", _roughness )                           ||
+            !Serializer::WriteVariable( stream, "refractiveIndex", _refractiveIndex )               ||
+            !Serializer::WriteVariable( stream, "absorption", _absorption )                         ||
+            !Serializer::WriteVariable( stream, "concentration", _concentration )                   ||
+            !Serializer::WriteVariable( stream, "texture", _pTexture )                              ||
+            !Serializer::WriteVariable( stream, "textureScale", _textureScale )                     )
             break;
     }
 

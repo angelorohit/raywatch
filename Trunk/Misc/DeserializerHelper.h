@@ -22,9 +22,13 @@
 
 // Helper Macros
 
-#define DESERIALIZE_OBJECT(Identifier,Stream,ClassName)     \
+#define DESERIALIZE_CLASS(Identifier,Stream,ClassName)      \
     ObjectDeserializer Identifier( Stream, #ClassName );    \
     for( sizeof(ClassName); Identifier; ++Identifier )
+
+//#define DESERIALIZE_OBJECT(Identifier,Stream,ObjectName)    \
+//    ObjectDeserializer Identifier( Stream, ObjectName );    \
+//    for( ; Identifier; ++Identifier )
 
 #define DESERIALIZE_LIST(Identifier,Stream,ListName)        \
     ListDeserializer Identifier( Stream, ListName );        \

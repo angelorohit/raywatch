@@ -102,7 +102,7 @@ void Triangle::SetVertices(const Vector<float> &v1, const Vector<float> &v2, con
 // Serializable's functions
 const bool Triangle::Read(std::istream &stream)
 {
-    DESERIALIZE_OBJECT( object, stream, Triangle )
+    DESERIALIZE_CLASS( object, stream, Triangle )
     {
         // Read the base
         if( !Primitive::Read( stream ) )
@@ -122,15 +122,15 @@ const bool Triangle::Read(std::istream &stream)
 
 const bool Triangle::Write(std::ostream &stream) const
 {
-    SERIALIZE_OBJECT( object, stream, Triangle )
+    SERIALIZE_CLASS( object, stream, Triangle )
     {
         // Write the base
         if( !Primitive::Write( stream ) )
             break;
 
-        if( !WriteVariable( stream, "vertex1", _v1 )    ||
-            !WriteVariable( stream, "vertex2", _v2 )    ||
-            !WriteVariable( stream, "vertex3", _v3 )    )
+        if( !Serializer::WriteVariable( stream, "vertex1", _v1 )    ||
+            !Serializer::WriteVariable( stream, "vertex2", _v2 )    ||
+            !Serializer::WriteVariable( stream, "vertex3", _v3 )    )
             break;
     }
 

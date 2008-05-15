@@ -79,7 +79,7 @@ void Light::SetRange(const float &range)
 // Serializable's functions
 const bool Light::Read(std::istream &stream)
 {
-    DESERIALIZE_OBJECT( object, stream, Light )
+    DESERIALIZE_CLASS( object, stream, Light )
     {
         // Read the base
         if( !Serializable::Read( stream ) )
@@ -104,15 +104,15 @@ const bool Light::Read(std::istream &stream)
 
 const bool Light::Write(std::ostream &stream) const
 {
-    SERIALIZE_OBJECT( object, stream, Light )
+    SERIALIZE_CLASS( object, stream, Light )
     {
         // Write the base
         if( !Serializable::Write( stream ) )
             break;
 
-        if( !WriteVariable( stream, "color", _color )           ||
-            !WriteVariable( stream, "intensity", _intensity )   ||
-            !WriteVariable( stream, "range", _range )           )
+        if( !Serializer::WriteVariable( stream, "color", _color )           ||
+            !Serializer::WriteVariable( stream, "intensity", _intensity )   ||
+            !Serializer::WriteVariable( stream, "range", _range )           )
             break;
     }
 

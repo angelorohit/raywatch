@@ -72,7 +72,7 @@ const Pixel<float> Texture::GetPixel(const float &tu, const float &tv) const
 
 const bool Texture::Read(std::istream &stream)
 {
-    DESERIALIZE_OBJECT( object, stream, Texture )
+    DESERIALIZE_CLASS( object, stream, Texture )
     {
         // Read the base
         if( !Serializable::Read( stream ) )
@@ -94,13 +94,13 @@ const bool Texture::Read(std::istream &stream)
 
 const bool Texture::Write(std::ostream &stream) const
 {
-    SERIALIZE_OBJECT( object, stream, Texture )
+    SERIALIZE_CLASS( object, stream, Texture )
     {
         // Write the base
         if( !Serializable::Write( stream ) )
             break;
 
-        if( !WriteVariable( stream, "fileName", _fileName ) )
+        if( !Serializer::WriteVariable( stream, "fileName", _fileName ) )
             break;
     }
 
