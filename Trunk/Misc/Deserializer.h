@@ -22,7 +22,7 @@
 #include <iostream>
 #include <map>
 
-#ifdef _WIN32
+#ifdef _MSVC
     #pragma warning( disable : 4311 4312 )
 #endif
 

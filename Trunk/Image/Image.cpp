@@ -329,7 +329,7 @@ const bool Image::SaveBMP(FILE *const outF) const
 
 
     // Fill the file header with required info
-    bmpFileHeader.bfType		= 'MB';
+    bmpFileHeader.bfType		= ((WORD)'M') << 8 | ((WORD)'B');
     bmpFileHeader.bfSize		= 0;
     bmpFileHeader.bfReserved1   = 0;
     bmpFileHeader.bfReserved2   = 0;

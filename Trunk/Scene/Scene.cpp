@@ -223,7 +223,7 @@ const bool Scene::Read(std::istream &stream)
                 break;
 
             // Create the object
-            Serializable *pSerializable = ObjectFactory<Serializable>::Create( objectType );
+            Serializable *pSerializable = ObjectFactory<Serializable>::Instance().Create( objectType );
             if( !pSerializable )
             {
                 std::cout << "Error: Unknown Object found: " << objectType << std::endl;

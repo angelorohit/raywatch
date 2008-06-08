@@ -22,12 +22,11 @@
 #include <string>
 
 // Macro to register a Type with the Object Factory
-#define ObjectFactory_Register(_AbstractProduct_,_ConcreteProduct_)                                         \
-    ObjectFactory<_AbstractProduct_>::AssocMap ObjectFactory<_AbstractProduct_>::_associations;             \
-    namespace                                                                                               \
-    {                                                                                                       \
-        _AbstractProduct_ *const Create() { return new _ConcreteProduct_(); }                               \
-        const bool bRegistered = ObjectFactory<_AbstractProduct_>::Register( #_ConcreteProduct_, Create );  \
+#define ObjectFactory_Register(_AbstractProduct_,_ConcreteProduct_)                                                     \
+    namespace                                                                                                           \
+    {                                                                                                                   \
+        _AbstractProduct_ *const Create() { return new _ConcreteProduct_(); }                                           \
+        const bool bRegistered = ObjectFactory<_AbstractProduct_>::Instance().Register( #_ConcreteProduct_, Create );   \
     }
 
 template
@@ -41,13 +40,18 @@ class ObjectFactory
 // Members
 private:
     typedef std::map<IdentifierType, ProductCreator> AssocMap;
-    static AssocMap _associations;
+    AssocMap _associations;
 
-// Monostate related
+// Singleton related
 private:
     // Constructor / Destructor
-    explicit ObjectFactory();
-    ~ObjectFactory();
+    explicit ObjectFactory()
+    {
+    }
+
+    ~ObjectFactory()
+    {
+    }
 
     // Copy Constructor / Assignment Operator
     ObjectFactory(const ObjectFactory &);
@@ -55,14 +59,21 @@ private:
 
 // Functions
 public:
-    static const bool Register(const IdentifierType &identifier, ProductCreator creator)
+    // Singleton instance access
+    static ObjectFactory<AbstractProduct,IdentifierType,ProductCreator> &Instance()
     {
-        return _associations.insert( AssocMap::value_type( identifier, creator ) ).second;
+        static ObjectFactory<AbstractProduct,IdentifierType,ProductCreator> objectFactory;
+        return objectFactory;
     }
 
-    static AbstractProduct *const Create(const IdentifierType &identifier)
+    const bool Register(const IdentifierType &identifier, ProductCreator creator)
     {
-        AssocMap::const_iterator itr = _associations.find( identifier );
+        return _associations.insert( typename AssocMap::value_type( identifier, creator ) ).second;
+    }
+
+    AbstractProduct *const Create(const IdentifierType &identifier)
+    {
+        typename AssocMap::const_iterator itr = _associations.find( identifier );
 
         if( itr != _associations.end() )
             return (itr->second)();

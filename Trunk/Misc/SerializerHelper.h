@@ -19,15 +19,16 @@
 #define SERIALIZERHELPER_HEADER
 
 #include "Serializer.h"
+#include "Sink.h"
 
 // Helper Macros
 
-#define SERIALIZE_CLASS(Identifier,Stream,ClassName)    \
-    ObjectSerializer Identifier( Stream, #ClassName );  \
-    for( sizeof(ClassName); Identifier; ++Identifier )
+#define SERIALIZE_CLASS(Identifier,Stream,ClassName)        \
+    ObjectSerializer Identifier( Stream, #ClassName );      \
+    for( Sink(sizeof(ClassName)); Identifier; ++Identifier )
 
-#define SERIALIZE_OBJECT(Identifier,Stream,ObjectName)  \
-    ObjectSerializer Identifier( Stream, ObjectName );  \
+#define SERIALIZE_OBJECT(Identifier,Stream,ObjectName)      \
+    ObjectSerializer Identifier( Stream, ObjectName );      \
     for( ; Identifier; ++Identifier )
 
 

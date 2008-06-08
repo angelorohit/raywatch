@@ -18,7 +18,7 @@
 #include "Serializer.h"
 #include "Utility.h"
 
-#ifdef _WIN32
+#ifdef _MSVC
     #pragma warning( disable : 4311 )
 #endif
 
@@ -69,7 +69,7 @@ const bool Serializer::WriteVariable(std::ostream &stream, const std::string &va
         Utility::String::ToString(value.x) + ", " +
         Utility::String::ToString(value.y) + ", " +
         Utility::String::ToString(value.z);
-    
+
     return WriteVariable( stream, variable, strValue );
 }
 
@@ -79,7 +79,7 @@ const bool Serializer::WriteVariable(std::ostream &stream, const std::string &va
         Utility::String::ToString(value.x) + ", " +
         Utility::String::ToString(value.y) + ", " +
         Utility::String::ToString(value.z);
-    
+
     return WriteVariable( stream, variable, strValue );
 }
 

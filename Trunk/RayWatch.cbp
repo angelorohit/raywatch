@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="RayWatch" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\RayWatch" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\RayWatch" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
+				<Compiler>
+					<Add option="-O1" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="Examples" />
+			<Add directory="Image" />
+			<Add directory="Light" />
+			<Add directory="Material" />
+			<Add directory="Maths" />
+			<Add directory="Misc" />
+			<Add directory="Primitive" />
+			<Add directory="RayTracer" />
+			<Add directory="Scene" />
+		</Compiler>
+		<Linker>
+			<Add library="mingw32" />
+			<Add library="SDLmain" />
+			<Add library="SDL.dll" />
+			<Add library="SDL_image" />
+			<Add library="user32" />
+			<Add library="gdi32" />
+			<Add library="winmm" />
+			<Add library="dxguid" />
+		</Linker>
+		<Unit filename="Examples\CornellBox.cpp" />
+		<Unit filename="Examples\Example1.cpp" />
+		<Unit filename="Examples\Example2.cpp" />
+		<Unit filename="Examples\Examples.h" />
+		<Unit filename="Image\Image.cpp" />
+		<Unit filename="Image\Image.h" />
+		<Unit filename="Image\Pixel.h" />
+		<Unit filename="Image\Texture.cpp" />
+		<Unit filename="Image\Texture.h" />
+		<Unit filename="Light\AreaLight.cpp" />
+		<Unit filename="Light\AreaLight.h" />
+		<Unit filename="Light\Light.cpp" />
+		<Unit filename="Light\Light.h" />
+		<Unit filename="Light\PointLight.cpp" />
+		<Unit filename="Light\PointLight.h" />
+		<Unit filename="Main.cpp" />
+		<Unit filename="Material\Color.h" />
+		<Unit filename="Material\Material.cpp" />
+		<Unit filename="Material\Material.h" />
+		<Unit filename="Maths\Maths.cpp" />
+		<Unit filename="Maths\Maths.h" />
+		<Unit filename="Maths\Vector.cpp" />
+		<Unit filename="Maths\Vector.h" />
+		<Unit filename="Misc\CodeBlocks.h" />
+		<Unit filename="Misc\Deserializer.cpp" />
+		<Unit filename="Misc\Deserializer.h" />
+		<Unit filename="Misc\DeserializerHelper.h" />
+		<Unit filename="Misc\ForEach.h" />
+		<Unit filename="Misc\ObjectFactory.h" />
+		<Unit filename="Misc\SafeDelete.h" />
+		<Unit filename="Misc\Serializable.cpp" />
+		<Unit filename="Misc\Serializable.h" />
+		<Unit filename="Misc\Serializer.cpp" />
+		<Unit filename="Misc\Serializer.h" />
+		<Unit filename="Misc\SerializerHelper.h" />
+		<Unit filename="Misc\Sink.h" />
+		<Unit filename="Misc\Utility.cpp" />
+		<Unit filename="Misc\Utility.h" />
+		<Unit filename="Primitive\Primitive.cpp" />
+		<Unit filename="Primitive\Primitive.h" />
+		<Unit filename="Primitive\Quad.cpp" />
+		<Unit filename="Primitive\Quad.h" />
+		<Unit filename="Primitive\Sphere.cpp" />
+		<Unit filename="Primitive\Sphere.h" />
+		<Unit filename="Primitive\Triangle.cpp" />
+		<Unit filename="Primitive\Triangle.h" />
+		<Unit filename="RayTracer\Camera.h" />
+		<Unit filename="RayTracer\IntersectionInfo.h" />
+		<Unit filename="RayTracer\Ray.cpp" />
+		<Unit filename="RayTracer\Ray.h" />
+		<Unit filename="RayTracer\RayTracer.cpp" />
+		<Unit filename="RayTracer\RayTracer.h" />
+		<Unit filename="Scene\Scene.cpp" />
+		<Unit filename="Scene\Scene.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="./Image/;./Light/;./Material/;./Maths/;./Misc/;./Primitive/;./RayTracer/;./Scene/;./Examples/"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;_MSVC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -118,7 +118,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="./Image/;./Light/;./Material/;./Maths/;./Misc/;./Primitive/;./RayTracer/;./Scene/;./Examples/"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;_MSVC"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="4"

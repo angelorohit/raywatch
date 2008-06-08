@@ -18,7 +18,7 @@
 #ifndef VECTOR_HEADER
 #define VECTOR_HEADER
 
-#ifdef _WIN32
+#ifdef _MSVC
 #pragma warning( disable : 4201 )
 #endif
 
