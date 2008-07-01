@@ -21,7 +21,7 @@
 #include "Utility.h"
 #include "Maths.h"
 #include "Vector.h"
-#include <SDL_Image.h>
+#include <SDL_image.h>
 
 // Constructor
 Image::Image() :

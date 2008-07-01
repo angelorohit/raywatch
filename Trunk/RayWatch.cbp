@@ -42,14 +42,9 @@
 			<Add directory="Scene" />
 		</Compiler>
 		<Linker>
-			<Add library="mingw32" />
 			<Add library="SDLmain" />
-			<Add library="SDL.dll" />
+			<Add library="SDL" />
 			<Add library="SDL_image" />
-			<Add library="user32" />
-			<Add library="gdi32" />
-			<Add library="winmm" />
-			<Add library="dxguid" />
 		</Linker>
 		<Unit filename="Examples\CornellBox.cpp" />
 		<Unit filename="Examples\Example1.cpp" />
