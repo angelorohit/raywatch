@@ -22,6 +22,7 @@
 #include "Maths.h"
 #include "Vector.h"
 #include <SDL_image.h>
+#include <iostream>
 
 // Constructor
 Image::Image() :
@@ -46,7 +47,14 @@ const bool Image::SDL_Load(const std::string &fileName)
     // Load the image using SDL_Image
     SDL_Surface *pSurface = IMG_Load( fileName.c_str() );
     if( !pSurface )
+    {
+        // Get the SDL Error
+        std::string sdlError( SDL_GetError() );
+        Utility::String::TrimWhiteSpaces( sdlError );
+
+        std::cout << "Error: " << sdlError << std::endl;
         return false;
+    }
 
     // Release any currently loaded data
     Release();
