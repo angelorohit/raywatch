@@ -67,8 +67,8 @@ public:
         Color &specular ) const = 0;
 
     // Serializable's functions
-    virtual const bool Read(std::istream &stream) =0;
-    virtual const bool Write(std::ostream &stream) const =0;
+    virtual const bool Read(Deserializer &d);
+    virtual const bool Write(Serializer &s) const;
 };
 
 #endif

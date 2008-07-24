@@ -15,42 +15,48 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef TEXTURE_HEADER
-#define TEXTURE_HEADER
+#ifndef STREAM_HEADER
+#define STREAM_HEADER
 
-#include "Image.h"
-#include "Serializable.h"
 #include <string>
+#include <vector>
+#include <istream>
 
-class Texture : public Serializable
+class StreamIterator
 {
 // Members
 private:
-    Image           _image;
-    std::string     _fileName;
+    typedef std::string         Buffer;
+    typedef Buffer::iterator    Cursor;
+    typedef std::vector<Cursor> CursorStack;
+
+    Buffer      _buffer;
+    Cursor      _cursor;
+    CursorStack _cursorStack;
 
 public:
 // Constructor
-    explicit Texture();
+    explicit StreamIterator();
 // Destructor
-    virtual ~Texture();
+    ~StreamIterator();
 
 private:
 // Copy Constructor / Assignment Operator
-    Texture(const Texture &);
-    const Texture &operator =(const Texture &);
+    StreamIterator(const StreamIterator &);
+    const StreamIterator &operator =(const StreamIterator &);
 
 // Functions
 public:
-    // Accessors
-    const std::string &FileName() const;
+    const bool Open(std::istream &stream);
+    void Close();
+    void Reset();
 
-    const bool Load(const std::string &fileName);
-    const Pixel<float> GetPixel(const float &tu, const float &tv) const;
+    const char operator * () const; // Dereference iterator
+    const bool Eof() const;         // Test for end of stream
+    void operator ++ ();            // Advance iterator
 
-    // Serializable's functions
-    virtual const bool Read(Deserializer &d);
-    virtual const bool Write(Serializer &s) const;
+    void SavePosition();
+    void RestorePosition();
 };
 
 #endif

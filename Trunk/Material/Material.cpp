@@ -215,12 +215,12 @@ const Color Material::GetIllumination(
 }
 
 // Serializable's functions
-const bool Material::Read(std::istream &stream)
+const bool Material::Read(Deserializer &d)
 {
-    DESERIALIZE_CLASS( object, stream, Material )
+    DESERIALIZE_CLASS( object, d, Material )
     {
         // Read the base
-        if( !Serializable::Read( stream ) )
+        if( !Serializable::Read( d ) )
             break;
 
         Color           color;
@@ -236,18 +236,18 @@ const bool Material::Read(std::istream &stream)
         const Texture  *pTexture = 0;
         float           textureScale;
 
-        if( !Deserializer::ReadVariable( stream, "color", color )                                     ||
-            !Deserializer::ReadVariable( stream, "opacity", opacity )                                 ||
-            !Deserializer::ReadVariable( stream, "reflectivity", reflectivity )                       ||
-            !Deserializer::ReadVariable( stream, "fuzzyReflectionRadius", fuzzyReflectionRadius )     ||
-            !Deserializer::ReadVariable( stream, "fuzzyReflectionSamples", fuzzyReflectionSamples )   ||
-            !Deserializer::ReadVariable( stream, "specularity", specularity )                         ||
-            !Deserializer::ReadVariable( stream, "roughness", roughness )                             ||
-            !Deserializer::ReadVariable( stream, "refractiveIndex", refractiveIndex )                 ||
-            !Deserializer::ReadVariable( stream, "absorption", absorption )                           ||
-            !Deserializer::ReadVariable( stream, "concentration", concentration )                     ||
-            !Deserializer::ReadVariable( stream, "texture", pTexture )                                ||
-            !Deserializer::ReadVariable( stream, "textureScale", textureScale )                       )
+        if( !d.ReadObject( "color", color )                                     ||
+            !d.ReadObject( "opacity", opacity )                                 ||
+            !d.ReadObject( "reflectivity", reflectivity )                       ||
+            !d.ReadObject( "fuzzyReflectionRadius", fuzzyReflectionRadius )     ||
+            !d.ReadObject( "fuzzyReflectionSamples", fuzzyReflectionSamples )   ||
+            !d.ReadObject( "specularity", specularity )                         ||
+            !d.ReadObject( "roughness", roughness )                             ||
+            !d.ReadObject( "refractiveIndex", refractiveIndex )                 ||
+            !d.ReadObject( "absorption", absorption )                           ||
+            !d.ReadObject( "concentration", concentration )                     ||
+            !d.ReadObject( "texture", pTexture )                                ||
+            !d.ReadObject( "textureScale", textureScale )                       )
             return false;
 
         SetColor( color.x, color.y, color.z );
@@ -267,35 +267,35 @@ const bool Material::Read(std::istream &stream)
     return object.ReadResult();
 }
 
-const bool Material::Write(std::ostream &stream) const
+const bool Material::Write(Serializer &s) const
 {
-    SERIALIZE_CLASS( object, stream, Material )
+    SERIALIZE_CLASS( object, s, Material )
     {
         // Write the base
-        if( !Serializable::Write( stream ) )
+        if( !Serializable::Write( s ) )
             break;
 
-        if( !Serializer::WriteVariable( stream, "color", _color )                                   ||
-            !Serializer::WriteVariable( stream, "opacity", _opacity )                               ||
-            !Serializer::WriteVariable( stream, "reflectivity", _reflectivity )                     ||
-            !Serializer::WriteVariable( stream, "fuzzyReflectionRadius", _fuzzyReflectionRadius )   ||
-            !Serializer::WriteVariable( stream, "fuzzyReflectionSamples", _fuzzyReflectionSamples ) ||
-            !Serializer::WriteVariable( stream, "specularity", _specularity )                       ||
-            !Serializer::WriteVariable( stream, "roughness", _roughness )                           ||
-            !Serializer::WriteVariable( stream, "refractiveIndex", _refractiveIndex )               ||
-            !Serializer::WriteVariable( stream, "absorption", _absorption )                         ||
-            !Serializer::WriteVariable( stream, "concentration", _concentration )                   ||
-            !Serializer::WriteVariable( stream, "texture", _pTexture )                              ||
-            !Serializer::WriteVariable( stream, "textureScale", _textureScale )                     )
+        if( !s.WriteObject( "color", _color )                                   ||
+            !s.WriteObject( "opacity", _opacity )                               ||
+            !s.WriteObject( "reflectivity", _reflectivity )                     ||
+            !s.WriteObject( "fuzzyReflectionRadius", _fuzzyReflectionRadius )   ||
+            !s.WriteObject( "fuzzyReflectionSamples", _fuzzyReflectionSamples ) ||
+            !s.WriteObject( "specularity", _specularity )                       ||
+            !s.WriteObject( "roughness", _roughness )                           ||
+            !s.WriteObject( "refractiveIndex", _refractiveIndex )               ||
+            !s.WriteObject( "absorption", _absorption )                         ||
+            !s.WriteObject( "concentration", _concentration )                   ||
+            !s.WriteObject( "texture", _pTexture )                              ||
+            !s.WriteObject( "textureScale", _textureScale )                     )
             break;
     }
 
     return object.WriteResult();
 }
 
-const bool Material::RestorePointers()
+const bool Material::RestorePointers(Deserializer &d)
 {
-    if( !Deserializer::TranslateAddress( _pTexture ) )
+    if( !d.TranslateAddress( _pTexture ) )
         return false;
 
     return true;

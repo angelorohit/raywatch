@@ -23,12 +23,12 @@
 
 // Helper Macros
 
-#define SERIALIZE_CLASS(Identifier,Stream,ClassName)        \
-    ObjectSerializer Identifier( Stream, #ClassName );      \
+#define SERIALIZE_CLASS(Identifier,SerializerObject,ClassName)        \
+    ObjectSerializer Identifier( SerializerObject, #ClassName );      \
     for( Sink(sizeof(ClassName)); Identifier; ++Identifier )
 
-#define SERIALIZE_OBJECT(Identifier,Stream,ObjectName)      \
-    ObjectSerializer Identifier( Stream, ObjectName );      \
+#define SERIALIZE_OBJECT(Identifier,SerializerObject,ObjectName)      \
+    ObjectSerializer Identifier( SerializerObject, ObjectName );      \
     for( ; Identifier; ++Identifier )
 
 
@@ -36,24 +36,22 @@
 class ObjectSerializer
 {
 private:
-    const std::string    _name;     // Name of the object
-    std::ostream        &_stream;   // Reference to the stream to which this object is being written
+    Serializer &_s;   // Reference to the serializer to which this object is being written
 
     bool _bError;
     bool _bFinished;
 
 public:
 // Constructor
-    explicit ObjectSerializer(std::ostream &stream, const std::string &name) :
-        _name( name ),
-        _stream( stream ),
+    explicit ObjectSerializer(Serializer &s, const std::string &name) :
+        _s( s ),
         _bError( false ),
         _bFinished( false )
     {
-        if( !Serializer::WriteHeader( _stream, _name ) )
+        if( !_s.WriteGroupObjectHeader( name ) )
             _bError = true;
 
-        Serializer::Indent();
+        _s.Indent();
     }
 
 private:
@@ -72,9 +70,9 @@ public:
     // See if we've reached the end of the object or not
     void operator ++ ()
     {
-        Serializer::Unindent();
+        _s.Unindent();
 
-        if( Serializer::WriteFooter( _stream, _name ) )
+        if( _s.WriteGroupObjectFooter() )
             _bFinished = true;
         else
             _bError = true;

@@ -24,14 +24,18 @@ namespace Utility
     {
         // Functions
 
+        const std::string &WhitespaceCharSet()
+        {
+            static const std::string whitespaceCharSet( " \r\n\t" );
+            return whitespaceCharSet;
+        }
+
         void TrimWhiteSpaces(std::string &str)
         {
-            const char *const whiteSpaceCharSet = " \r\n\t";
-
             size_t startPos, endPos;
 
-            if( (startPos = str.find_first_not_of(whiteSpaceCharSet)) != std::string::npos &&
-                (endPos   = str.find_last_not_of (whiteSpaceCharSet)) != std::string::npos )
+            if( (startPos = str.find_first_not_of( WhitespaceCharSet() )) != std::string::npos &&
+                (endPos   = str.find_last_not_of ( WhitespaceCharSet() )) != std::string::npos )
             {
                 str = str.substr( startPos, (endPos - startPos + 1) );
             }
@@ -43,9 +47,7 @@ namespace Utility
 
         const bool ContainsWhiteSpaces(const std::string &str)
         {
-            const char *const whiteSpaceCharSet = " \r\n\t";
-
-            if( str.find_first_of(whiteSpaceCharSet) != std::string::npos )
+            if( str.find_first_of( WhitespaceCharSet() ) != std::string::npos )
                 return true;
 
             return false;

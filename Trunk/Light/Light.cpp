@@ -77,21 +77,21 @@ void Light::SetRange(const float &range)
 }
 
 // Serializable's functions
-const bool Light::Read(std::istream &stream)
+const bool Light::Read(Deserializer &d)
 {
-    DESERIALIZE_CLASS( object, stream, Light )
+    DESERIALIZE_CLASS( object, d, Light )
     {
         // Read the base
-        if( !Serializable::Read( stream ) )
+        if( !Serializable::Read( d ) )
             break;
 
         Color   color;
         float   intensity;
         float   range;
 
-        if( !Deserializer::ReadVariable( stream, "color", color )         ||
-            !Deserializer::ReadVariable( stream, "intensity", intensity ) ||
-            !Deserializer::ReadVariable( stream, "range", range )         )
+        if( !d.ReadObject( "color", color )         ||
+            !d.ReadObject( "intensity", intensity ) ||
+            !d.ReadObject( "range", range )         )
             break;
 
         SetColor( color );
@@ -102,17 +102,17 @@ const bool Light::Read(std::istream &stream)
     return object.ReadResult();
 }
 
-const bool Light::Write(std::ostream &stream) const
+const bool Light::Write(Serializer &s) const
 {
-    SERIALIZE_CLASS( object, stream, Light )
+    SERIALIZE_CLASS( object, s, Light )
     {
         // Write the base
-        if( !Serializable::Write( stream ) )
+        if( !Serializable::Write( s ) )
             break;
 
-        if( !Serializer::WriteVariable( stream, "color", _color )           ||
-            !Serializer::WriteVariable( stream, "intensity", _intensity )   ||
-            !Serializer::WriteVariable( stream, "range", _range )           )
+        if( !s.WriteObject( "color", _color )           ||
+            !s.WriteObject( "intensity", _intensity )   ||
+            !s.WriteObject( "range", _range )           )
             break;
     }
 

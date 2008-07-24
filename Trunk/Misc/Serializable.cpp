@@ -31,33 +31,33 @@ Serializable::~Serializable()
 
 // Functions
 
-const bool Serializable::Read(std::istream &stream)
+const bool Serializable::Read(Deserializer &d)
 {
-    DESERIALIZE_CLASS( object, stream, Serializable )
+    DESERIALIZE_CLASS( object, d, Serializable )
     {
-        int oldAddress;
-        if( !Deserializer::ReadVariable( stream, "address", oldAddress ) )
+        std::size_t oldAddress;
+        if( !d.ReadObject( "address", oldAddress ) )
             break;
 
-        if( !Deserializer::Register( oldAddress, this ) )
+        if( !d.Register( oldAddress, this ) )
             break;
     }
 
     return object.ReadResult();
 }
 
-const bool Serializable::Write(std::ostream &stream) const
+const bool Serializable::Write(Serializer &s) const
 {
-    SERIALIZE_CLASS( object, stream, Serializable )
+    SERIALIZE_CLASS( object, s, Serializable )
     {
-        if( !Serializer::WriteVariable( stream, "address", this ) )
+        if( !s.WriteObject( "address", this ) )
             break;
     }
 
     return object.WriteResult();
 }
 
-const bool Serializable::RestorePointers()
+const bool Serializable::RestorePointers(Deserializer &/*d*/)
 {
     // Note: Empty default implementation; override to fix any required pointers
     return true;

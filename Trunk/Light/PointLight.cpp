@@ -76,30 +76,30 @@ void PointLight::AccumulateIlluminationAtSurface(
 }
 
 // Serializable's functions
-const bool PointLight::Read(std::istream &stream)
+const bool PointLight::Read(Deserializer &d)
 {
-    DESERIALIZE_CLASS( object, stream, PointLight )
+    DESERIALIZE_CLASS( object, d, PointLight )
     {
         // Read the base
-        if( !Light::Read( stream ) )
+        if( !Light::Read( d ) )
             break;
 
-        if( !Deserializer::ReadVariable( stream, "position", _position ) )
+        if( !d.ReadObject( "position", _position ) )
             break;
     }
 
     return object.ReadResult();
 }
 
-const bool PointLight::Write(std::ostream &stream) const
+const bool PointLight::Write(Serializer &s) const
 {
-    SERIALIZE_CLASS( object, stream, PointLight )
+    SERIALIZE_CLASS( object, s, PointLight )
     {
         // Write the base
-        if( !Light::Write( stream ) )
+        if( !Light::Write( s ) )
             break;
 
-        if( !Serializer::WriteVariable( stream, "position", _position ) )
+        if( !s.WriteObject( "position", _position ) )
             break;
     }
 

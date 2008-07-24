@@ -29,38 +29,43 @@ class Serializer
 {
 // Members
 private:
-    static int _indentation;
+    int              _indentation;
+    std::ostream    &_stream;
 
-// Monostate related
-private:
-    // Constructor
-    explicit Serializer();
-    // Destructor
+public:
+// Constructor
+    explicit Serializer(std::ostream &stream);
+// Destructor
     ~Serializer();
 
-    // Copy Constructor / Assignment Operator
+private:
+// Copy Constructor / Assignment Operator
     Serializer(const Serializer &);
     const Serializer &operator =(const Serializer &);
 
 // Functions
+private:
+    // A base WriteObject function; all other WriteObject functions use this function.
+    const bool WriteObjectBase(const std::string &name, const std::string &value);
+
 public:
-    static void Indent();
-    static void Unindent();
+    void Indent();
+    void Unindent();
+
+    // Helper functions to write group objects
+    const bool WriteGroupObjectHeader(const std::string &name);
+    const bool WriteGroupObjectFooter();
 
     // Helper functions to write various data types
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const std::string &value);
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const char *const value);
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const int &value);
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const float &value);
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const bool &value);
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const Vector<int> &value);
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const Vector<float> &value);
-    static const bool WriteVariable(std::ostream &stream, const std::string &variable, const Serializable *const value);
-
-    // Helper function to write an object header in the form: begin = <objectName>;
-    static const bool WriteHeader(std::ostream &stream, const std::string &objectName);
-    // Helper function to write an object footer in the form: end = <objectName>;
-    static const bool WriteFooter(std::ostream &stream, const std::string &objectName);
+    const bool WriteObject(const std::string &name, const std::string &value);
+    const bool WriteObject(const std::string &name, const char *const value);
+    const bool WriteObject(const std::string &name, const std::size_t &value);
+    const bool WriteObject(const std::string &name, const int &value);
+    const bool WriteObject(const std::string &name, const float &value);
+    const bool WriteObject(const std::string &name, const bool &value);
+    const bool WriteObject(const std::string &name, const Vector<int> &value);
+    const bool WriteObject(const std::string &name, const Vector<float> &value);
+    const bool WriteObject(const std::string &name, const Serializable *const value);
 };
 
 #endif

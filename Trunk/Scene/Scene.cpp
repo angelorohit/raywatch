@@ -48,15 +48,15 @@ Scene::~Scene()
 {
     // Delete all the Primitives
     for(PrimitiveList::iterator itr = _primitiveList.begin(); itr != _primitiveList.end(); ++itr)
-        SAFE_DELETE_SCALAR( *itr );
+        SafeDeleteScalar( *itr );
 
     // Delete all the Lights
     for(LightList::iterator itr = _lightList.begin(); itr != _lightList.end(); ++itr)
-        SAFE_DELETE_SCALAR( *itr );
+        SafeDeleteScalar( *itr );
 
     // Delete all the Textures
     for(TextureList::iterator itr = _textureList.begin(); itr != _textureList.end(); ++itr)
-        SAFE_DELETE_SCALAR( *itr );
+        SafeDeleteScalar( *itr );
 }
 
 // Functions
@@ -191,7 +191,7 @@ Texture *const Scene::LoadTexture(const std::string &fileName)
     // Load the texture
     if( !pTexture->Load( fileName ) )
     {
-        SAFE_DELETE_SCALAR( pTexture );
+        SafeDeleteScalar( pTexture );
         return 0;
     }
 
@@ -202,24 +202,24 @@ Texture *const Scene::LoadTexture(const std::string &fileName)
 }
 
 // Serializable's functions
-const bool Scene::Read(std::istream &stream)
+const bool Scene::Read(Deserializer &d)
 {
-    DESERIALIZE_CLASS( object, stream, Scene )
+    DESERIALIZE_CLASS( object, d, Scene )
     {
         // Read the base
-        if( !Serializable::Read( stream ) )
+        if( !Serializable::Read( d ) )
             break;
 
-        if( !Deserializer::ReadVariable( stream, "ambientLight", _ambientLight )            ||
-            !Deserializer::ReadVariable( stream, "maxRayGenerations", _maxRayGenerations )  )
+        if( !d.ReadObject( "ambientLight", _ambientLight )            ||
+            !d.ReadObject( "maxRayGenerations", _maxRayGenerations )  )
             break;
 
         // Read the children
-        DESERIALIZE_LIST( children, stream, "Children" )
+        DESERIALIZE_LIST( children, d, "Children" )
         {
             // Peek the next object header
             std::string objectType;
-            if( !Deserializer::PeekHeader( stream, objectType ) )
+            if( !d.PeekGroupObjectHeader( objectType ) )
                 break;
 
             // Create the object
@@ -231,9 +231,9 @@ const bool Scene::Read(std::istream &stream)
             }
 
             // Load the object
-            if( !pSerializable->Read( stream ) )
+            if( !pSerializable->Read( d ) )
             {
-                SAFE_DELETE_SCALAR( pSerializable );
+                SafeDeleteScalar( pSerializable );
                 break;
             }
 
@@ -266,7 +266,7 @@ const bool Scene::Read(std::istream &stream)
                 // We don't know what type of object this is
                 {
                     std::cout << "Error: Object '" << objectType << "' cannot be inserted directly into the Scene." << std::endl;
-                    SAFE_DELETE_SCALAR( pSerializable );
+                    SafeDeleteScalar( pSerializable );
                     break;
                 }
             }
@@ -279,27 +279,27 @@ const bool Scene::Read(std::istream &stream)
     return object.ReadResult();
 }
 
-const bool Scene::Write(std::ostream &stream) const
+const bool Scene::Write(Serializer &s) const
 {
-    SERIALIZE_CLASS( object, stream, Scene )
+    SERIALIZE_CLASS( object, s, Scene )
     {
         // Write the base
-        if( !Serializable::Write( stream ) )
+        if( !Serializable::Write( s ) )
             break;
 
-        if( !Serializer::WriteVariable( stream, "ambientLight", _ambientLight )             ||
-            !Serializer::WriteVariable( stream, "maxRayGenerations", _maxRayGenerations )   )
+        if( !s.WriteObject( "ambientLight", _ambientLight )             ||
+            !s.WriteObject( "maxRayGenerations", _maxRayGenerations )   )
             break;
 
         // Write all the children
-        SERIALIZE_OBJECT( children, stream, "Children" )
+        SERIALIZE_OBJECT( children, s, "Children" )
         {
             // Write all the Primitives
             {
                 PrimitiveList::const_iterator itr;
                 for(itr = _primitiveList.begin(); itr != _primitiveList.end(); ++itr)
                 {
-                    if( !(*itr)->Write( stream ) )
+                    if( !(*itr)->Write( s ) )
                         break;
                 }
                 if( itr != _primitiveList.end() )
@@ -311,7 +311,7 @@ const bool Scene::Write(std::ostream &stream) const
                 LightList::const_iterator itr;
                 for(itr = _lightList.begin(); itr != _lightList.end(); ++itr)
                 {
-                    if( !(*itr)->Write( stream ) )
+                    if( !(*itr)->Write( s ) )
                         break;
                 }
                 if( itr != _lightList.end() )
@@ -323,7 +323,7 @@ const bool Scene::Write(std::ostream &stream) const
                 TextureList::const_iterator itr;
                 for(itr = _textureList.begin(); itr != _textureList.end(); ++itr)
                 {
-                    if( !(*itr)->Write( stream ) )
+                    if( !(*itr)->Write( s ) )
                         break;
                 }
                 if( itr != _textureList.end() )

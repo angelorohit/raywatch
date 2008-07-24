@@ -18,7 +18,9 @@
 #ifndef SERIALIZABLE_HEADER
 #define SERIALIZABLE_HEADER
 
-#include <iostream>
+// Forward Declarations
+class Deserializer;
+class Serializer;
 
 class Serializable
 {
@@ -31,8 +33,8 @@ public:
 
 // Functions
 public:
-    virtual const bool Read(std::istream &stream) =0;
-    virtual const bool Write(std::ostream &stream) const =0;
+    virtual const bool Read(Deserializer &d) =0;
+    virtual const bool Write(Serializer &s) const =0;
 
     // Function which will be called to give this Serializable object a chance to translate
     // all its old pointer addresses to the new ones via the TranslateAddress() function.
@@ -41,7 +43,7 @@ public:
     // is required.
     // Do not call the Base's RestorePointers() in any overridden function; it
     // will automatically be called separately.
-    virtual const bool RestorePointers();
+    virtual const bool RestorePointers(Deserializer &d);
 };
 
 #endif

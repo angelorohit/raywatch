@@ -70,18 +70,18 @@ const Pixel<float> Texture::GetPixel(const float &tu, const float &tv) const
 
 // Serializable's functions
 
-const bool Texture::Read(std::istream &stream)
+const bool Texture::Read(Deserializer &d)
 {
-    DESERIALIZE_CLASS( object, stream, Texture )
+    DESERIALIZE_CLASS( object, d, Texture )
     {
         // Read the base
-        if( !Serializable::Read( stream ) )
+        if( !Serializable::Read( d ) )
             break;
 
         // Read the texture fileName
         {
             std::string fileName;
-            if( !Deserializer::ReadVariable( stream, "fileName", fileName ) )
+            if( !d.ReadObject( "fileName", fileName ) )
                 break;
 
             if( !Load( fileName ) )
@@ -92,15 +92,15 @@ const bool Texture::Read(std::istream &stream)
     return object.ReadResult();
 }
 
-const bool Texture::Write(std::ostream &stream) const
+const bool Texture::Write(Serializer &s) const
 {
-    SERIALIZE_CLASS( object, stream, Texture )
+    SERIALIZE_CLASS( object, s, Texture )
     {
         // Write the base
-        if( !Serializable::Write( stream ) )
+        if( !Serializable::Write( s ) )
             break;
 
-        if( !Serializer::WriteVariable( stream, "fileName", _fileName ) )
+        if( !s.WriteObject( "fileName", _fileName ) )
             break;
     }
 

@@ -75,6 +75,7 @@
 		<Unit filename="Misc\DeserializerHelper.h" />
 		<Unit filename="Misc\ForEach.h" />
 		<Unit filename="Misc\ObjectFactory.h" />
+		<Unit filename="Misc\Preprocessor.h" />
 		<Unit filename="Misc\SafeDelete.h" />
 		<Unit filename="Misc\Serializable.cpp" />
 		<Unit filename="Misc\Serializable.h" />
@@ -82,6 +83,11 @@
 		<Unit filename="Misc\Serializer.h" />
 		<Unit filename="Misc\SerializerHelper.h" />
 		<Unit filename="Misc\Sink.h" />
+		<Unit filename="Misc\SortedList.h" />
+		<Unit filename="Misc\StreamIterator.cpp" />
+		<Unit filename="Misc\StreamIterator.h" />
+		<Unit filename="Misc\TokenStream.cpp" />
+		<Unit filename="Misc\TokenStream.h" />
 		<Unit filename="Misc\Utility.cpp" />
 		<Unit filename="Misc\Utility.h" />
 		<Unit filename="Primitive\Primitive.cpp" />

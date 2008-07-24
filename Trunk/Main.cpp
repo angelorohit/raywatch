@@ -139,8 +139,16 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+    // Create a Deserializer for the stream
+    Deserializer d;
+    if( !d.Open( stream ) )
+    {
+        std::cout << "Error: Failed to read file: " << argv[1] << std::endl;
+        return -1;
+    }
+
     // Load the scene from the stream
-    Scene *pScene = dynamic_cast<Scene *>( Deserializer::Read( stream ) );
+    Scene *pScene = dynamic_cast<Scene *>( d.Read() );
     if( !pScene )
     {
         std::cout << "Error: Failed to load Scene from file: " << argv[1] << std::endl;
@@ -154,7 +162,7 @@ int main(int argc, char *argv[])
     std::cout << "Done" << std::endl;
 
     // We're done with the scene, delete it
-    SAFE_DELETE_SCALAR( pScene );
+    SafeDeleteScalar( pScene );
 
     if( !bRTResult )
     {

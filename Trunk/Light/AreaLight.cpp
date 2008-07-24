@@ -147,21 +147,21 @@ void AreaLight::AccumulateIlluminationAtSurface(
 }
 
 // Serializable's functions
-const bool AreaLight::Read(std::istream &stream)
+const bool AreaLight::Read(Deserializer &d)
 {
-    DESERIALIZE_CLASS( object, stream, AreaLight )
+    DESERIALIZE_CLASS( object, d, AreaLight )
     {
         // Read the base
-        if( !Light::Read( stream ) )
+        if( !Light::Read( d ) )
             break;
 
         Vector<float> vertex1, vertex2, vertex3;
         int numHorizontalSamples, numVerticalSamples;
-        if( !Deserializer::ReadVariable( stream, "vertex1", vertex1 )                             ||
-            !Deserializer::ReadVariable( stream, "vertex2", vertex2 )                             ||
-            !Deserializer::ReadVariable( stream, "vertex3", vertex3 )                             ||
-            !Deserializer::ReadVariable( stream, "numHorizontalSamples", numHorizontalSamples )   ||
-            !Deserializer::ReadVariable( stream, "numVerticalSamples", numVerticalSamples )       )
+        if( !d.ReadObject( "vertex1", vertex1 )                             ||
+            !d.ReadObject( "vertex2", vertex2 )                             ||
+            !d.ReadObject( "vertex3", vertex3 )                             ||
+            !d.ReadObject( "numHorizontalSamples", numHorizontalSamples )   ||
+            !d.ReadObject( "numVerticalSamples", numVerticalSamples )       )
             break;
 
         SetRectangularArea( vertex1, vertex2, vertex3, numHorizontalSamples, numVerticalSamples );
@@ -170,19 +170,19 @@ const bool AreaLight::Read(std::istream &stream)
     return object.ReadResult();
 }
 
-const bool AreaLight::Write(std::ostream &stream) const
+const bool AreaLight::Write(Serializer &s) const
 {
-    SERIALIZE_CLASS( object, stream, AreaLight )
+    SERIALIZE_CLASS( object, s, AreaLight )
     {
         // Write the base
-        if( !Light::Write( stream ) )
+        if( !Light::Write( s ) )
             break;
 
-        if( !Serializer::WriteVariable( stream, "vertex1", _v1 )                                ||
-            !Serializer::WriteVariable( stream, "vertex2", _v2 )                                ||
-            !Serializer::WriteVariable( stream, "vertex3", _v3 )                                ||
-            !Serializer::WriteVariable( stream, "numHorizontalSamples", _numHorizontalSamples ) ||
-            !Serializer::WriteVariable( stream, "numVerticalSamples", _numVerticalSamples )     )
+        if( !s.WriteObject( "vertex1", _v1 )                                ||
+            !s.WriteObject( "vertex2", _v2 )                                ||
+            !s.WriteObject( "vertex3", _v3 )                                ||
+            !s.WriteObject( "numHorizontalSamples", _numHorizontalSamples ) ||
+            !s.WriteObject( "numVerticalSamples", _numVerticalSamples )     )
             break;
     }
 

@@ -126,19 +126,19 @@ const Vector<float> Sphere::GetSurfaceNormal(const Vector<float> &position) cons
 }
 
 // Serializable's functions
-const bool Sphere::Read(std::istream &stream)
+const bool Sphere::Read(Deserializer &d)
 {
-    DESERIALIZE_CLASS( object, stream, Sphere )
+    DESERIALIZE_CLASS( object, d, Sphere )
     {
         // Read the base
-        if( !Primitive::Read( stream ) )
+        if( !Primitive::Read( d ) )
             break;
 
         Vector<float> centre;
         float         radius;
 
-        if( !Deserializer::ReadVariable( stream, "centre", centre ) ||
-            !Deserializer::ReadVariable( stream, "radius", radius ) )
+        if( !d.ReadObject( "centre", centre ) ||
+            !d.ReadObject( "radius", radius ) )
             break;
 
         SetCentre( centre );
@@ -148,16 +148,16 @@ const bool Sphere::Read(std::istream &stream)
     return object.ReadResult();
 }
 
-const bool Sphere::Write(std::ostream &stream) const
+const bool Sphere::Write(Serializer &s) const
 {
-    SERIALIZE_CLASS( object, stream, Sphere )
+    SERIALIZE_CLASS( object, s, Sphere )
     {
         // Write the base
-        if( !Primitive::Write( stream ) )
+        if( !Primitive::Write( s ) )
             break;
 
-        if( !Serializer::WriteVariable( stream, "centre", _centre ) ||
-            !Serializer::WriteVariable( stream, "radius", _radius ) )
+        if( !s.WriteObject( "centre", _centre ) ||
+            !s.WriteObject( "radius", _radius ) )
             break;
     }
 

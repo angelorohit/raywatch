@@ -103,18 +103,18 @@ void Quad::SetVertices(const Vector<float> &v1, const Vector<float> &v2, const V
 }
 
 // Serializable's functions
-const bool Quad::Read(std::istream &stream)
+const bool Quad::Read(Deserializer &d)
 {
-    DESERIALIZE_CLASS( object, stream, Quad )
+    DESERIALIZE_CLASS( object, d, Quad )
     {
         // Read the base
-        if( !Primitive::Read( stream ) )
+        if( !Primitive::Read( d ) )
             break;
 
         Vector<float> vertex1, vertex2, vertex3;
-        if( !Deserializer::ReadVariable( stream, "vertex1", vertex1 ) ||
-            !Deserializer::ReadVariable( stream, "vertex2", vertex2 ) ||
-            !Deserializer::ReadVariable( stream, "vertex3", vertex3 ) )
+        if( !d.ReadObject( "vertex1", vertex1 ) ||
+            !d.ReadObject( "vertex2", vertex2 ) ||
+            !d.ReadObject( "vertex3", vertex3 ) )
             break;
 
         SetVertices( vertex1, vertex2, vertex3 );
@@ -123,17 +123,17 @@ const bool Quad::Read(std::istream &stream)
     return object.ReadResult();
 }
 
-const bool Quad::Write(std::ostream &stream) const
+const bool Quad::Write(Serializer &s) const
 {
-    SERIALIZE_CLASS( object, stream, Quad )
+    SERIALIZE_CLASS( object, s, Quad )
     {
         // Write the base
-        if( !Primitive::Write( stream ) )
+        if( !Primitive::Write( s ) )
             break;
 
-        if( !Serializer::WriteVariable( stream, "vertex1", _topLeft )   ||
-            !Serializer::WriteVariable( stream, "vertex2", _v2 )        ||
-            !Serializer::WriteVariable( stream, "vertex3", _v3 )        )
+        if( !s.WriteObject( "vertex1", _topLeft )   ||
+            !s.WriteObject( "vertex2", _v2 )        ||
+            !s.WriteObject( "vertex3", _v3 )        )
             break;
     }
 

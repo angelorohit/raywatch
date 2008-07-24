@@ -289,6 +289,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Misc\Preprocessor.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Misc\SafeDelete.h"
 				>
 			</File>
@@ -310,6 +314,30 @@
 			</File>
 			<File
 				RelativePath=".\Misc\SerializerHelper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Misc\Sink.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Misc\SortedList.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Misc\StreamIterator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Misc\StreamIterator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Misc\TokenStream.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Misc\TokenStream.h"
 				>
 			</File>
 			<File

@@ -15,42 +15,43 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef TEXTURE_HEADER
-#define TEXTURE_HEADER
+#ifndef TOKENSTREAM_HEADER
+#define TOKENSTREAM_HEADER
 
-#include "Image.h"
-#include "Serializable.h"
-#include <string>
+#include "StreamIterator.h"
 
-class Texture : public Serializable
+class TokenStream
 {
 // Members
 private:
-    Image           _image;
-    std::string     _fileName;
+    StreamIterator _streamIterator;
 
 public:
 // Constructor
-    explicit Texture();
+    explicit TokenStream();
 // Destructor
-    virtual ~Texture();
+    ~TokenStream();
 
 private:
 // Copy Constructor / Assignment Operator
-    Texture(const Texture &);
-    const Texture &operator =(const Texture &);
+    TokenStream(const TokenStream &);
+    const TokenStream &operator =(const TokenStream &);
 
 // Functions
+private:
+    static const bool IsContained(const char character, const std::string &characterSet);
+
 public:
-    // Accessors
-    const std::string &FileName() const;
+    const bool Open(std::istream &stream);
+    void Close();
 
-    const bool Load(const std::string &fileName);
-    const Pixel<float> GetPixel(const float &tu, const float &tv) const;
+    const bool ReadToken(std::string &token, const std::string &delimiterSet, const bool bTrimWhitespaces = true);
+    const bool PeekToken(std::string &token, const std::string &delimiterSet, const bool bTrimWhitespaces = true);
 
-    // Serializable's functions
-    virtual const bool Read(Deserializer &d);
-    virtual const bool Write(Serializer &s) const;
+    const bool ReadToken(std::string &token, const std::size_t tokenLength);
+
+    const bool ReadToken(const std::string &token);
+    const bool PeekToken(const std::string &token);
 };
 
 #endif

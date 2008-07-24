@@ -27,6 +27,7 @@ namespace Utility
     namespace String
     {
         // Functions
+        const std::string &WhitespaceCharSet();
 
         void TrimWhiteSpaces(std::string &str);
         const bool ContainsWhiteSpaces(const std::string &str);

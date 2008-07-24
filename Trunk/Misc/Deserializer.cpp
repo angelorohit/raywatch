@@ -24,134 +24,143 @@
 #include "ForEach.h"
 #include <string>
 
-// Initialize static members
-Deserializer::AssocMap Deserializer::_associations;
-
-// A class to encapsulate the cached read functionality
-class CachedRead
+// Constructor
+Deserializer::Deserializer() :
+    _associations(),
+    _stream()
 {
-private:
-    std::string     _variable;
-    std::string     _value;
-    bool            _bAvailable;
-
-public:
-    // Accessors
-    const std::string   &Variable()             { return _variable;     }
-    const std::string   &Value()                { return _value;        }
-    const bool          &IsAvailable() const    { return _bAvailable;   }
-
-    // Constructor
-    explicit CachedRead() :
-        _variable(),
-        _value(),
-        _bAvailable( false )
-    {
-    }
-
-    // Functions
-
-    void Set(const std::string &variable, const std::string &value)
-    {
-        _variable   = variable;
-        _value      = value;
-        _bAvailable = true;
-    }
-
-    void Clear()
-    {
-        _variable   .clear();
-        _value      .clear();
-        _bAvailable = false;
-    }
-};
-
-// Parses an unknown variable of the format: <variable> = <value>;
-const bool Deserializer::ParseVariable(
-    std::istream    &stream,
-    std::string     &variable,
-    std::string     &value,
-    const bool      &bPeek )
-{
-    static CachedRead cachedRead;
-
-    // If the previous read was a peek, then return the cached variable/value now
-    if( cachedRead.IsAvailable() )
-    {
-        variable = cachedRead.Variable();
-        value    = cachedRead.Value();
-
-        // If this read is also a peek, then the cached variable/value
-        // should be left intact for the next read.
-        if( !bPeek )
-            cachedRead.Clear();
-
-        return true;
-    }
-
-    // Get the variable
-    for(;;)
-    {
-        getline(stream, variable, '=');
-        Utility::String::TrimWhiteSpaces( variable );
-
-        // If we've reached the end of file
-        if( stream.eof() )
-        {
-            std::cout << "Error: A Variable was expected, but EndOfFile was reached." << std::endl;
-            return false;
-        }
-
-        // If this is a comment
-        if( variable.compare( "//" ) == 0 )
-        {
-            getline(stream, value, ';'); // Read upto the end of the comment
-            continue;
-        }
-
-        // We got the variable we wanted
-        break;
-    }
-
-    // Get the value
-    getline(stream, value, ';');
-    Utility::String::TrimWhiteSpaces( value );
-
-    // If we've reached the end of file
-    if( stream.eof() )
-    {
-        std::cout << "Error: Value for Variable '" << variable << "' was expected, but EndOfFile was reached." << std::endl;
-        return false;
-    }
-
-    // If this is a peek, then the same variable/value must be returned the next time.
-    if( bPeek )
-        cachedRead.Set( variable, value );
-
-    return true;
 }
 
-const bool Deserializer::ReadVariable(std::istream &stream, const std::string &variable, std::string &value)
+// Destructor
+Deserializer::~Deserializer()
 {
-    std::string variableRead;
-    if( !ParseVariable( stream, variableRead, value ) )
-        return false;
+    Close();
+}
 
-    // See if the variable read is what is expected
-    if( variableRead.compare( variable ) != 0 )
+const bool Deserializer::Open(std::istream &stream)
+{
+    return _stream.Open( stream );
+}
+
+void Deserializer::Close()
+{
+    AssocMap().swap( _associations );
+    _stream.Close();
+}
+
+// Reads a token and verifies it
+const bool Deserializer::ReadToken(const std::string &name, const std::string &delimiterSet)
+{
+    std::string readName;
+    if( !_stream.ReadToken( readName, delimiterSet ) )
     {
-        std::cout << "Error: Variable '" << variable << "' was expected, but '" << variableRead << "' was found instead." << std::endl;
+        std::cout << "Error: Object '" << name << "' was expected." << std::endl;
+        return false;
+    }
+    if( readName.compare( name ) != 0 )
+    {
+        std::cout << "Error: Object '" << name << "' was expected, but '" << readName << "' was found instead." << std::endl;
         return false;
     }
 
     return true;
 }
 
-const bool Deserializer::ReadVariable(std::istream &stream, const std::string &variable, int &value)
+// Helper functions to read group objects
+const bool Deserializer::PeekGroupObjectHeader(std::string &name)
 {
+    return _stream.PeekToken( name, "{" );
+}
+
+const bool Deserializer::ReadGroupObjectHeader(const std::string &name)
+{
+    return ReadToken( name, "{" );
+}
+
+const bool Deserializer::PeekGroupObjectFooter()
+{
+    return _stream.PeekToken( "}" );
+}
+
+const bool Deserializer::ReadGroupObjectFooter()
+{
+    if( !_stream.ReadToken( "}" ) )
+    {
+        std::cout << "Error: Missing '}'" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+// A base ReadObject function; all other ReadObject functions use this function.
+const bool Deserializer::ReadObjectBase(const std::string &name, std::string &value)
+{
+    // Read the name and verify it
+    if( !ReadToken( name, "=" ) )
+        return false;
+
     // Read the value
+    if( !_stream.ReadToken( value, ";" ) )
+    {
+        std::cout << "Error: Missing ';'" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+// Helper functions to read various data types
+const bool Deserializer::ReadObject(const std::string &name, std::string &value)
+{
+    // Read the name and verify it
+    if( !ReadToken( name, "=" ) )
+        return false;
+
+    // Read a doubleQuote
+    if( !_stream.ReadToken( "\"" ) )
+    {
+        std::cout << "Error: A double-quote (\") was expected (string values must be enclosed within double-quotes)." << std::endl;
+        return false;
+    }
+
+    // Read the value upto the next doubleQuote preserving whitespace
+    if( !_stream.ReadToken( value, "\"", false ) )
+    {
+        std::cout << "Error: A double-quote (\") was expected (string values must be enclosed within double-quotes)." << std::endl;
+        return false;
+    }
+
+    // Read a semicolon
+    if( !_stream.ReadToken( ";" ) )
+    {
+        std::cout << "Error: Missing ';'" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+const bool Deserializer::ReadObject(const std::string &name, std::size_t &value)
+{
     std::string valueRead;
-    if( !ReadVariable( stream, variable, valueRead ) )
+    if( !ReadObjectBase( name, valueRead ) )
+        return false;
+
+    // Convert the value from string to the required type
+    if( !Utility::String::FromString( value, valueRead ) )
+    {
+        std::cout << "Error: '" << valueRead << "' is not a valid unsigned-int." << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+const bool Deserializer::ReadObject(const std::string &name, int &value)
+{
+    std::string valueRead;
+    if( !ReadObjectBase( name, valueRead ) )
         return false;
 
     // Convert the value from string to the required type
@@ -164,11 +173,10 @@ const bool Deserializer::ReadVariable(std::istream &stream, const std::string &v
     return true;
 }
 
-const bool Deserializer::ReadVariable(std::istream &stream, const std::string &variable, float &value)
+const bool Deserializer::ReadObject(const std::string &name, float &value)
 {
-    // Read the value
     std::string valueRead;
-    if( !ReadVariable( stream, variable, valueRead ) )
+    if( !ReadObjectBase( name, valueRead ) )
         return false;
 
     // Convert the value from string to the required type
@@ -181,20 +189,18 @@ const bool Deserializer::ReadVariable(std::istream &stream, const std::string &v
     return true;
 }
 
-const bool Deserializer::ReadVariable(std::istream &stream, const std::string &variable, bool &value)
+const bool Deserializer::ReadObject(const std::string &name, bool &value)
 {
-    // Read the value
     std::string valueRead;
-    if( !ReadVariable( stream, variable, valueRead ) )
+    if( !ReadObjectBase( name, valueRead ) )
         return false;
 
-    if( valueRead.compare( "true" ) == 0 )
+    if( Utility::String::CaseInsensitiveCompare( valueRead, "true" ) == 0 )
     {
         value = true;
         return true;
     }
-
-    if( valueRead.compare( "false" ) == 0 )
+    if( Utility::String::CaseInsensitiveCompare( valueRead, "false" ) == 0 )
     {
         value = false;
         return true;
@@ -204,11 +210,10 @@ const bool Deserializer::ReadVariable(std::istream &stream, const std::string &v
     return false;
 }
 
-const bool Deserializer::ReadVariable(std::istream &stream, const std::string &variable, Vector<int> &value)
+const bool Deserializer::ReadObject(const std::string &name, Vector<int> &value)
 {
-    // Read the value
     std::string valueRead;
-    if( !ReadVariable( stream, variable, valueRead ) )
+    if( !ReadObjectBase( name, valueRead ) )
         return false;
 
     std::istringstream iss(valueRead);
@@ -222,11 +227,10 @@ const bool Deserializer::ReadVariable(std::istream &stream, const std::string &v
     return true;
 }
 
-const bool Deserializer::ReadVariable(std::istream &stream, const std::string &variable, Vector<float> &value)
+const bool Deserializer::ReadObject(const std::string &name, Vector<float> &value)
 {
-    // Read the value
     std::string valueRead;
-    if( !ReadVariable( stream, variable, valueRead ) )
+    if( !ReadObjectBase( name, valueRead ) )
         return false;
 
     std::istringstream iss(valueRead);
@@ -240,77 +244,20 @@ const bool Deserializer::ReadVariable(std::istream &stream, const std::string &v
     return true;
 }
 
-// Reads an object header of the form: begin = <objectName>;
-const bool Deserializer::ReadHeader(std::istream &stream, const std::string &objectName)
-{
-    std::string readObjectName;
-    if( !ReadVariable( stream, "begin", readObjectName ) )
-        return false;
-
-    if( objectName.compare( readObjectName ) != 0 )
-    {
-        std::cout << "Error: Begin of object '" << objectName << "' was expected, but '" << readObjectName << "' was found instead." << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-// Reads an object footer of the form: end = <objectName>;
-const bool Deserializer::ReadFooter(std::istream &stream, const std::string &objectName)
-{
-    std::string readObjectName;
-    if( !ReadVariable( stream, "end", readObjectName ) )
-        return false;
-
-    if( objectName.compare( readObjectName ) != 0 )
-    {
-        std::cout << "Error: End of object '" << objectName << "' was expected, but '" << readObjectName << "' was found instead." << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-// Peeks whether we've reached an object header, but doesn't remove anything.
-const bool Deserializer::PeekHeader(std::istream &stream, std::string &objectName)
-{
-    std::string variable;
-    if( !ParseVariable( stream, variable, objectName, true ) )
-        return false;
-
-    return (variable.compare( "begin" ) == 0);
-}
-
-// Peeks whether we've reached an object footer, and removes it if we have.
-const bool Deserializer::PeekFooter(std::istream &stream, const std::string &objectName)
-{
-    std::string variable, value;
-    if( !ParseVariable( stream, variable, value, true ) )
-        return false;
-
-    if( (variable.compare( "end" ) != 0) || (value.compare( objectName ) != 0) )
-        return false;
-
-    // Now that we're sure it's the required footer, remove it by reading it.
-    if( !ReadFooter( stream, objectName ) )
-        return false;
-
-    return true;
-}
-
-const bool Deserializer::Register(const int &oldAddress, Serializable *const pSerializable)
+// Registers a Serializable and it's old address for restoration of pointers later.
+const bool Deserializer::Register(const std::size_t oldAddress, Serializable *const pSerializable)
 {
     // Try to insert this address into the map
     if( _associations.insert( AssocMap::value_type( oldAddress, pSerializable ) ).second )
         return true;
 
     // We couldn't insert it
-    std::cout << "Error: Failed to Register address [" << oldAddress << "] with Deserializer" << std::endl;
+    std::cout << "Error: Failed to Register address [" << oldAddress << "] with the Deserializer" << std::endl;
     return false;
 }
 
-Serializable *const Deserializer::Read(std::istream &stream)
+// Reads and returns a Serializable
+Serializable *const Deserializer::Read()
 {
     Serializable *pSerializable = 0;
 
@@ -318,7 +265,7 @@ Serializable *const Deserializer::Read(std::istream &stream)
     {
         // Peek the first object's header
         std::string objectType;
-        if( !PeekHeader( stream, objectType ) )
+        if( !PeekGroupObjectHeader( objectType ) )
             break;
 
         // Create the object
@@ -330,16 +277,16 @@ Serializable *const Deserializer::Read(std::istream &stream)
         }
 
         // Load the object
-        if( !pSerializable->Read( stream ) )
+        if( !pSerializable->Read( *this ) )
         {
-            SAFE_DELETE_SCALAR( pSerializable );
+            SafeDeleteScalar( pSerializable );
             EXIT_CODE_BLOCK;
         }
 
         // Restore all pointers
         if( !RestoreAllPointers() )
         {
-            SAFE_DELETE_SCALAR( pSerializable );
+            SafeDeleteScalar( pSerializable );
             EXIT_CODE_BLOCK;
         }
     }
@@ -348,6 +295,7 @@ Serializable *const Deserializer::Read(std::istream &stream)
     return pSerializable;
 }
 
+// Restores the pointers of all Serializables currently registered in the associations map
 const bool Deserializer::RestoreAllPointers()
 {
     bool bRetVal = true;
@@ -356,7 +304,7 @@ const bool Deserializer::RestoreAllPointers()
     FOR_EACH( itr, AssocMap, _associations )
     {
         Serializable *const pSerializable = itr->second;
-        if( !pSerializable->RestorePointers() )
+        if( !pSerializable->RestorePointers( *this ) )
         {
             bRetVal = false;
             break;

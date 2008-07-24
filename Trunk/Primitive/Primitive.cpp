@@ -36,47 +36,47 @@ Primitive::~Primitive()
 }
 
 // Serializable's functions
-const bool Primitive::Read(std::istream &stream)
+const bool Primitive::Read(Deserializer &d)
 {
-    DESERIALIZE_CLASS( object, stream, Primitive )
+    DESERIALIZE_CLASS( object, d, Primitive )
     {
         // Read the base
-        if( !Serializable::Read( stream ) )
+        if( !Serializable::Read( d ) )
             break;
 
         // Read the material
-        if( !_material.Read( stream ) )
+        if( !_material.Read( d ) )
             break;
 
         // Read the light pointer
-        if( !Deserializer::ReadVariable( stream, "light", _pLight ) )
+        if( !d.ReadObject( "light", _pLight ) )
             break;
     }
 
     return object.ReadResult();
 }
 
-const bool Primitive::Write(std::ostream &stream) const
+const bool Primitive::Write(Serializer &s) const
 {
-    SERIALIZE_CLASS( object, stream, Primitive )
+    SERIALIZE_CLASS( object, s, Primitive )
     {
         // Write the base
-        if( !Serializable::Write( stream ) )
+        if( !Serializable::Write( s ) )
             break;
 
-        if( !_material.Write( stream ) )
+        if( !_material.Write( s ) )
             break;
 
-        if( !Serializer::WriteVariable( stream, "light", _pLight ) )
+        if( !s.WriteObject( "light", _pLight ) )
             break;
     }
 
     return object.WriteResult();
 }
 
-const bool Primitive::RestorePointers()
+const bool Primitive::RestorePointers(Deserializer &d)
 {
-    if( !Deserializer::TranslateAddress( _pLight ) )
+    if( !d.TranslateAddress( _pLight ) )
         return false;
 
     return true;

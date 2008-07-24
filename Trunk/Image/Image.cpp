@@ -188,7 +188,7 @@ void Image::Release()
     _height         = 0;
     _numTotalPixels = 0;
 
-    SAFE_DELETE_ARRAY( _pPixelData );
+    SafeDeleteArray( _pPixelData );
 }
 
 const int &Image::Width() const

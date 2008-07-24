@@ -18,12 +18,17 @@
 #include "Serializer.h"
 #include "Utility.h"
 
-#ifdef _MSVC
-    #pragma warning( disable : 4311 )
-#endif
+// Constructor
+Serializer::Serializer(std::ostream &stream) :
+    _indentation( 0 ),
+    _stream( stream )
+{
+}
 
-// Initialize static members
-int Serializer::_indentation( 0 );
+// Destructor
+Serializer::~Serializer()
+{
+}
 
 // Functions
 
@@ -37,65 +42,80 @@ void Serializer::Unindent()
     _indentation -= 4;
 }
 
-const bool Serializer::WriteVariable(std::ostream &stream, const std::string &variable, const std::string &value)
+// Helper functions to write group objects
+const bool Serializer::WriteGroupObjectHeader(const std::string &name)
 {
-    return (stream << std::string( _indentation, ' ' ) << variable << " = " << value << ";" << std::endl).good();
+    return (_stream <<
+        std::string(_indentation, ' ') << name << std::endl <<
+        std::string(_indentation, ' ') << "{"  << std::endl ).good();
 }
 
-const bool Serializer::WriteVariable(std::ostream &stream, const std::string &variable, const char *const value)
+const bool Serializer::WriteGroupObjectFooter()
 {
-    return WriteVariable( stream, variable, std::string( value ) );
+    return (_stream <<
+        std::string(_indentation, ' ') << "}"  << std::endl ).good();
 }
 
-const bool Serializer::WriteVariable(std::ostream &stream, const std::string &variable, const int &value)
+// A base WriteObject function; all other WriteObject functions use this function.
+const bool Serializer::WriteObjectBase(const std::string &name, const std::string &value)
 {
-    return WriteVariable( stream, variable, Utility::String::ToString( value ) );
+    return (_stream << std::string(_indentation, ' ') << name << " = " << value << ";" << std::endl).good();
 }
 
-const bool Serializer::WriteVariable(std::ostream &stream, const std::string &variable, const float &value)
+// Helper functions to write various data types
+const bool Serializer::WriteObject(const std::string &name, const std::string &value)
 {
-    return WriteVariable( stream, variable, Utility::String::ToString( value ) );
+    const std::string doubleQuote( "\"" );
+    return WriteObjectBase( name, doubleQuote + value + doubleQuote );
 }
 
-const bool Serializer::WriteVariable(std::ostream &stream, const std::string &variable, const bool &value)
+const bool Serializer::WriteObject(const std::string &name, const char *const value)
 {
-    const std::string strValue = value? "true": "false";
-    return WriteVariable( stream, variable, strValue );
+    return WriteObjectBase( name, std::string( value ) );
 }
 
-const bool Serializer::WriteVariable(std::ostream &stream, const std::string &variable, const Vector<int> &value)
+const bool Serializer::WriteObject(const std::string &name, const std::size_t &value)
+{
+    return WriteObjectBase( name, Utility::String::ToString( value ) );
+}
+
+const bool Serializer::WriteObject(const std::string &name, const int &value)
+{
+    return WriteObjectBase( name, Utility::String::ToString( value ) );
+}
+
+const bool Serializer::WriteObject(const std::string &name, const float &value)
+{
+    return WriteObjectBase( name, Utility::String::ToString( value ) );
+}
+
+const bool Serializer::WriteObject(const std::string &name, const bool &value)
+{
+    const std::string strValue( value? ("true"): ("false") );
+    return WriteObjectBase( name, strValue );
+}
+
+const bool Serializer::WriteObject(const std::string &name, const Vector<int> &value)
 {
     const std::string strValue =
         Utility::String::ToString(value.x) + ", " +
         Utility::String::ToString(value.y) + ", " +
         Utility::String::ToString(value.z);
 
-    return WriteVariable( stream, variable, strValue );
+    return WriteObjectBase( name, strValue );
 }
 
-const bool Serializer::WriteVariable(std::ostream &stream, const std::string &variable, const Vector<float> &value)
+const bool Serializer::WriteObject(const std::string &name, const Vector<float> &value)
 {
     const std::string strValue =
         Utility::String::ToString(value.x) + ", " +
         Utility::String::ToString(value.y) + ", " +
         Utility::String::ToString(value.z);
 
-    return WriteVariable( stream, variable, strValue );
+    return WriteObjectBase( name, strValue );
 }
 
-const bool Serializer::WriteVariable(std::ostream &stream, const std::string &variable, const Serializable *const value)
+const bool Serializer::WriteObject(const std::string &name, const Serializable *const value)
 {
-    return WriteVariable( stream, variable, reinterpret_cast<int>(value) );
-}
-
-// Helper function to write an object header in the form: begin = <object>;
-const bool Serializer::WriteHeader(std::ostream &stream, const std::string &objectName)
-{
-    return WriteVariable( stream, "begin", objectName );
-}
-
-// Helper function to write an object footer in the form: end = <object>;
-const bool Serializer::WriteFooter(std::ostream &stream, const std::string &objectName)
-{
-    return WriteVariable( stream, "end", objectName );
+    return WriteObject( name, reinterpret_cast<std::size_t>(value) );
 }

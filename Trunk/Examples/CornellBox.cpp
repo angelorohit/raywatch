@@ -26,7 +26,9 @@
 #include "Camera.h"
 #include "Image.h"
 #include "RayTracer.h"
+#include "Serializer.h"
 #include <fstream>
+#include <iostream>
 
 const bool Examples::CornellBox(const std::string &fileName)
 {
@@ -150,7 +152,8 @@ const bool Examples::CornellBox(const std::string &fileName)
     }
 
     // Serialize the scene
-    if( !scene.Write( stream ) )
+    Serializer s( stream );
+    if( !scene.Write( s ) )
     {
         std::cout << "Error: Failed to write Scene" << std::endl;
         return false;

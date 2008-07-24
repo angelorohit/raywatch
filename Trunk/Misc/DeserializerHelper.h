@@ -23,18 +23,18 @@
 
 // Helper Macros
 
-#define DESERIALIZE_CLASS(Identifier,Stream,ClassName)      \
-    ObjectDeserializer Identifier( Stream, #ClassName );    \
+#define DESERIALIZE_CLASS(Identifier,DeserializerObject,ClassName)      \
+    ObjectDeserializer Identifier( DeserializerObject, #ClassName );    \
     for( Sink(sizeof(ClassName)); Identifier; ++Identifier )
 
 /*
-#define DESERIALIZE_OBJECT(Identifier,Stream,ObjectName)    \
-    ObjectDeserializer Identifier( Stream, ObjectName );    \
+#define DESERIALIZE_OBJECT(Identifier,DeserializerObject,ObjectName)    \
+    ObjectDeserializer Identifier( DeserializerObject, ObjectName );    \
     for( ; Identifier; ++Identifier )
 */
 
-#define DESERIALIZE_LIST(Identifier,Stream,ListName)        \
-    ListDeserializer Identifier( Stream, ListName );        \
+#define DESERIALIZE_LIST(Identifier,DeserializerObject,ListName)        \
+    ListDeserializer Identifier( DeserializerObject, ListName );        \
     for( ; Identifier; ++Identifier )
 
 
@@ -42,21 +42,19 @@
 class ObjectDeserializer
 {
 private:
-    const std::string    _name;     // Name of the object
-    std::istream        &_stream;   // Reference to the stream from which this object is being read
+    Deserializer &_d;   // Reference to the deserializer from which this object is being read
 
     bool _bError;
     bool _bFinished;
 
 public:
 // Constructor
-    explicit ObjectDeserializer(std::istream &stream, const std::string &name) :
-        _name( name ),
-        _stream( stream ),
+    explicit ObjectDeserializer(Deserializer &d, const std::string &name) :
+        _d( d ),
         _bError( false ),
         _bFinished( false )
     {
-        if( !Deserializer::ReadHeader( _stream, _name ) )
+        if( !_d.ReadGroupObjectHeader( name ) )
             _bError = true;
     }
 
@@ -76,7 +74,7 @@ public:
     // See if we've reached the end of the object or not
     void operator ++ ()
     {
-        if( Deserializer::ReadFooter( _stream, _name ) )
+        if( _d.ReadGroupObjectFooter() )
             _bFinished = true;
         else
             _bError = true;
@@ -99,21 +97,19 @@ public:
 class ListDeserializer
 {
 private:
-    const std::string    _name;     // Name of the list of objects
-    std::istream        &_stream;   // Reference to the stream from which this list is being read
+    Deserializer &_d;   // Reference to the deserializer from which this object is being read
 
     bool _bError;
     bool _bFinished;
 
 public:
 // Constructor
-    explicit ListDeserializer(std::istream &stream, const std::string &name) :
-        _name( name ),
-        _stream( stream ),
+    explicit ListDeserializer(Deserializer &d, const std::string &name) :
+        _d( d ),
         _bError( false ),
         _bFinished( false )
     {
-        if( !Deserializer::ReadHeader( _stream, _name ) )
+        if( !_d.ReadGroupObjectHeader( name ) )
             _bError = true;
     }
 
@@ -133,8 +129,12 @@ public:
     // See if we've reached the end of the list or not
     void operator ++ ()
     {
-        if( Deserializer::PeekFooter( _stream, _name ) )
+        if( _d.PeekGroupObjectFooter() )
+        {
             _bFinished = true;
+            if( !_d.ReadGroupObjectFooter() )
+                _bError = true;
+        }
     }
 
     // The result of the read; true if we succeeded, false otherwise

@@ -18,7 +18,18 @@
 #ifndef SAFEDELETE_HEADER
 #define SAFEDELETE_HEADER
 
-#define SAFE_DELETE_SCALAR(_x)  { if(_x) { delete    (_x); (_x) = 0; } }
-#define SAFE_DELETE_ARRAY(_x)   { if(_x) { delete [] (_x); (_x) = 0; } }
+template <class T>
+void SafeDeleteScalar(T *&pObject)
+{
+    delete pObject;
+    pObject = 0;
+}
+
+template <class T>
+void SafeDeleteArray(T *&pArray)
+{
+    delete [] pArray;
+    pArray = 0;
+}
 
 #endif
