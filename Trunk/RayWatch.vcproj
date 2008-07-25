@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./Image/;./Light/;./Material/;./Maths/;./Misc/;./Primitive/;./RayTracer/;./Scene/;./Examples/"
+				AdditionalIncludeDirectories="./Image/;./Light/;./Material/;./Maths/;./Misc/;./Primitive/;./RayTracer/;./Scene/;./Serialization/;./Examples/"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;_MSVC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -117,7 +117,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="./Image/;./Light/;./Material/;./Maths/;./Misc/;./Primitive/;./RayTracer/;./Scene/;./Examples/"
+				AdditionalIncludeDirectories="./Image/;./Light/;./Material/;./Maths/;./Misc/;./Primitive/;./RayTracer/;./Scene/;./Serialization/;./Examples/"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;_MSVC"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -269,18 +269,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Misc\Deserializer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Misc\Deserializer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Misc\DeserializerHelper.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Misc\ForEach.h"
 				>
 			</File>
@@ -289,31 +277,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Misc\Preprocessor.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Misc\SafeDelete.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Misc\Serializable.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Misc\Serializable.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Misc\Serializer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Misc\Serializer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Misc\SerializerHelper.h"
 				>
 			</File>
 			<File
@@ -322,22 +286,6 @@
 			</File>
 			<File
 				RelativePath=".\Misc\SortedList.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Misc\StreamIterator.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Misc\StreamIterator.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Misc\TokenStream.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Misc\TokenStream.h"
 				>
 			</File>
 			<File
@@ -442,6 +390,62 @@
 			</File>
 			<File
 				RelativePath=".\Examples\Examples.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Serialization"
+			>
+			<File
+				RelativePath=".\Serialization\Deserializer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization\Deserializer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization\DeserializerHelper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization\Preprocessor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization\Serializable.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization\Serializable.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization\Serializer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization\Serializer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization\SerializerHelper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization\StreamIterator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization\StreamIterator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization\TokenStream.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization\TokenStream.h"
 				>
 			</File>
 		</Filter>

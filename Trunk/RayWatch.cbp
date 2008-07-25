@@ -31,7 +31,6 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add directory="Examples" />
 			<Add directory="Image" />
 			<Add directory="Light" />
 			<Add directory="Material" />
@@ -40,6 +39,8 @@
 			<Add directory="Primitive" />
 			<Add directory="RayTracer" />
 			<Add directory="Scene" />
+			<Add directory="Serialization" />
+			<Add directory="Examples" />
 		</Compiler>
 		<Linker>
 			<Add library="SDLmain" />
@@ -70,24 +71,11 @@
 		<Unit filename="Maths\Vector.cpp" />
 		<Unit filename="Maths\Vector.h" />
 		<Unit filename="Misc\CodeBlocks.h" />
-		<Unit filename="Misc\Deserializer.cpp" />
-		<Unit filename="Misc\Deserializer.h" />
-		<Unit filename="Misc\DeserializerHelper.h" />
 		<Unit filename="Misc\ForEach.h" />
 		<Unit filename="Misc\ObjectFactory.h" />
-		<Unit filename="Misc\Preprocessor.h" />
 		<Unit filename="Misc\SafeDelete.h" />
-		<Unit filename="Misc\Serializable.cpp" />
-		<Unit filename="Misc\Serializable.h" />
-		<Unit filename="Misc\Serializer.cpp" />
-		<Unit filename="Misc\Serializer.h" />
-		<Unit filename="Misc\SerializerHelper.h" />
 		<Unit filename="Misc\Sink.h" />
 		<Unit filename="Misc\SortedList.h" />
-		<Unit filename="Misc\StreamIterator.cpp" />
-		<Unit filename="Misc\StreamIterator.h" />
-		<Unit filename="Misc\TokenStream.cpp" />
-		<Unit filename="Misc\TokenStream.h" />
 		<Unit filename="Misc\Utility.cpp" />
 		<Unit filename="Misc\Utility.h" />
 		<Unit filename="Primitive\Primitive.cpp" />
@@ -106,6 +94,19 @@
 		<Unit filename="RayTracer\RayTracer.h" />
 		<Unit filename="Scene\Scene.cpp" />
 		<Unit filename="Scene\Scene.h" />
+		<Unit filename="Serialization\Deserializer.cpp" />
+		<Unit filename="Serialization\Deserializer.h" />
+		<Unit filename="Serialization\DeserializerHelper.h" />
+		<Unit filename="Serialization\Preprocessor.h" />
+		<Unit filename="Serialization\Serializable.cpp" />
+		<Unit filename="Serialization\Serializable.h" />
+		<Unit filename="Serialization\Serializer.cpp" />
+		<Unit filename="Serialization\Serializer.h" />
+		<Unit filename="Serialization\SerializerHelper.h" />
+		<Unit filename="Serialization\StreamIterator.cpp" />
+		<Unit filename="Serialization\StreamIterator.h" />
+		<Unit filename="Serialization\TokenStream.cpp" />
+		<Unit filename="Serialization\TokenStream.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
