@@ -397,6 +397,14 @@
 			Name="Serialization"
 			>
 			<File
+				RelativePath=".\Serialization\AddressTranslator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization\AddressTranslator.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Serialization\Deserializer.cpp"
 				>
 			</File>

@@ -19,14 +19,14 @@
 #define FOREACH_HEADER
 
 // Constant iterator
-#define FOR_EACH(IteratorName,ContainerType,ContainerName)                  \
-    for(ContainerType::const_iterator IteratorName = ContainerName.begin(); \
-        IteratorName != ContainerName.end();                                \
+#define FOR_EACH(IteratorName,ContainerType,ContainerName)                      \
+    for(ContainerType::const_iterator IteratorName( ContainerName.begin() );    \
+        IteratorName != ContainerName.end();                                    \
         ++IteratorName)
 
 // Non-constant iterator
 #define FOR_EACH_MUTABLE(IteratorName,ContainerType,ContainerName)      \
-    for(ContainerType::iterator IteratorName = ContainerName.begin();   \
+    for(ContainerType::iterator IteratorName( ContainerName.begin() );  \
         IteratorName != ContainerName.end();                            \
         ++IteratorName)
 

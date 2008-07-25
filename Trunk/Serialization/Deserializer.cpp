@@ -26,7 +26,6 @@
 
 // Constructor
 Deserializer::Deserializer() :
-    _associations(),
     _stream()
 {
 }
@@ -44,7 +43,6 @@ const bool Deserializer::Open(std::istream &stream)
 
 void Deserializer::Close()
 {
-    AssocMap().swap( _associations );
     _stream.Close();
 }
 
@@ -244,18 +242,6 @@ const bool Deserializer::ReadObject(const std::string &name, Vector<float> &valu
     return true;
 }
 
-// Registers a Serializable and it's old address for restoration of pointers later.
-const bool Deserializer::Register(const std::size_t oldAddress, Serializable *const pSerializable)
-{
-    // Try to insert this address into the map
-    if( _associations.insert( AssocMap::value_type( oldAddress, pSerializable ) ).second )
-        return true;
-
-    // We couldn't insert it
-    std::cout << "Error: Failed to Register address [" << oldAddress << "] with the Deserializer" << std::endl;
-    return false;
-}
-
 // Reads and returns a Serializable
 Serializable *const Deserializer::Read()
 {
@@ -276,6 +262,9 @@ Serializable *const Deserializer::Read()
             EXIT_CODE_BLOCK;
         }
 
+        // Begin address translation
+        AddressTranslator::BeginTranslations();
+
         // Load the object
         if( !pSerializable->Read( *this ) )
         {
@@ -283,8 +272,8 @@ Serializable *const Deserializer::Read()
             EXIT_CODE_BLOCK;
         }
 
-        // Restore all pointers
-        if( !RestoreAllPointers() )
+        // End address translation
+        if( !AddressTranslator::EndTranslations() )
         {
             SafeDeleteScalar( pSerializable );
             EXIT_CODE_BLOCK;
@@ -293,26 +282,4 @@ Serializable *const Deserializer::Read()
     END_CODE_BLOCK;
 
     return pSerializable;
-}
-
-// Restores the pointers of all Serializables currently registered in the associations map
-const bool Deserializer::RestoreAllPointers()
-{
-    bool bRetVal = true;
-
-    // Go through all the Serializables and restore their pointers
-    FOR_EACH( itr, AssocMap, _associations )
-    {
-        Serializable *const pSerializable = itr->second;
-        if( !pSerializable->RestorePointers( *this ) )
-        {
-            bRetVal = false;
-            break;
-        }
-    }
-
-    // Clear the associations map; we're done with it.
-    _associations.clear();
-
-    return bRetVal;
 }

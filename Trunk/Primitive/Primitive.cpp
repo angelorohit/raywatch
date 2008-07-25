@@ -74,9 +74,13 @@ const bool Primitive::Write(Serializer &s) const
     return object.WriteResult();
 }
 
-const bool Primitive::RestorePointers(Deserializer &d)
+const bool Primitive::RestorePointers(AddressTranslator &t)
 {
-    if( !d.TranslateAddress( _pLight ) )
+    // Restore the base
+    if( !Serializable::RestorePointers( t ) )
+        return false;
+
+    if( !t.TranslateAddress( _pLight ) )
         return false;
 
     return true;

@@ -57,7 +57,7 @@ const bool Serializable::Write(Serializer &s) const
     return object.WriteResult();
 }
 
-const bool Serializable::RestorePointers(Deserializer &/*d*/)
+const bool Serializable::RestorePointers(AddressTranslator &/*t*/)
 {
     // Note: Empty default implementation; override to fix any required pointers
     return true;

@@ -103,7 +103,7 @@ public:
     // Serializable's functions
     virtual const bool Read(Deserializer &d);
     virtual const bool Write(Serializer &s) const;
-    virtual const bool RestorePointers(Deserializer &d);
+    virtual const bool RestorePointers(AddressTranslator &t);
 };
 
 #endif

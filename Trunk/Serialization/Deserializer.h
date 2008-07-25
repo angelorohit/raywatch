@@ -18,22 +18,15 @@
 #ifndef DESERIALIZER_HEADER
 #define DESERIALIZER_HEADER
 
+#include "AddressTranslator.h"
 #include "TokenStream.h"
 #include "Vector.h"
-#include <map>
-#include <iostream>
 
-// Forward Declarations
-class Serializable;
-
-class Deserializer
+class Deserializer : public AddressTranslator
 {
 // Members
 private:
-    typedef std::map<std::size_t, Serializable*> AssocMap;
-
-    AssocMap    _associations;
-    TokenStream _stream;
+    TokenStream         _stream;
 
 public:
 // Constructor
@@ -48,9 +41,6 @@ private:
 
 // Functions
 private:
-    // Restores the pointers of all Serializables currently registered in the associations map
-    const bool RestoreAllPointers();
-
     // Reads a token and verifies it
     const bool ReadToken(const std::string &name, const std::string &delimiterSet);
 
@@ -86,36 +76,6 @@ public:
             return false;
 
         pPointer = reinterpret_cast<T*>(valueRead);
-        return true;
-    }
-
-    // Registers a Serializable and it's old address for restoration of pointers later.
-    const bool Register(const std::size_t oldAddress, Serializable *const pSerializable);
-
-    // Templated function which can translate any pointer from the old address
-    // (when last saved) to the new address (after loading and reconstruction).
-    template <typename T>
-    const bool TranslateAddress(T* &pPointer)
-    {
-        if( !pPointer )
-            return true;
-
-        const std::size_t oldAddress = reinterpret_cast<std::size_t>(pPointer);
-
-        AssocMap::const_iterator itr = _associations.find( oldAddress );
-        if( itr == _associations.end() )
-        {
-            std::cout << "Error: Failed to restore pointer; could not find Serializable with old address: " << oldAddress << std::endl;
-            return false;
-        }
-
-        pPointer = dynamic_cast<T*>(itr->second);
-        if( !pPointer )
-        {
-            std::cout << "Error: Failed to restore pointer; the object at the given old address (" << oldAddress << ") is not of the required type" << std::endl;
-            return false;
-        }
-
         return true;
     }
 

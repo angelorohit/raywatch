@@ -293,9 +293,13 @@ const bool Material::Write(Serializer &s) const
     return object.WriteResult();
 }
 
-const bool Material::RestorePointers(Deserializer &d)
+const bool Material::RestorePointers(AddressTranslator &t)
 {
-    if( !d.TranslateAddress( _pTexture ) )
+    // Restore the base
+    if( !Serializable::RestorePointers( t ) )
+        return false;
+
+    if( !t.TranslateAddress( _pTexture ) )
         return false;
 
     return true;

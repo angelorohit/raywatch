@@ -21,6 +21,7 @@
 // Forward Declarations
 class Deserializer;
 class Serializer;
+class AddressTranslator;
 
 class Serializable
 {
@@ -36,14 +37,11 @@ public:
     virtual const bool Read(Deserializer &d) =0;
     virtual const bool Write(Serializer &s) const =0;
 
-    // Function which will be called to give this Serializable object a chance to translate
+    // This will be called by the Deserializer to give this Serializable object a chance to translate
     // all its old pointer addresses to the new ones via the TranslateAddress() function.
-    // This function will be called just after this Serializable is Read().
-    // Default empty implementation is provided; override and implement if pointer translation
-    // is required.
-    // Do not call the Base's RestorePointers() in any overridden function; it
-    // will automatically be called separately.
-    virtual const bool RestorePointers(Deserializer &d);
+    // Default empty implementation is provided; override and implement if pointer translation is required.
+    // Note: When overridden, the immediate base class' version must be called.
+    virtual const bool RestorePointers(AddressTranslator &t);
 };
 
 #endif
