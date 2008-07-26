@@ -20,11 +20,11 @@
 
 #include <vector>
 
-template <class Type, class Compare>
+template <class Type, class Compare, class Container = std::vector<Type> >
 class SortedList
 {
 public:
-    typedef std::vector<Type> ContainerType;
+    typedef Container ContainerType;
 
 // Members
 private:

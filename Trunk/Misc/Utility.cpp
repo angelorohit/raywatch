@@ -17,6 +17,7 @@
 
 #include "Utility.h"
 #include <cctype>   // For std::toupper()
+#include <algorithm>
 
 namespace Utility
 {
@@ -81,14 +82,14 @@ namespace Utility
             return (size1 < size2) ? -1 : 1;
         }
 
-        const std::string ToUpper(const std::string &str)
+        void ToUpper(std::string &str)
         {
-            std::string result;
+            std::transform( str.begin(), str.end(), str.begin(), std::toupper );
+        }
 
-            for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
-                result.push_back( (char)std::toupper(*i) );
-
-            return result;
+        void ToLower(std::string &str)
+        {
+            std::transform( str.begin(), str.end(), str.begin(), std::tolower );
         }
 
     } // String

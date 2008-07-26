@@ -32,7 +32,8 @@ namespace Utility
         void TrimWhiteSpaces(std::string &str);
         const bool ContainsWhiteSpaces(const std::string &str);
         const int CaseInsensitiveCompare(const std::string &str1, const std::string &str2);
-        const std::string ToUpper(const std::string &str);
+        void ToUpper(std::string &str);
+        void ToLower(std::string &str);
 
         // Templates
 
