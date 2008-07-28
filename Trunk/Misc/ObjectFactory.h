@@ -22,11 +22,11 @@
 #include <string>
 
 // Macro to register a Type with the Object Factory
-#define ObjectFactory_Register(_AbstractProduct_,_ConcreteProduct_)                                                     \
-    namespace                                                                                                           \
-    {                                                                                                                   \
-        _AbstractProduct_ *const Create() { return new _ConcreteProduct_(); }                                           \
-        const bool bRegistered = ObjectFactory<_AbstractProduct_>::Instance().Register( #_ConcreteProduct_, Create );   \
+#define ObjectFactory_Register(AbstractProduct,ConcreteProduct)                                                     \
+    namespace                                                                                                       \
+    {                                                                                                               \
+        AbstractProduct *const Create() { return new ConcreteProduct(); }                                           \
+        const bool bRegistered = ObjectFactory<AbstractProduct>::Instance().Register( #ConcreteProduct, Create );   \
     }
 
 template
@@ -45,13 +45,8 @@ private:
 // Singleton related
 private:
     // Constructor / Destructor
-    explicit ObjectFactory()
-    {
-    }
-
-    ~ObjectFactory()
-    {
-    }
+    explicit ObjectFactory()    { }
+    ~ObjectFactory()            { }
 
     // Copy Constructor / Assignment Operator
     ObjectFactory(const ObjectFactory &);

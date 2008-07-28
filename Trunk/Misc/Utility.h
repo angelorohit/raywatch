@@ -21,6 +21,7 @@
 // Includes
 #include <string>
 #include <sstream>
+#include <cctype>   // For std::toupper()
 
 namespace Utility
 {
@@ -36,6 +37,18 @@ namespace Utility
         void ToLower(std::string &str);
 
         // Templates
+
+        template <class T>
+        const T ToUpper(const T character)
+        {
+            return static_cast<T>( std::toupper( character ) );
+        }
+
+        template <class T>
+        const T ToLower(const T character)
+        {
+            return static_cast<T>( std::tolower( character ) );
+        }
 
         template<class T>
         const std::string ToString(const T &val)

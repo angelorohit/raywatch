@@ -16,7 +16,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Utility.h"
-#include <cctype>   // For std::toupper()
 #include <algorithm>
 
 namespace Utility
@@ -84,12 +83,12 @@ namespace Utility
 
         void ToUpper(std::string &str)
         {
-            std::transform( str.begin(), str.end(), str.begin(), std::toupper );
+            std::transform( str.begin(), str.end(), str.begin(), ToUpper<char> );
         }
 
         void ToLower(std::string &str)
         {
-            std::transform( str.begin(), str.end(), str.begin(), std::tolower );
+            std::transform( str.begin(), str.end(), str.begin(), ToLower<char> );
         }
 
     } // String
