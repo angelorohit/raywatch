@@ -83,15 +83,14 @@ namespace Utility
 
         void ToUpper(std::string &str)
         {
-            std::transform( str.begin(), str.end(), str.begin(), ToUpper<char> );
+            std::transform( str.begin(), str.end(), str.begin(), ToUpper<std::string::value_type> );
         }
 
         void ToLower(std::string &str)
         {
-            std::transform( str.begin(), str.end(), str.begin(), ToLower<char> );
+            std::transform( str.begin(), str.end(), str.begin(), ToLower<std::string::value_type> );
         }
 
     } // String
 
 } // Utility
-

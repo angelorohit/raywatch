@@ -39,15 +39,15 @@ namespace Utility
         // Templates
 
         template <class T>
-        const T ToUpper(const T character)
+        const T ToUpper(const T c)
         {
-            return static_cast<T>( std::toupper( character ) );
+            return static_cast<const T>( std::toupper( c ) );
         }
 
         template <class T>
-        const T ToLower(const T character)
+        const T ToLower(const T c)
         {
-            return static_cast<T>( std::tolower( character ) );
+            return static_cast<const T>( std::tolower( c ) );
         }
 
         template<class T>
