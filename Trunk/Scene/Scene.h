@@ -24,6 +24,7 @@
 #include "IntersectionInfo.h"
 #include "Serializable.h"
 #include <list>
+#include <string>
 
 // Forward Declarations
 class Ray;
@@ -74,7 +75,7 @@ public:
     const Primitive *const FindClosestIntersection(const Ray &ray, IntersectionInfo &closestIntersectionInfo) const;
 
     const bool IsOccluded(const Ray &ray, const float &rayLength) const;
-    
+
     void GetSurfaceIllumination(
         const Ray           &ray,
         const Vector<float> &surfaceNormal,
