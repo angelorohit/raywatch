@@ -18,6 +18,7 @@
 #include "Serializable.h"
 #include "DeserializerHelper.h"
 #include "SerializerHelper.h"
+#include "Utility.h"
 
 // Constructor
 Serializable::Serializable()
@@ -48,13 +49,22 @@ const bool Serializable::Read(Deserializer &d)
 
 const bool Serializable::Write(Serializer &s) const
 {
-    SERIALIZE_CLASS( object, s, Serializable )
-    {
-        if( !s.WriteObject( "address", this ) )
-            break;
-    }
+    // Note: Since Serializable has only one member, we can treat it as a
+    //       special case and write it manually, to improve readability.
 
-    return object.WriteResult();
+    //SERIALIZE_CLASS( object, s, Serializable )
+    //{
+    //    if( !s.WriteObject( "address", this ) )
+    //        break;
+    //}
+
+    //return object.WriteResult();
+
+    return
+        s.WriteIndentation()                                                            &&
+        s.WriteString("Serializable { address = ")                                      &&
+        s.WriteString(Utility::String::ToString( reinterpret_cast<std::size_t>(this) )) &&
+        s.WriteLine("; }");
 }
 
 const bool Serializable::RestorePointers(AddressTranslator &/*t*/)

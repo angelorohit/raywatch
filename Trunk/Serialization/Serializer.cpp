@@ -42,24 +42,38 @@ void Serializer::Unindent()
     _indentation -= 4;
 }
 
+// Helper functions to write string literals to the stream (useful for writing custom data).
+const bool Serializer::WriteIndentation()
+{
+    return (_stream << std::string(_indentation, ' ')).good();
+}
+
+const bool Serializer::WriteString(const std::string &str)
+{
+    return (_stream << str).good();
+}
+
+const bool Serializer::WriteLine(const std::string &str)
+{
+    return (_stream << str << std::endl).good();
+}
+
 // Helper functions to write group objects
 const bool Serializer::WriteGroupObjectHeader(const std::string &name)
 {
-    return (_stream <<
-        std::string(_indentation, ' ') << name << std::endl <<
-        std::string(_indentation, ' ') << "{"  << std::endl ).good();
+    return  WriteIndentation() && WriteLine(name) &&
+            WriteIndentation() && WriteLine("{");
 }
 
 const bool Serializer::WriteGroupObjectFooter()
 {
-    return (_stream <<
-        std::string(_indentation, ' ') << "}"  << std::endl ).good();
+    return  WriteIndentation() && WriteLine("}");
 }
 
 // A base WriteObject function; all other WriteObject functions use this function.
 const bool Serializer::WriteObjectBase(const std::string &name, const std::string &value)
 {
-    return (_stream << std::string(_indentation, ' ') << name << " = " << value << ";" << std::endl).good();
+    return WriteIndentation() && WriteString(name) && WriteString(" = ") && WriteString(value) && WriteLine(";");
 }
 
 // Helper functions to write various data types

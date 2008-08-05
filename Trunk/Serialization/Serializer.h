@@ -52,6 +52,11 @@ public:
     void Indent();
     void Unindent();
 
+    // Helper functions to write string literals to the stream (useful for writing custom data).
+    const bool WriteIndentation();
+    const bool WriteString(const std::string &str);
+    const bool WriteLine(const std::string &str);
+
     // Helper functions to write group objects
     const bool WriteGroupObjectHeader(const std::string &name);
     const bool WriteGroupObjectFooter();
