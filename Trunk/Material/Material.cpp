@@ -39,7 +39,7 @@ Material::Material() :
     _refractiveIndex( 1 ),
     _absorption( 0 ),
     _concentration( 1 ),
-    _pTexture( 0 ),
+    _pDiffuseMap( 0 ),
     _oneOverTextureScale( 1 ),
     _textureScale( 1 )
 {
@@ -106,9 +106,9 @@ void Material::SetConcentration(const float &concentration)
     _concentration = Maths::Max<float>( 0, concentration );
 }
 
-void Material::SetTexture(const Texture *const pTexture)
+void Material::SetDiffuseMap(const Texture *const pDiffuseMap)
 {
-    _pTexture = pTexture;
+    _pDiffuseMap = pDiffuseMap;
 }
 
 void Material::SetTextureScale(const float &scale)
@@ -177,12 +177,12 @@ const Color Material::GetReflectedIllumination(
     return RayTracer::GetIllumination( Ray( incidentRay.Origin(), r, incidentRay ), scene );
 }
 
-const Pixel<float> Material::GetTexel(const float &u, const float &v) const
+const Pixel<float> Material::GetDiffuseTexel(const float &u, const float &v) const
 {
-    if( !_pTexture )
+    if( !_pDiffuseMap )
         return Pixel<float>( 1, 1, 1, 1 );
 
-    return _pTexture->GetPixel( u * _oneOverTextureScale, v * _oneOverTextureScale );
+    return _pDiffuseMap->GetPixel( u * _oneOverTextureScale, v * _oneOverTextureScale );
 }
 
 const Color Material::GetIllumination(
@@ -191,7 +191,7 @@ const Color Material::GetIllumination(
     const Scene             &scene,
     const IntersectionInfo  &intersectionInfo ) const
 {
-    const Pixel<float> texel = GetTexel( intersectionInfo._tU, intersectionInfo._tV );
+    const Pixel<float> texel = GetDiffuseTexel( intersectionInfo._tU, intersectionInfo._tV );
     const Color texelColor( texel._r, texel._g, texel._b );
     const float effectiveOpacity = texel._a * _opacity;
 
@@ -233,7 +233,7 @@ const bool Material::Read(Deserializer &d)
         float           refractiveIndex;
         float           absorption;
         float           concentration;
-        const Texture  *pTexture = 0;
+        const Texture  *pDiffuseMap = 0;
         float           textureScale;
 
         if( !d.ReadObject( "color", color )                                     ||
@@ -246,7 +246,7 @@ const bool Material::Read(Deserializer &d)
             !d.ReadObject( "refractiveIndex", refractiveIndex )                 ||
             !d.ReadObject( "absorption", absorption )                           ||
             !d.ReadObject( "concentration", concentration )                     ||
-            !d.ReadObject( "texture", pTexture )                                ||
+            !d.ReadObject( "diffuseMap", pDiffuseMap )                          ||
             !d.ReadObject( "textureScale", textureScale )                       )
             return false;
 
@@ -260,7 +260,7 @@ const bool Material::Read(Deserializer &d)
         SetRefractiveIndex( refractiveIndex );
         SetAbsorption( absorption );
         SetConcentration( concentration );
-        SetTexture( pTexture );
+        SetDiffuseMap( pDiffuseMap );
         SetTextureScale( textureScale );
     }
 
@@ -285,7 +285,7 @@ const bool Material::Write(Serializer &s) const
             !s.WriteObject( "refractiveIndex", _refractiveIndex )               ||
             !s.WriteObject( "absorption", _absorption )                         ||
             !s.WriteObject( "concentration", _concentration )                   ||
-            !s.WriteObject( "texture", _pTexture )                              ||
+            !s.WriteObject( "diffuseMap", _pDiffuseMap )                        ||
             !s.WriteObject( "textureScale", _textureScale )                     )
             break;
     }
@@ -299,7 +299,7 @@ const bool Material::RestorePointers(AddressTranslator &t)
     if( !Serializable::RestorePointers( t ) )
         return false;
 
-    if( !t.TranslateAddress( _pTexture ) )
+    if( !t.TranslateAddress( _pDiffuseMap ) )
         return false;
 
     return true;

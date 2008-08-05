@@ -47,7 +47,7 @@ private:
     float   _absorption;                // The amount of light absorbed by the material
     float   _concentration;             // The concentration of the material; density of the material.
 
-    const Texture   *_pTexture;             // Texture to apply on the material
+    const Texture   *_pDiffuseMap;          // Diffuse map to apply on the material
     float            _oneOverTextureScale;  // 1 / scale to be applied to the texture
 
     // For Serializing
@@ -78,7 +78,7 @@ private:
         const Vector<float> &surfaceNormal,
         const Scene         &scene) const;
 
-    const Pixel<float> GetTexel(const float &u, const float &v) const;
+    const Pixel<float> GetDiffuseTexel(const float &u, const float &v) const;
 
 public:
     void SetColor(const float &r, const float &g, const float &b);
@@ -91,7 +91,7 @@ public:
     void SetRefractiveIndex(const float &refractiveIndex);
     void SetAbsorption(const float &absorption);
     void SetConcentration(const float &concentration);
-    void SetTexture(const Texture *const pTexture);
+    void SetDiffuseMap(const Texture *const pDiffuseMap);
     void SetTextureScale(const float &scale);
 
     const Color GetIllumination(

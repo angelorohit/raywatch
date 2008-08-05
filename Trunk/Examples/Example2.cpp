@@ -54,7 +54,7 @@ const bool Examples::Example2(const std::string &fileName)
             Vector<float>( -2, -1, -2),
             Vector<float>(  2, -1, -2) );
         pQuad->_material.SetColor(1, 1, 1);
-        pQuad->_material.SetTexture( pTexture1 );
+        pQuad->_material.SetDiffuseMap( pTexture1 );
         pQuad->_material.SetTextureScale( 0.25f );
 
         scene.AddPrimitive( pQuad );
@@ -81,7 +81,7 @@ const bool Examples::Example2(const std::string &fileName)
         pSphere->_material.SetRefractiveIndex( 1.05f );
         pSphere->_material.SetAbsorption( 3 );
 
-        pSphere->_material.SetTexture( pTexture2 );
+        pSphere->_material.SetDiffuseMap( pTexture2 );
 
         scene.AddPrimitive( pSphere );
     }
@@ -98,7 +98,7 @@ const bool Examples::Example2(const std::string &fileName)
         pSphere->_material.SetRefractiveIndex( 1.05f );
         pSphere->_material.SetAbsorption( 3 );
 
-        pSphere->_material.SetTexture( pTexture2 );
+        pSphere->_material.SetDiffuseMap( pTexture2 );
 
         scene.AddPrimitive( pSphere );
     }

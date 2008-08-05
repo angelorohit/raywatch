@@ -53,7 +53,7 @@ const bool Examples::Example1(const std::string &fileName)
             Vector<float>( -2, -1, -2),
             Vector<float>(  2, -1, -2) );
         pQuad->_material.SetColor(1, 1, 1);
-        pQuad->_material.SetTexture( pTexture );
+        pQuad->_material.SetDiffuseMap( pTexture );
         pQuad->_material.SetTextureScale( 0.25f );
 
         scene.AddPrimitive( pQuad );
