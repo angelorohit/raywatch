@@ -67,7 +67,7 @@ const bool Primitive::Write(Serializer &s) const
         if( !_material.Write( s ) )
             break;
 
-        if( !s.WriteObject( "light", _pLight ) )
+        if( !s.WriteObject( "light", _pLight, DefaultValue<const Serializable *>(0) ) )
             break;
     }
 

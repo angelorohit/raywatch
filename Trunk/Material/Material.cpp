@@ -275,18 +275,18 @@ const bool Material::Write(Serializer &s) const
         if( !Serializable::Write( s ) )
             break;
 
-        if( !s.WriteObject( "color", _color )                                   ||
-            !s.WriteObject( "opacity", _opacity )                               ||
-            !s.WriteObject( "reflectivity", _reflectivity )                     ||
-            !s.WriteObject( "fuzzyReflectionRadius", _fuzzyReflectionRadius )   ||
-            !s.WriteObject( "fuzzyReflectionSamples", _fuzzyReflectionSamples ) ||
-            !s.WriteObject( "specularity", _specularity )                       ||
-            !s.WriteObject( "roughness", _roughness )                           ||
-            !s.WriteObject( "refractiveIndex", _refractiveIndex )               ||
-            !s.WriteObject( "absorption", _absorption )                         ||
-            !s.WriteObject( "concentration", _concentration )                   ||
-            !s.WriteObject( "diffuseMap", _pDiffuseMap )                        ||
-            !s.WriteObject( "textureScale", _textureScale )                     )
+        if( !s.WriteObject( "color", _color, Color(1) )                                         ||
+            !s.WriteObject( "opacity", _opacity, 1 )                                            ||
+            !s.WriteObject( "reflectivity", _reflectivity, 0 )                                  ||
+            !s.WriteObject( "fuzzyReflectionRadius", _fuzzyReflectionRadius, 0 )                ||
+            !s.WriteObject( "fuzzyReflectionSamples", _fuzzyReflectionSamples, 1 )              ||
+            !s.WriteObject( "specularity", _specularity, 0 )                                    ||
+            !s.WriteObject( "roughness", _roughness, 20 )                                       ||
+            !s.WriteObject( "refractiveIndex", _refractiveIndex, 1 )                            ||
+            !s.WriteObject( "absorption", _absorption, 0 )                                      ||
+            !s.WriteObject( "concentration", _concentration, 1 )                                ||
+            !s.WriteObject( "diffuseMap", _pDiffuseMap, DefaultValue<const Serializable *>(0) ) ||
+            !s.WriteObject( "textureScale", _textureScale, 1 )                                  )
             break;
     }
 

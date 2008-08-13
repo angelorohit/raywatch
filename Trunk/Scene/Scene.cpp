@@ -287,8 +287,8 @@ const bool Scene::Write(Serializer &s) const
         if( !Serializable::Write( s ) )
             break;
 
-        if( !s.WriteObject( "ambientLight", _ambientLight )             ||
-            !s.WriteObject( "maxRayGenerations", _maxRayGenerations )   )
+        if( !s.WriteObject( "ambientLight", _ambientLight, Color(0) )       ||
+            !s.WriteObject( "maxRayGenerations", _maxRayGenerations, 3 )    )
             break;
 
         // Write all the children

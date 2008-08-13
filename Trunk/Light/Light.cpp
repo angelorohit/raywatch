@@ -110,9 +110,9 @@ const bool Light::Write(Serializer &s) const
         if( !Serializable::Write( s ) )
             break;
 
-        if( !s.WriteObject( "color", _color )           ||
-            !s.WriteObject( "intensity", _intensity )   ||
-            !s.WriteObject( "range", _range )           )
+        if( !s.WriteObject( "color", _color, Color(1) )     ||
+            !s.WriteObject( "intensity", _intensity, 1 )    ||
+            !s.WriteObject( "range", _range, 1 )            )
             break;
     }
 

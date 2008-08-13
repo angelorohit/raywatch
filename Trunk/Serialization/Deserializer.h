@@ -64,17 +64,17 @@ public:
     const bool ReadGroupObjectFooter();
 
     // Helper functions to read various data types
-    const bool ReadObject(const std::string &name,  std::string   &value,    const DefaultValue<std::string>    &defaultValue = DefaultValue<std::string>()     );
-    const bool ReadObject(const std::string &name,  std::size_t   &value,    const DefaultValue<std::size_t>    &defaultValue = DefaultValue<std::size_t>()     );
-    const bool ReadObject(const std::string &name,  int           &value,    const DefaultValue<int>            &defaultValue = DefaultValue<int>()             );
-    const bool ReadObject(const std::string &name,  float         &value,    const DefaultValue<float>          &defaultValue = DefaultValue<float>()           );
-    const bool ReadObject(const std::string &name,  bool          &value,    const DefaultValue<bool>           &defaultValue = DefaultValue<bool>()            );
-    const bool ReadObject(const std::string &name,  Vector<int>   &value,    const DefaultValue<Vector<int> >   &defaultValue = DefaultValue<Vector<int> >()    );
-    const bool ReadObject(const std::string &name,  Vector<float> &value,    const DefaultValue<Vector<float> > &defaultValue = DefaultValue<Vector<float> >()  );
+    const bool ReadObject(const std::string &name, std::string   &value, const DefaultValue<std::string>    &defaultValue = DefaultValue<std::string>()    );
+    const bool ReadObject(const std::string &name, std::size_t   &value, const DefaultValue<std::size_t>    &defaultValue = DefaultValue<std::size_t>()    );
+    const bool ReadObject(const std::string &name, int           &value, const DefaultValue<int>            &defaultValue = DefaultValue<int>()            );
+    const bool ReadObject(const std::string &name, float         &value, const DefaultValue<float>          &defaultValue = DefaultValue<float>()          );
+    const bool ReadObject(const std::string &name, bool          &value, const DefaultValue<bool>           &defaultValue = DefaultValue<bool>()           );
+    const bool ReadObject(const std::string &name, Vector<int>   &value, const DefaultValue<Vector<int> >   &defaultValue = DefaultValue<Vector<int> >()   );
+    const bool ReadObject(const std::string &name, Vector<float> &value, const DefaultValue<Vector<float> > &defaultValue = DefaultValue<Vector<float> >() );
 
     // Templated function to read any pointer type
     template <typename T>
-    const bool ReadObject(const std::string &name, T* &pPointer, const DefaultValue<T*> &defaultValue = DefaultValue<T*>())
+    const bool ReadObject(const std::string &name, T* &pPointer, const DefaultValue<T*> &defaultValue = DefaultValue<T*>() )
     {
         if( defaultValue.Exists() && !PeekToken( name, "=" ) )
         {

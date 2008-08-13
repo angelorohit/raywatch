@@ -77,40 +77,58 @@ const bool Serializer::WriteObjectBase(const std::string &name, const std::strin
 }
 
 // Helper functions to write various data types
-const bool Serializer::WriteObject(const std::string &name, const std::string &value)
+const bool Serializer::WriteObject(const std::string &name, const std::string &value, const DefaultValue<std::string> &defaultValue)
 {
+    if( defaultValue.Exists() && (value.compare( defaultValue.Get() ) == 0) )
+        return true;
+
     const std::string doubleQuote( "\"" );
     return WriteObjectBase( name, doubleQuote + value + doubleQuote );
 }
 
-const bool Serializer::WriteObject(const std::string &name, const char *const value)
+const bool Serializer::WriteObject(const std::string &name, const char *const value, const DefaultValue<const char *> &defaultValue)
 {
-    return WriteObjectBase( name, std::string( value ) );
+    return WriteObject( name, std::string(value), std::string(defaultValue.Get()) );
 }
 
-const bool Serializer::WriteObject(const std::string &name, const std::size_t &value)
+const bool Serializer::WriteObject(const std::string &name, const std::size_t &value, const DefaultValue<std::size_t> &defaultValue)
 {
+    if( defaultValue.Exists() && (value == defaultValue.Get()) )
+        return true;
+
     return WriteObjectBase( name, Utility::String::ToString( value ) );
 }
 
-const bool Serializer::WriteObject(const std::string &name, const int &value)
+const bool Serializer::WriteObject(const std::string &name, const int &value, const DefaultValue<int> &defaultValue)
 {
+    if( defaultValue.Exists() && (value == defaultValue.Get()) )
+        return true;
+
     return WriteObjectBase( name, Utility::String::ToString( value ) );
 }
 
-const bool Serializer::WriteObject(const std::string &name, const float &value)
+const bool Serializer::WriteObject(const std::string &name, const float &value, const DefaultValue<float> &defaultValue)
 {
+    if( defaultValue.Exists() && (value == defaultValue.Get()) )
+        return true;
+
     return WriteObjectBase( name, Utility::String::ToString( value ) );
 }
 
-const bool Serializer::WriteObject(const std::string &name, const bool &value)
+const bool Serializer::WriteObject(const std::string &name, const bool &value, const DefaultValue<bool> &defaultValue)
 {
+    if( defaultValue.Exists() && (value == defaultValue.Get()) )
+        return true;
+
     const std::string strValue( value? ("true"): ("false") );
     return WriteObjectBase( name, strValue );
 }
 
-const bool Serializer::WriteObject(const std::string &name, const Vector<int> &value)
+const bool Serializer::WriteObject(const std::string &name, const Vector<int> &value, const DefaultValue<Vector<int> > &defaultValue)
 {
+    if( defaultValue.Exists() && (value == defaultValue.Get()) )
+        return true;
+
     const std::string strValue =
         Utility::String::ToString(value.x) + ", " +
         Utility::String::ToString(value.y) + ", " +
@@ -119,8 +137,11 @@ const bool Serializer::WriteObject(const std::string &name, const Vector<int> &v
     return WriteObjectBase( name, strValue );
 }
 
-const bool Serializer::WriteObject(const std::string &name, const Vector<float> &value)
+const bool Serializer::WriteObject(const std::string &name, const Vector<float> &value, const DefaultValue<Vector<float> > &defaultValue)
 {
+    if( defaultValue.Exists() && (value == defaultValue.Get()) )
+        return true;
+
     const std::string strValue =
         Utility::String::ToString(value.x) + ", " +
         Utility::String::ToString(value.y) + ", " +
@@ -129,7 +150,10 @@ const bool Serializer::WriteObject(const std::string &name, const Vector<float> 
     return WriteObjectBase( name, strValue );
 }
 
-const bool Serializer::WriteObject(const std::string &name, const Serializable *const value)
+const bool Serializer::WriteObject(const std::string &name, const Serializable *const value, const DefaultValue<const Serializable *> &defaultValue)
 {
+    if( defaultValue.Exists() && (value == defaultValue.Get()) )
+        return true;
+
     return WriteObject( name, reinterpret_cast<std::size_t>(value) );
 }
