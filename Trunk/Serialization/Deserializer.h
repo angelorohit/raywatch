@@ -63,18 +63,21 @@ public:
     const bool ReadGroupObjectFooter();
 
     // Helper functions to read various data types
-    const bool ReadObject(const std::string &name, std::string &value);
-    const bool ReadObject(const std::string &name, std::size_t &value);
-    const bool ReadObject(const std::string &name, int &value);
-    const bool ReadObject(const std::string &name, float &value);
-    const bool ReadObject(const std::string &name, bool &value);
-    const bool ReadObject(const std::string &name, Vector<int> &value);
-    const bool ReadObject(const std::string &name, Vector<float> &value);
+    const bool ReadObject(const std::string &name, std::string &value,   const bool bOptional = false);
+    const bool ReadObject(const std::string &name, std::size_t &value,   const bool bOptional = false);
+    const bool ReadObject(const std::string &name, int &value,           const bool bOptional = false);
+    const bool ReadObject(const std::string &name, float &value,         const bool bOptional = false);
+    const bool ReadObject(const std::string &name, bool &value,          const bool bOptional = false);
+    const bool ReadObject(const std::string &name, Vector<int> &value,   const bool bOptional = false);
+    const bool ReadObject(const std::string &name, Vector<float> &value, const bool bOptional = false);
 
     // Templated function to read any pointer type
     template <typename T>
-    const bool ReadObject(const std::string &name, T* &pPointer)
+    const bool ReadObject(const std::string &name, T* &pPointer, const bool bOptional = false)
     {
+        if( bOptional && !PeekToken( name, "=" ) )
+            return true;
+
         // Read the value
         std::size_t valueRead;
         if( !ReadObject( name, valueRead ) )

@@ -145,8 +145,11 @@ const bool Deserializer::ReadObjectBase(const std::string &name, std::string &va
 }
 
 // Helper functions to read various data types
-const bool Deserializer::ReadObject(const std::string &name, std::string &value)
+const bool Deserializer::ReadObject(const std::string &name, std::string &value, const bool bOptional)
 {
+    if( bOptional && !PeekToken( name, "=" ) )
+        return true;
+
     // Read the name and verify it
     if( !ReadToken( name, "=" ) )
         return false;
@@ -175,8 +178,11 @@ const bool Deserializer::ReadObject(const std::string &name, std::string &value)
     return true;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, std::size_t &value)
+const bool Deserializer::ReadObject(const std::string &name, std::size_t &value, const bool bOptional)
 {
+    if( bOptional && !PeekToken( name, "=" ) )
+        return true;
+
     std::string valueRead;
     if( !ReadObjectBase( name, valueRead ) )
         return false;
@@ -191,8 +197,11 @@ const bool Deserializer::ReadObject(const std::string &name, std::size_t &value)
     return true;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, int &value)
+const bool Deserializer::ReadObject(const std::string &name, int &value, const bool bOptional)
 {
+    if( bOptional && !PeekToken( name, "=" ) )
+        return true;
+
     std::string valueRead;
     if( !ReadObjectBase( name, valueRead ) )
         return false;
@@ -207,8 +216,11 @@ const bool Deserializer::ReadObject(const std::string &name, int &value)
     return true;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, float &value)
+const bool Deserializer::ReadObject(const std::string &name, float &value, const bool bOptional)
 {
+    if( bOptional && !PeekToken( name, "=" ) )
+        return true;
+
     std::string valueRead;
     if( !ReadObjectBase( name, valueRead ) )
         return false;
@@ -223,8 +235,11 @@ const bool Deserializer::ReadObject(const std::string &name, float &value)
     return true;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, bool &value)
+const bool Deserializer::ReadObject(const std::string &name, bool &value, const bool bOptional)
 {
+    if( bOptional && !PeekToken( name, "=" ) )
+        return true;
+
     std::string valueRead;
     if( !ReadObjectBase( name, valueRead ) )
         return false;
@@ -244,8 +259,11 @@ const bool Deserializer::ReadObject(const std::string &name, bool &value)
     return false;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, Vector<int> &value)
+const bool Deserializer::ReadObject(const std::string &name, Vector<int> &value, const bool bOptional)
 {
+    if( bOptional && !PeekToken( name, "=" ) )
+        return true;
+
     std::string valueRead;
     if( !ReadObjectBase( name, valueRead ) )
         return false;
@@ -261,8 +279,11 @@ const bool Deserializer::ReadObject(const std::string &name, Vector<int> &value)
     return true;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, Vector<float> &value)
+const bool Deserializer::ReadObject(const std::string &name, Vector<float> &value, const bool bOptional)
 {
+    if( bOptional && !PeekToken( name, "=" ) )
+        return true;
+
     std::string valueRead;
     if( !ReadObjectBase( name, valueRead ) )
         return false;
