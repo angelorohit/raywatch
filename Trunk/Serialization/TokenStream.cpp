@@ -101,19 +101,10 @@ const bool TokenStream::ReadToken(std::string &token, const std::size_t tokenLen
     return (token.size() >= tokenLength);
 }
 
-const bool TokenStream::ReadToken(const std::string &token)
-{
-    std::string readToken;
-    if( !ReadToken( readToken, token.size() ) )
-        return false;
-
-    return ( readToken.compare( token ) == 0 );
-}
-
-const bool TokenStream::PeekToken(const std::string &token)
+const bool TokenStream::PeekToken(std::string &token, const std::size_t tokenLength)
 {
     _streamIterator.SavePosition();
-    const bool bRetVal = ReadToken( token );
+    const bool bRetVal = ReadToken( token, tokenLength );
     _streamIterator.RestorePosition();
     return bRetVal;
 }

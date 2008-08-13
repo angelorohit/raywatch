@@ -26,7 +26,7 @@ class Deserializer : public AddressTranslator
 {
 // Members
 private:
-    TokenStream         _stream;
+    TokenStream _stream;
 
 public:
 // Constructor
@@ -43,6 +43,11 @@ private:
 private:
     // Reads a token and verifies it
     const bool ReadToken(const std::string &name, const std::string &delimiterSet);
+    const bool PeekToken(const std::string &name, const std::string &delimiterSet);
+
+    // Reads a token of specified length and verifies it
+    const bool ReadToken(const std::string &name);
+    const bool PeekToken(const std::string &name);
 
     // A base ReadObject function; all other ReadObject functions use this function.
     const bool ReadObjectBase(const std::string &name, std::string &value);

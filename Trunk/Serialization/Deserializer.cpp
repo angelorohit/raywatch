@@ -64,6 +64,42 @@ const bool Deserializer::ReadToken(const std::string &name, const std::string &d
     return true;
 }
 
+const bool Deserializer::PeekToken(const std::string &name, const std::string &delimiterSet)
+{
+    std::string readName;
+    if( !_stream.PeekToken( readName, delimiterSet ) )
+        return false;
+
+    return (readName.compare( name ) == 0);
+}
+
+// Reads a token of specified length and verifies it
+const bool Deserializer::ReadToken(const std::string &name)
+{
+    std::string readName;
+    if( !_stream.ReadToken( readName, name.length() ) )
+    {
+        std::cout << "Error: Object '" << name << "' was expected." << std::endl;
+        return false;
+    }
+    if( readName.compare( name ) != 0 )
+    {
+        std::cout << "Error: Object '" << name << "' was expected, but '" << readName << "' was found instead." << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+const bool Deserializer::PeekToken(const std::string &name)
+{
+    std::string readName;
+    if( !_stream.PeekToken( readName, name.length() ) )
+        return false;
+
+    return (readName.compare( name ) == 0);
+}
+
 // Helper functions to read group objects
 const bool Deserializer::PeekGroupObjectHeader(std::string &name)
 {
@@ -77,12 +113,12 @@ const bool Deserializer::ReadGroupObjectHeader(const std::string &name)
 
 const bool Deserializer::PeekGroupObjectFooter()
 {
-    return _stream.PeekToken( "}" );
+    return PeekToken( "}" );
 }
 
 const bool Deserializer::ReadGroupObjectFooter()
 {
-    if( !_stream.ReadToken( "}" ) )
+    if( !ReadToken( "}" ) )
     {
         std::cout << "Error: Missing '}'" << std::endl;
         return false;
@@ -116,7 +152,7 @@ const bool Deserializer::ReadObject(const std::string &name, std::string &value)
         return false;
 
     // Read a doubleQuote
-    if( !_stream.ReadToken( "\"" ) )
+    if( !ReadToken( "\"" ) )
     {
         std::cout << "Error: A double-quote (\") was expected (string values must be enclosed within double-quotes)." << std::endl;
         return false;
@@ -130,7 +166,7 @@ const bool Deserializer::ReadObject(const std::string &name, std::string &value)
     }
 
     // Read a semicolon
-    if( !_stream.ReadToken( ";" ) )
+    if( !ReadToken( ";" ) )
     {
         std::cout << "Error: Missing ';'" << std::endl;
         return false;

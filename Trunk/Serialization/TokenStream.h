@@ -49,9 +49,7 @@ public:
     const bool PeekToken(std::string &token, const std::string &delimiterSet, const bool bTrimWhitespaces = true);
 
     const bool ReadToken(std::string &token, const std::size_t tokenLength);
-
-    const bool ReadToken(const std::string &token);
-    const bool PeekToken(const std::string &token);
+    const bool PeekToken(std::string &token, const std::size_t tokenLength);
 };
 
 #endif
