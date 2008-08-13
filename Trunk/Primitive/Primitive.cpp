@@ -49,7 +49,7 @@ const bool Primitive::Read(Deserializer &d)
             break;
 
         // Read the light pointer
-        if( !d.ReadObject( "light", _pLight ) )
+        if( !d.ReadObject( "light", _pLight, DefaultValue<const Light *>(0) ) )
             break;
     }
 

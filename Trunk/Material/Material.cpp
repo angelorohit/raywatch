@@ -236,18 +236,18 @@ const bool Material::Read(Deserializer &d)
         const Texture  *pDiffuseMap = 0;
         float           textureScale;
 
-        if( !d.ReadObject( "color", color )                                     ||
-            !d.ReadObject( "opacity", opacity )                                 ||
-            !d.ReadObject( "reflectivity", reflectivity )                       ||
-            !d.ReadObject( "fuzzyReflectionRadius", fuzzyReflectionRadius )     ||
-            !d.ReadObject( "fuzzyReflectionSamples", fuzzyReflectionSamples )   ||
-            !d.ReadObject( "specularity", specularity )                         ||
-            !d.ReadObject( "roughness", roughness )                             ||
-            !d.ReadObject( "refractiveIndex", refractiveIndex )                 ||
-            !d.ReadObject( "absorption", absorption )                           ||
-            !d.ReadObject( "concentration", concentration )                     ||
-            !d.ReadObject( "diffuseMap", pDiffuseMap )                          ||
-            !d.ReadObject( "textureScale", textureScale )                       )
+        if( !d.ReadObject( "color", color, Color(1) )                                       ||
+            !d.ReadObject( "opacity", opacity, 1 )                                          ||
+            !d.ReadObject( "reflectivity", reflectivity, 0 )                                ||
+            !d.ReadObject( "fuzzyReflectionRadius", fuzzyReflectionRadius, 0 )              ||
+            !d.ReadObject( "fuzzyReflectionSamples", fuzzyReflectionSamples, 1 )            ||
+            !d.ReadObject( "specularity", specularity, 0 )                                  ||
+            !d.ReadObject( "roughness", roughness, 20 )                                     ||
+            !d.ReadObject( "refractiveIndex", refractiveIndex, 1 )                          ||
+            !d.ReadObject( "absorption", absorption, 0 )                                    ||
+            !d.ReadObject( "concentration", concentration, 1 )                              ||
+            !d.ReadObject( "diffuseMap", pDiffuseMap, DefaultValue<const Texture *>(0) )    ||
+            !d.ReadObject( "textureScale", textureScale, 1 )                                )
             return false;
 
         SetColor( color.x, color.y, color.z );

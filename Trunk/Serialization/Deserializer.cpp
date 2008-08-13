@@ -137,7 +137,11 @@ const bool Deserializer::ReadObjectBase(const std::string &name, std::string &va
     // Read the value
     if( !_stream.ReadToken( value, ";" ) )
     {
-        std::cout << "Error: Missing ';'" << std::endl;
+        if( value.size() == 0 )
+            std::cout << "Error: Value expected for Object '" << name << "'" << std::endl;
+        else
+            std::cout << "Error: Missing ';'" << std::endl;
+
         return false;
     }
 
@@ -145,10 +149,13 @@ const bool Deserializer::ReadObjectBase(const std::string &name, std::string &va
 }
 
 // Helper functions to read various data types
-const bool Deserializer::ReadObject(const std::string &name, std::string &value, const bool bOptional)
+const bool Deserializer::ReadObject(const std::string &name, std::string &value, const DefaultValue<std::string> &defaultValue)
 {
-    if( bOptional && !PeekToken( name, "=" ) )
+    if( defaultValue.Exists() && !PeekToken( name, "=" ) )
+    {
+        value = defaultValue.Get();
         return true;
+    }
 
     // Read the name and verify it
     if( !ReadToken( name, "=" ) )
@@ -178,10 +185,13 @@ const bool Deserializer::ReadObject(const std::string &name, std::string &value,
     return true;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, std::size_t &value, const bool bOptional)
+const bool Deserializer::ReadObject(const std::string &name, std::size_t &value, const DefaultValue<std::size_t> &defaultValue)
 {
-    if( bOptional && !PeekToken( name, "=" ) )
+    if( defaultValue.Exists() && !PeekToken( name, "=" ) )
+    {
+        value = defaultValue.Get();
         return true;
+    }
 
     std::string valueRead;
     if( !ReadObjectBase( name, valueRead ) )
@@ -197,10 +207,13 @@ const bool Deserializer::ReadObject(const std::string &name, std::size_t &value,
     return true;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, int &value, const bool bOptional)
+const bool Deserializer::ReadObject(const std::string &name, int &value, const DefaultValue<int> &defaultValue)
 {
-    if( bOptional && !PeekToken( name, "=" ) )
+    if( defaultValue.Exists() && !PeekToken( name, "=" ) )
+    {
+        value = defaultValue.Get();
         return true;
+    }
 
     std::string valueRead;
     if( !ReadObjectBase( name, valueRead ) )
@@ -216,10 +229,13 @@ const bool Deserializer::ReadObject(const std::string &name, int &value, const b
     return true;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, float &value, const bool bOptional)
+const bool Deserializer::ReadObject(const std::string &name, float &value, const DefaultValue<float> &defaultValue)
 {
-    if( bOptional && !PeekToken( name, "=" ) )
+    if( defaultValue.Exists() && !PeekToken( name, "=" ) )
+    {
+        value = defaultValue.Get();
         return true;
+    }
 
     std::string valueRead;
     if( !ReadObjectBase( name, valueRead ) )
@@ -235,10 +251,13 @@ const bool Deserializer::ReadObject(const std::string &name, float &value, const
     return true;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, bool &value, const bool bOptional)
+const bool Deserializer::ReadObject(const std::string &name, bool &value, const DefaultValue<bool> &defaultValue)
 {
-    if( bOptional && !PeekToken( name, "=" ) )
+    if( defaultValue.Exists() && !PeekToken( name, "=" ) )
+    {
+        value = defaultValue.Get();
         return true;
+    }
 
     std::string valueRead;
     if( !ReadObjectBase( name, valueRead ) )
@@ -259,10 +278,13 @@ const bool Deserializer::ReadObject(const std::string &name, bool &value, const 
     return false;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, Vector<int> &value, const bool bOptional)
+const bool Deserializer::ReadObject(const std::string &name, Vector<int> &value, const DefaultValue<Vector<int> > &defaultValue)
 {
-    if( bOptional && !PeekToken( name, "=" ) )
+    if( defaultValue.Exists() && !PeekToken( name, "=" ) )
+    {
+        value = defaultValue.Get();
         return true;
+    }
 
     std::string valueRead;
     if( !ReadObjectBase( name, valueRead ) )
@@ -279,10 +301,13 @@ const bool Deserializer::ReadObject(const std::string &name, Vector<int> &value,
     return true;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, Vector<float> &value, const bool bOptional)
+const bool Deserializer::ReadObject(const std::string &name, Vector<float> &value, const DefaultValue<Vector<float> > &defaultValue)
 {
-    if( bOptional && !PeekToken( name, "=" ) )
+    if( defaultValue.Exists() && !PeekToken( name, "=" ) )
+    {
+        value = defaultValue.Get();
         return true;
+    }
 
     std::string valueRead;
     if( !ReadObjectBase( name, valueRead ) )

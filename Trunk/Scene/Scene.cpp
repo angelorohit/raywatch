@@ -210,8 +210,8 @@ const bool Scene::Read(Deserializer &d)
         if( !Serializable::Read( d ) )
             break;
 
-        if( !d.ReadObject( "ambientLight", _ambientLight )            ||
-            !d.ReadObject( "maxRayGenerations", _maxRayGenerations )  )
+        if( !d.ReadObject( "ambientLight", _ambientLight, Color(0) )    ||
+            !d.ReadObject( "maxRayGenerations", _maxRayGenerations, 3 ) )
             break;
 
         // Read the children

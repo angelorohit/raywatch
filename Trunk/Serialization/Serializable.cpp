@@ -31,13 +31,19 @@ Serializable::~Serializable()
 }
 
 // Functions
+const std::size_t Serializable::RandomAddress() const
+{
+    static std::size_t randomAddress = 0;
+    ++randomAddress;
+    return randomAddress;
+}
 
 const bool Serializable::Read(Deserializer &d)
 {
     DESERIALIZE_CLASS( object, d, Serializable )
     {
         std::size_t oldAddress;
-        if( !d.ReadObject( "address", oldAddress ) )
+        if( !d.ReadObject( "address", oldAddress, RandomAddress() ) )
             break;
 
         if( !d.Register( oldAddress, this ) )

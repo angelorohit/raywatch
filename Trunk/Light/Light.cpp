@@ -89,9 +89,9 @@ const bool Light::Read(Deserializer &d)
         float   intensity;
         float   range;
 
-        if( !d.ReadObject( "color", color )         ||
-            !d.ReadObject( "intensity", intensity ) ||
-            !d.ReadObject( "range", range )         )
+        if( !d.ReadObject( "color", color, Color(1) )   ||
+            !d.ReadObject( "intensity", intensity, 1 )  ||
+            !d.ReadObject( "range", range, 1 )          )
             break;
 
         SetColor( color );

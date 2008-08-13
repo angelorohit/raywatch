@@ -405,6 +405,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Serialization\DefaultValue.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Serialization\Deserializer.cpp"
 				>
 			</File>
