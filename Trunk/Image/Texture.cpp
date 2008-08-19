@@ -20,6 +20,7 @@
 #include "Deserializer.h"
 #include "DeserializerHelper.h"
 #include "SerializerHelper.h"
+#include "Utility.h"
 
 // Register with the ObjectFactory
 ObjectFactory_Register(Serializable, Texture);
@@ -83,6 +84,13 @@ const bool Texture::Read(Deserializer &d)
             std::string fileName;
             if( !d.ReadObject( "fileName", fileName ) )
                 break;
+
+            Utility::String::TrimWhiteSpaces( fileName );
+            if( fileName.empty() )
+            {
+                std::cout << "Error: file name cannot be an empty string." << std::endl;
+                break;
+            }
 
             if( !Load( fileName ) )
                 break;

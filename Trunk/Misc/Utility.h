@@ -62,7 +62,7 @@ namespace Utility
         const bool FromString(T &val, const std::string &str)
         {
             std::istringstream iss(str);
-            return !(iss >> std::dec >> val).fail();
+            return (!(iss >> std::dec >> val).fail()) && iss.eof();
         }
 
     } // String

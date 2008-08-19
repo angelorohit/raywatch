@@ -45,7 +45,7 @@ public:
     const bool Open(std::istream &stream);
     void Close();
 
-    const bool ReadToken(std::string &token, const std::string &delimiterSet, const bool bTrimWhitespaces = true);
+    const bool ReadToken(std::string &token, const std::string &delimiterSet, const bool bTrimWhitespaces = true, const bool bRemoveDelimiter = true);
     const bool PeekToken(std::string &token, const std::string &delimiterSet, const bool bTrimWhitespaces = true);
 
     const bool ReadToken(std::string &token, const std::size_t tokenLength);

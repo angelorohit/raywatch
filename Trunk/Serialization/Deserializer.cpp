@@ -36,62 +36,25 @@ Deserializer::~Deserializer()
     Close();
 }
 
-const bool Deserializer::Open(std::istream &stream)
-{
-    return _stream.Open( stream );
-}
-
-void Deserializer::Close()
-{
-    _stream.Close();
-}
-
-// Reads a token and verifies it
-const bool Deserializer::ReadToken(const std::string &name, const std::string &delimiterSet)
-{
-    std::string readName;
-    if( !_stream.ReadToken( readName, delimiterSet ) )
-    {
-        std::cout << "Error: Object '" << name << "' was expected." << std::endl;
-        return false;
-    }
-    if( readName.compare( name ) != 0 )
-    {
-        std::cout << "Error: Object '" << name << "' was expected, but '" << readName << "' was found instead." << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-const bool Deserializer::PeekToken(const std::string &name, const std::string &delimiterSet)
-{
-    std::string readName;
-    if( !_stream.PeekToken( readName, delimiterSet ) )
-        return false;
-
-    return (readName.compare( name ) == 0);
-}
-
 // Reads a token of specified length and verifies it
-const bool Deserializer::ReadToken(const std::string &name)
+const bool Deserializer::ReadKnownToken(const std::string &name)
 {
     std::string readName;
     if( !_stream.ReadToken( readName, name.length() ) )
     {
-        std::cout << "Error: Object '" << name << "' was expected." << std::endl;
+        std::cout << "Error: '" << name << "' was expected." << std::endl;
         return false;
     }
     if( readName.compare( name ) != 0 )
     {
-        std::cout << "Error: Object '" << name << "' was expected, but '" << readName << "' was found instead." << std::endl;
+        std::cout << "Error: '" << name << "' was expected, but '" << readName << "' was found instead." << std::endl;
         return false;
     }
 
     return true;
 }
 
-const bool Deserializer::PeekToken(const std::string &name)
+const bool Deserializer::PeekKnownToken(const std::string &name)
 {
     std::string readName;
     if( !_stream.PeekToken( readName, name.length() ) )
@@ -100,102 +63,73 @@ const bool Deserializer::PeekToken(const std::string &name)
     return (readName.compare( name ) == 0);
 }
 
-// Helper functions to read group objects
-const bool Deserializer::PeekGroupObjectHeader(std::string &name)
+// Reads an unknown token
+const bool Deserializer::ReadUnknownToken(std::string &name, const char delimiter)
 {
-    return _stream.PeekToken( name, "{" );
+    const std::string delimiterStr( 1, delimiter );
+
+    // Read the name upto the delimiter or a white space.
+    if( !_stream.ReadToken( name, delimiterStr + Utility::String::WhitespaceCharSet(), true, false ) )
+        return false;
+
+    // Read the delimiter
+    return ReadKnownToken( delimiterStr );
 }
 
-const bool Deserializer::ReadGroupObjectHeader(const std::string &name)
+const bool Deserializer::PeekUnknownToken(std::string &name, const char delimiter)
 {
-    return ReadToken( name, "{" );
+    const std::string delimiterStr( 1, delimiter );
+
+    // Peek the name upto the delimiter or a white space.
+    return _stream.PeekToken( name, delimiterStr + Utility::String::WhitespaceCharSet() );
 }
 
-const bool Deserializer::PeekGroupObjectFooter()
+// Reads a known token
+const bool Deserializer::ReadKnownToken(const std::string &name, const char delimiter)
 {
-    return PeekToken( "}" );
-}
-
-const bool Deserializer::ReadGroupObjectFooter()
-{
-    if( !ReadToken( "}" ) )
+    // Read an unknown token
+    std::string readName;
+    if( !ReadUnknownToken( readName, delimiter ) )
     {
-        std::cout << "Error: Missing '}'" << std::endl;
+        if( readName.size() == 0 )
+            std::cout << "Error: '" << name << "' was expected." << std::endl;
+
+        return false;
+    }
+
+    // See if the read name is expected.
+    if( readName.compare( name ) != 0 )
+    {
+        std::cout << "Error: '" << name << "' was expected, but '" << readName << "' was found instead." << std::endl;
         return false;
     }
 
     return true;
 }
 
-// A base ReadObject function; all other ReadObject functions use this function.
-const bool Deserializer::ReadObjectBase(const std::string &name, std::string &value)
+const bool Deserializer::PeekKnownToken(const std::string &name, const char delimiter)
 {
-    // Read the name and verify it
-    if( !ReadToken( name, "=" ) )
+    // Peek an unknown token
+    std::string readName;
+    if( !PeekUnknownToken( readName, delimiter ) )
         return false;
 
-    // Read the value
-    if( !_stream.ReadToken( value, ";" ) )
-    {
-        if( value.size() == 0 )
-            std::cout << "Error: Value expected for Object '" << name << "'" << std::endl;
-        else
-            std::cout << "Error: Missing ';'" << std::endl;
-
-        return false;
-    }
-
-    return true;
+    // See if the read name is expected.
+    return (readName.compare( name ) == 0);
 }
 
-// Helper functions to read various data types
-const bool Deserializer::ReadObject(const std::string &name, std::string &value, const DefaultValue<std::string> &defaultValue)
+// Helper functions to read a token and convert it to a value
+const bool Deserializer::ReadValue(std::size_t &value, const char delimiter)
 {
-    if( defaultValue.Exists() && !PeekToken( name, "=" ) )
-    {
-        value = defaultValue.Get();
-        return true;
-    }
-
-    // Read the name and verify it
-    if( !ReadToken( name, "=" ) )
-        return false;
-
-    // Read a doubleQuote
-    if( !ReadToken( "\"" ) )
-    {
-        std::cout << "Error: A double-quote (\") was expected (string values must be enclosed within double-quotes)." << std::endl;
-        return false;
-    }
-
-    // Read the value upto the next doubleQuote preserving whitespace
-    if( !_stream.ReadToken( value, "\"", false ) )
-    {
-        std::cout << "Error: A double-quote (\") was expected (string values must be enclosed within double-quotes)." << std::endl;
-        return false;
-    }
-
-    // Read a semicolon
-    if( !ReadToken( ";" ) )
-    {
-        std::cout << "Error: Missing ';'" << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-const bool Deserializer::ReadObject(const std::string &name, std::size_t &value, const DefaultValue<std::size_t> &defaultValue)
-{
-    if( defaultValue.Exists() && !PeekToken( name, "=" ) )
-    {
-        value = defaultValue.Get();
-        return true;
-    }
-
+    // Read an unknown token
     std::string valueRead;
-    if( !ReadObjectBase( name, valueRead ) )
+    if( !ReadUnknownToken( valueRead, delimiter ) )
+    {
+        if( valueRead.size() == 0 )
+            std::cout << "Error: unsigned-int expected" << std::endl;
+
         return false;
+    }
 
     // Convert the value from string to the required type
     if( !Utility::String::FromString( value, valueRead ) )
@@ -207,17 +141,17 @@ const bool Deserializer::ReadObject(const std::string &name, std::size_t &value,
     return true;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, int &value, const DefaultValue<int> &defaultValue)
+const bool Deserializer::ReadValue(int &value, const char delimiter)
 {
-    if( defaultValue.Exists() && !PeekToken( name, "=" ) )
-    {
-        value = defaultValue.Get();
-        return true;
-    }
-
+    // Read an unknown token
     std::string valueRead;
-    if( !ReadObjectBase( name, valueRead ) )
+    if( !ReadUnknownToken( valueRead, delimiter ) )
+    {
+        if( valueRead.size() == 0 )
+            std::cout << "Error: int expected" << std::endl;
+
         return false;
+    }
 
     // Convert the value from string to the required type
     if( !Utility::String::FromString( value, valueRead ) )
@@ -229,17 +163,17 @@ const bool Deserializer::ReadObject(const std::string &name, int &value, const D
     return true;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, float &value, const DefaultValue<float> &defaultValue)
+const bool Deserializer::ReadValue(float &value, const char delimiter)
 {
-    if( defaultValue.Exists() && !PeekToken( name, "=" ) )
-    {
-        value = defaultValue.Get();
-        return true;
-    }
-
+    // Read an unknown token
     std::string valueRead;
-    if( !ReadObjectBase( name, valueRead ) )
+    if( !ReadUnknownToken( valueRead, delimiter ) )
+    {
+        if( valueRead.size() == 0 )
+            std::cout << "Error: float expected" << std::endl;
+
         return false;
+    }
 
     // Convert the value from string to the required type
     if( !Utility::String::FromString( value, valueRead ) )
@@ -251,18 +185,19 @@ const bool Deserializer::ReadObject(const std::string &name, float &value, const
     return true;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, bool &value, const DefaultValue<bool> &defaultValue)
+const bool Deserializer::ReadValue(bool &value, const char delimiter)
 {
-    if( defaultValue.Exists() && !PeekToken( name, "=" ) )
+    // Read an unknown token
+    std::string valueRead;
+    if( !ReadUnknownToken( valueRead, delimiter ) )
     {
-        value = defaultValue.Get();
-        return true;
+        if( valueRead.size() == 0 )
+            std::cout << "Error: bool expected" << std::endl;
+
+        return false;
     }
 
-    std::string valueRead;
-    if( !ReadObjectBase( name, valueRead ) )
-        return false;
-
+    // Convert the value from string to the required type
     if( Utility::String::CaseInsensitiveCompare( valueRead, "true" ) == 0 )
     {
         value = true;
@@ -278,50 +213,161 @@ const bool Deserializer::ReadObject(const std::string &name, bool &value, const 
     return false;
 }
 
-const bool Deserializer::ReadObject(const std::string &name, Vector<int> &value, const DefaultValue<Vector<int> > &defaultValue)
+const bool Deserializer::Open(std::istream &stream)
 {
-    if( defaultValue.Exists() && !PeekToken( name, "=" ) )
+    return _stream.Open( stream );
+}
+
+void Deserializer::Close()
+{
+    _stream.Close();
+}
+
+// Helper functions to read group objects
+const bool Deserializer::PeekGroupObjectHeader(std::string &name)
+{
+    return PeekUnknownToken( name, '{' );
+}
+
+const bool Deserializer::ReadGroupObjectHeader(const std::string &name)
+{
+    return ReadKnownToken( name, '{' );
+}
+
+const bool Deserializer::PeekGroupObjectFooter()
+{
+    return PeekKnownToken( "}" );
+}
+
+const bool Deserializer::ReadGroupObjectFooter()
+{
+    return ReadKnownToken( "}" );
+}
+
+// Helper functions to read various data types
+const bool Deserializer::ReadObject(const std::string &name, std::string &value, const DefaultValue<std::string> &defaultValue)
+{
+    if( defaultValue.Exists() && !PeekKnownToken( name, '=' ) )
     {
         value = defaultValue.Get();
         return true;
     }
 
-    std::string valueRead;
-    if( !ReadObjectBase( name, valueRead ) )
+    // Read the name and verify it
+    if( !ReadKnownToken( name, '=' ) )
         return false;
 
-    std::istringstream iss(valueRead);
-    std::string separator;
-    if( (iss >> std::dec >> value.x >> separator >> value.y >> separator >> value.z).fail() )
-    {
-        std::cout << "Error: '" << valueRead << "' is not a valid Vector<int>." << std::endl;
+    // Read a doubleQuote
+    if( !ReadKnownToken( "\"" ) )
         return false;
+
+    // Read the value upto the next doubleQuote preserving whitespace
+    // Note: value is allowed to be empty, an empty string might be intended;
+    //       that's why we don't check the return value of ReadToken here.
+    _stream.ReadToken( value, "\"", false, false );
+
+    // Read a doubleQuote
+    if( !ReadKnownToken( "\"" ) )
+        return false;
+
+    // Read a semicolon
+    return ReadKnownToken( ";" );
+}
+
+const bool Deserializer::ReadObject(const std::string &name, std::size_t &value, const DefaultValue<std::size_t> &defaultValue)
+{
+    if( defaultValue.Exists() && !PeekKnownToken( name, '=' ) )
+    {
+        value = defaultValue.Get();
+        return true;
     }
 
-    return true;
+    // Read the name and verify it
+    if( !ReadKnownToken( name, '=' ) )
+        return false;
+
+    return ReadValue( value, ';' );
+}
+
+const bool Deserializer::ReadObject(const std::string &name, int &value, const DefaultValue<int> &defaultValue)
+{
+    if( defaultValue.Exists() && !PeekKnownToken( name, '=' ) )
+    {
+        value = defaultValue.Get();
+        return true;
+    }
+
+    // Read the name and verify it
+    if( !ReadKnownToken( name, '=' ) )
+        return false;
+
+    return ReadValue( value, ';' );
+}
+
+const bool Deserializer::ReadObject(const std::string &name, float &value, const DefaultValue<float> &defaultValue)
+{
+    if( defaultValue.Exists() && !PeekKnownToken( name, '=' ) )
+    {
+        value = defaultValue.Get();
+        return true;
+    }
+
+    // Read the name and verify it
+    if( !ReadKnownToken( name, '=' ) )
+        return false;
+
+    return ReadValue( value, ';' );
+}
+
+const bool Deserializer::ReadObject(const std::string &name, bool &value, const DefaultValue<bool> &defaultValue)
+{
+    if( defaultValue.Exists() && !PeekKnownToken( name, '=' ) )
+    {
+        value = defaultValue.Get();
+        return true;
+    }
+
+    // Read the name and verify it
+    if( !ReadKnownToken( name, '=' ) )
+        return false;
+
+    return ReadValue( value, ';' );
+}
+
+const bool Deserializer::ReadObject(const std::string &name, Vector<int> &value, const DefaultValue<Vector<int> > &defaultValue)
+{
+    if( defaultValue.Exists() && !PeekKnownToken( name, '=' ) )
+    {
+        value = defaultValue.Get();
+        return true;
+    }
+
+    // Read the name and verify it
+    if( !ReadKnownToken( name, '=' ) )
+        return false;
+
+    return
+        ReadValue( value.x, ',' ) &&
+        ReadValue( value.y, ',' ) &&
+        ReadValue( value.z, ';' );
 }
 
 const bool Deserializer::ReadObject(const std::string &name, Vector<float> &value, const DefaultValue<Vector<float> > &defaultValue)
 {
-    if( defaultValue.Exists() && !PeekToken( name, "=" ) )
+    if( defaultValue.Exists() && !PeekKnownToken( name, '=' ) )
     {
         value = defaultValue.Get();
         return true;
     }
 
-    std::string valueRead;
-    if( !ReadObjectBase( name, valueRead ) )
+    // Read the name and verify it
+    if( !ReadKnownToken( name, '=' ) )
         return false;
 
-    std::istringstream iss(valueRead);
-    std::string separator;
-    if( (iss >> std::dec >> value.x >> separator >> value.y >> separator >> value.z).fail() )
-    {
-        std::cout << "Error: '" << valueRead << "' is not a valid Vector<float>." << std::endl;
-        return false;
-    }
-
-    return true;
+    return
+        ReadValue( value.x, ',' ) &&
+        ReadValue( value.y, ',' ) &&
+        ReadValue( value.z, ';' );
 }
 
 // Reads and returns a Serializable

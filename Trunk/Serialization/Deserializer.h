@@ -42,16 +42,21 @@ private:
 
 // Functions
 private:
-    // Reads a token and verifies it
-    const bool ReadToken(const std::string &name, const std::string &delimiterSet);
-    const bool PeekToken(const std::string &name, const std::string &delimiterSet);
-
     // Reads a token of specified length and verifies it
-    const bool ReadToken(const std::string &name);
-    const bool PeekToken(const std::string &name);
+    const bool ReadKnownToken(const std::string &name);
+    const bool PeekKnownToken(const std::string &name);
+    // Reads an unknown token
+    const bool ReadUnknownToken(std::string &name, const char delimiter);
+    const bool PeekUnknownToken(std::string &name, const char delimiter);
+    // Reads a token and verifies it
+    const bool ReadKnownToken(const std::string &name, const char delimiter);
+    const bool PeekKnownToken(const std::string &name, const char delimiter);
 
-    // A base ReadObject function; all other ReadObject functions use this function.
-    const bool ReadObjectBase(const std::string &name, std::string &value);
+    // Helper functions to read a token and convert it to a value
+    const bool ReadValue(std::size_t &value, const char delimiter);
+    const bool ReadValue(int         &value, const char delimiter);
+    const bool ReadValue(float       &value, const char delimiter);
+    const bool ReadValue(bool        &value, const char delimiter);
 
 public:
     const bool Open(std::istream &stream);
@@ -76,13 +81,13 @@ public:
     template <typename T>
     const bool ReadObject(const std::string &name, T* &pPointer, const DefaultValue<T*> &defaultValue = DefaultValue<T*>() )
     {
-        if( defaultValue.Exists() && !PeekToken( name, "=" ) )
+        if( defaultValue.Exists() && !PeekKnownToken( name, '=' ) )
         {
             pPointer = defaultValue.Get();
             return true;
         }
 
-        // Read the value
+        // Read an unsigned-int object
         std::size_t valueRead;
         if( !ReadObject( name, valueRead ) )
             return false;

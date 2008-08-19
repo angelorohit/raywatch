@@ -47,11 +47,11 @@ void TokenStream::Close()
     _streamIterator.Close();
 }
 
-const bool TokenStream::ReadToken(std::string &token, const std::string &delimiterSet, const bool bTrimWhitespaces)
+const bool TokenStream::ReadToken(std::string &token, const std::string &delimiterSet, const bool bTrimWhitespaces, const bool bRemoveDelimiter)
 {
     token.clear();
 
-    // Skip all white spaces before the token
+    // Read all white spaces before the token
     while( !_streamIterator.Eof() && IsContained(*_streamIterator, Utility::String::WhitespaceCharSet()) )
     {
         if( !bTrimWhitespaces )
@@ -69,8 +69,9 @@ const bool TokenStream::ReadToken(std::string &token, const std::string &delimit
     if( bTrimWhitespaces )
         Utility::String::TrimWhiteSpaces( token );
 
-    // Eat-up the delimiter
-    ++_streamIterator;
+    // Eat-up the delimiter if required
+    if( bRemoveDelimiter )
+        ++_streamIterator;
 
     return (token.size() > 0);
 }
