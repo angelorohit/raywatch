@@ -23,7 +23,8 @@
 StreamIterator::StreamIterator() :
     _buffer(),
     _cursor( _buffer.end() ),
-    _cursorStack()
+    _lineNumber( 0 ),
+    _positionInfoStack()
 {
 }
 
@@ -67,18 +68,26 @@ const bool StreamIterator::Open(std::istream &stream)
 
 void StreamIterator::Close()
 {
-    Buffer().swap( _buffer );
+    _buffer.clear();
     _cursor = _buffer.end();
-    CursorStack().swap( _cursorStack );
+    _lineNumber = 0;
+    _positionInfoStack.clear();
 }
 
 void StreamIterator::Reset()
 {
     if( _buffer.empty() )
-        return;
+    {
+        _cursor     = _buffer.end();
+        _lineNumber = 0;
+    }
+    else
+    {
+        _cursor     = _buffer.begin();
+        _lineNumber = 1;
+    }
 
-    _cursor = _buffer.begin();
-    CursorStack().swap( _cursorStack );
+    _positionInfoStack.clear();
 }
 
 const char StreamIterator::operator * () const
@@ -94,20 +103,32 @@ const bool StreamIterator::Eof() const
 void StreamIterator::operator ++ ()
 {
     if( !Eof() )
+    {
+        if( (*_cursor) == '\n' )
+            ++_lineNumber;
+
         ++_cursor;
+    }
 }
 
 void StreamIterator::SavePosition()
 {
     if( !Eof() )
-        _cursorStack.push_back( _cursor );
+        _positionInfoStack.push_back( PositionInfo( _cursor, _lineNumber ) );
 }
 
 void StreamIterator::RestorePosition()
 {
-    if( _cursorStack.empty() )
+    if( _positionInfoStack.empty() )
         return;
 
-    _cursor = _cursorStack.back();
-    _cursorStack.pop_back();
+    _cursor     = _positionInfoStack.back().first;
+    _lineNumber = _positionInfoStack.back().second;
+
+    _positionInfoStack.pop_back();
+}
+
+const int StreamIterator::LineNumber() const
+{
+    return _lineNumber;
 }

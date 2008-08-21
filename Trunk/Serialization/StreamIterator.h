@@ -26,13 +26,15 @@ class StreamIterator
 {
 // Members
 private:
-    typedef std::string         Buffer;
-    typedef Buffer::iterator    Cursor;
-    typedef std::vector<Cursor> CursorStack;
+    typedef std::string                 Buffer;
+    typedef Buffer::iterator            Cursor;
+    typedef std::pair<Cursor, int>      PositionInfo;   // (Cursor, LineNumber)
+    typedef std::vector<PositionInfo>   PositionInfoStack;
 
-    Buffer      _buffer;
-    Cursor      _cursor;
-    CursorStack _cursorStack;
+    Buffer              _buffer;
+    Cursor              _cursor;
+    int                 _lineNumber;
+    PositionInfoStack   _positionInfoStack;
 
 public:
 // Constructor
@@ -57,6 +59,8 @@ public:
 
     void SavePosition();
     void RestorePosition();
+
+    const int LineNumber() const;
 };
 
 #endif

@@ -47,6 +47,11 @@ void TokenStream::Close()
     _streamIterator.Close();
 }
 
+const int TokenStream::LineNumber() const
+{
+    return _streamIterator.LineNumber();
+}
+
 const bool TokenStream::ReadToken(std::string &token, const std::string &delimiterSet, const bool bTrimWhitespaces, const bool bRemoveDelimiter)
 {
     token.clear();
