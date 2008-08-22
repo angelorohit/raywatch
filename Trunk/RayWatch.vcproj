@@ -421,6 +421,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Serialization\LineNumberProvider.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization\MessageLog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization\MessageLog.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Serialization\Preprocessor.h"
 				>
 			</File>

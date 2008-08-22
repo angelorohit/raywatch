@@ -54,10 +54,7 @@ const bool Texture::Load(const std::string &fileName)
     _fileName.clear();
 
     if( !_image.SDL_Load( fileName ) )
-    {
-        std::cout << "Error: Failed to load image from file: " << fileName << std::endl;
         return false;
-    }
 
     _fileName = fileName;
 
@@ -88,12 +85,15 @@ const bool Texture::Read(Deserializer &d)
             Utility::String::TrimWhiteSpaces( fileName );
             if( fileName.empty() )
             {
-                std::cout << "Error: file name cannot be an empty string." << std::endl;
+                d.Log << "Error: file name cannot be an empty string." << endl;
                 break;
             }
 
             if( !Load( fileName ) )
+            {
+                d.Log << "Error: Failed to load image from file: " << fileName << endl;
                 break;
+            }
         }
     }
 

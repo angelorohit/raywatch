@@ -18,6 +18,7 @@
 #ifndef ADDRESSTRANSLATOR_HEADER
 #define ADDRESSTRANSLATOR_HEADER
 
+#include "MessageLog.h"
 #include <map>
 #include <iostream>
 
@@ -33,6 +34,10 @@ class AddressTranslator
 private:
     typedef std::map<std::size_t, Serializable*> AssocMap;
     AssocMap _associations;
+
+public:
+    // Note: Should this be in Deserializer instead?
+    MessageLog Log;
 
 protected:
 // Constructor
@@ -71,14 +76,14 @@ public:
         AssocMap::const_iterator itr = _associations.find( oldAddress );
         if( itr == _associations.end() )
         {
-            std::cout << "Error: Failed to restore pointer; could not find Serializable with old address: " << oldAddress << std::endl;
+            Log << "Error: Failed to restore pointer; could not find Serializable with old address: " << oldAddress << endl;
             return false;
         }
 
         pPointer = dynamic_cast<T*>(itr->second);
         if( !pPointer )
         {
-            std::cout << "Error: Failed to restore pointer; the object at the given old address [" << oldAddress << "] is not of the required type" << std::endl;
+            Log << "Error: Failed to restore pointer; the object at the given old address [" << oldAddress << "] is not of the required type" << endl;
             return false;
         }
 

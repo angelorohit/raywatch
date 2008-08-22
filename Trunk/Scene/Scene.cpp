@@ -226,7 +226,7 @@ const bool Scene::Read(Deserializer &d)
             Serializable *pSerializable = ObjectFactory<Serializable>::Instance().Create( objectType );
             if( !pSerializable )
             {
-                std::cout << "Error: Unknown Object found: " << objectType << std::endl;
+                d.Log << "Error: Unknown Object found: " << objectType << endl;
                 break;
             }
 
@@ -265,7 +265,7 @@ const bool Scene::Read(Deserializer &d)
 
                 // We don't know what type of object this is
                 {
-                    std::cout << "Error: Object '" << objectType << "' cannot be inserted directly into the Scene." << std::endl;
+                    d.Log << "Error: Object '" << objectType << "' cannot be inserted directly into the Scene." << endl;
                     SafeDeleteScalar( pSerializable );
                     break;
                 }

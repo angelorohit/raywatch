@@ -32,6 +32,7 @@
 #include "SafeDelete.h"
 #include "Utility.h"
 #include "Examples.h"
+#include "ForEach.h"
 #include <iostream>
 #include <fstream>
 //#include <time.h>
@@ -152,6 +153,11 @@ int main(int argc, char *argv[])
     if( !pScene )
     {
         std::cout << "Error: Failed to load Scene from file: " << argv[1] << std::endl;
+        
+        // Print all the Log Messages
+        FOR_EACH( itr, MessageLog::MessageList, d.Log.Messages() )
+            std::cout << "(" << (*itr).first << ") " << (*itr).second << std::endl;
+
         return -1;
     }
 

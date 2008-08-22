@@ -21,7 +21,8 @@
 
 // Constructor
 AddressTranslator::AddressTranslator() :
-    _associations()
+    _associations(),
+    Log()
 {
 }
 
@@ -40,7 +41,7 @@ const bool AddressTranslator::Register(const std::size_t oldAddress, Serializabl
         return true;
 
     // We couldn't insert it
-    std::cout << "Error: Failed to Register address [" << oldAddress << "] with the Deserializer; it might have already been registered earlier." << std::endl;
+    Log << "Error: Failed to Register address [" << oldAddress << "] with the Deserializer; it might have already been registered earlier." << endl;
     return false;
 }
 

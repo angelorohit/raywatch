@@ -28,6 +28,8 @@
 Deserializer::Deserializer() :
     _stream()
 {
+    // Set the token stream as the line number provider for the log.
+    Log.SetLineNumberProvider( &_stream );
 }
 
 // Destructor
@@ -42,12 +44,12 @@ const bool Deserializer::ReadKnownToken(const std::string &name)
     std::string readName;
     if( !_stream.ReadToken( readName, name.length() ) )
     {
-        std::cout << "Error: '" << name << "' was expected." << std::endl;
+        Log << "Error: '" << name << "' was expected." << endl;
         return false;
     }
     if( readName.compare( name ) != 0 )
     {
-        std::cout << "Error: '" << name << "' was expected, but '" << readName << "' was found instead." << std::endl;
+        Log << "Error: '" << name << "' was expected, but '" << readName << "' was found instead." << endl;
         return false;
     }
 
@@ -92,7 +94,7 @@ const bool Deserializer::ReadKnownToken(const std::string &name, const char deli
     if( !ReadUnknownToken( readName, delimiter ) )
     {
         if( readName.size() == 0 )
-            std::cout << "Error: '" << name << "' was expected." << std::endl;
+            Log << "Error: '" << name << "' was expected." << endl;
 
         return false;
     }
@@ -100,7 +102,7 @@ const bool Deserializer::ReadKnownToken(const std::string &name, const char deli
     // See if the read name is expected.
     if( readName.compare( name ) != 0 )
     {
-        std::cout << "Error: '" << name << "' was expected, but '" << readName << "' was found instead." << std::endl;
+        Log << "Error: '" << name << "' was expected, but '" << readName << "' was found instead." << endl;
         return false;
     }
 
@@ -126,7 +128,7 @@ const bool Deserializer::ReadValue(std::size_t &value, const char delimiter)
     if( !ReadUnknownToken( valueRead, delimiter ) )
     {
         if( valueRead.size() == 0 )
-            std::cout << "Error: unsigned-int expected" << std::endl;
+            Log << "Error: unsigned-int expected" << endl;
 
         return false;
     }
@@ -134,7 +136,7 @@ const bool Deserializer::ReadValue(std::size_t &value, const char delimiter)
     // Convert the value from string to the required type
     if( !Utility::String::FromString( value, valueRead ) )
     {
-        std::cout << "Error: '" << valueRead << "' is not a valid unsigned-int." << std::endl;
+        Log << "Error: '" << valueRead << "' is not a valid unsigned-int." << endl;
         return false;
     }
 
@@ -148,7 +150,7 @@ const bool Deserializer::ReadValue(int &value, const char delimiter)
     if( !ReadUnknownToken( valueRead, delimiter ) )
     {
         if( valueRead.size() == 0 )
-            std::cout << "Error: int expected" << std::endl;
+            Log << "Error: int expected" << endl;
 
         return false;
     }
@@ -156,7 +158,7 @@ const bool Deserializer::ReadValue(int &value, const char delimiter)
     // Convert the value from string to the required type
     if( !Utility::String::FromString( value, valueRead ) )
     {
-        std::cout << "Error: '" << valueRead << "' is not a valid int." << std::endl;
+        Log << "Error: '" << valueRead << "' is not a valid int." << endl;
         return false;
     }
 
@@ -170,7 +172,7 @@ const bool Deserializer::ReadValue(float &value, const char delimiter)
     if( !ReadUnknownToken( valueRead, delimiter ) )
     {
         if( valueRead.size() == 0 )
-            std::cout << "Error: float expected" << std::endl;
+            Log << "Error: float expected" << endl;
 
         return false;
     }
@@ -178,7 +180,7 @@ const bool Deserializer::ReadValue(float &value, const char delimiter)
     // Convert the value from string to the required type
     if( !Utility::String::FromString( value, valueRead ) )
     {
-        std::cout << "Error: '" << valueRead << "' is not a valid float." << std::endl;
+        Log << "Error: '" << valueRead << "' is not a valid float." << endl;
         return false;
     }
 
@@ -192,7 +194,7 @@ const bool Deserializer::ReadValue(bool &value, const char delimiter)
     if( !ReadUnknownToken( valueRead, delimiter ) )
     {
         if( valueRead.size() == 0 )
-            std::cout << "Error: bool expected" << std::endl;
+            Log << "Error: bool expected" << endl;
 
         return false;
     }
@@ -209,7 +211,7 @@ const bool Deserializer::ReadValue(bool &value, const char delimiter)
         return true;
     }
 
-    std::cout << "Error: '" << valueRead << "' is not a valid bool." << std::endl;
+    Log << "Error: '" << valueRead << "' is not a valid bool." << endl;
     return false;
 }
 
@@ -386,7 +388,7 @@ Serializable *const Deserializer::Read()
         pSerializable = ObjectFactory<Serializable>::Instance().Create( objectType );
         if( !pSerializable )
         {
-            std::cout << "Error: Unknown Object found: " << objectType << std::endl;
+            Log << "Error: Unknown Object found: " << objectType << endl;
             EXIT_CODE_BLOCK;
         }
 

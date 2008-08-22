@@ -53,16 +53,16 @@ namespace Utility
         template<class T>
         const std::string ToString(const T &val)
         {
-            std::stringstream strStream;
-            strStream << val;
-            return strStream.str();
+            std::ostringstream stream;
+            stream << val;
+            return stream.str();
         }
 
         template<class T>
         const bool FromString(T &val, const std::string &str)
         {
-            std::istringstream iss(str);
-            return (!(iss >> std::dec >> val).fail()) && iss.eof();
+            std::istringstream stream(str);
+            return (!(stream >> std::dec >> val).fail()) && stream.eof();
         }
 
     } // String

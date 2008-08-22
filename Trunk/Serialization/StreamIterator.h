@@ -18,11 +18,12 @@
 #ifndef STREAM_HEADER
 #define STREAM_HEADER
 
+#include "LineNumberProvider.h"
 #include <string>
 #include <vector>
 #include <istream>
 
-class StreamIterator
+class StreamIterator : public LineNumberProvider
 {
 // Members
 private:
@@ -60,7 +61,8 @@ public:
     void SavePosition();
     void RestorePosition();
 
-    const int LineNumber() const;
+    // LineNumberProvider's functions
+    virtual const int ProvideLineNumber() const;
 };
 
 #endif

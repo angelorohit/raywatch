@@ -18,9 +18,10 @@
 #ifndef TOKENSTREAM_HEADER
 #define TOKENSTREAM_HEADER
 
+#include "LineNumberProvider.h"
 #include "StreamIterator.h"
 
-class TokenStream
+class TokenStream : public LineNumberProvider
 {
 // Members
 private:
@@ -45,13 +46,14 @@ public:
     const bool Open(std::istream &stream);
     void Close();
 
-    const int LineNumber() const;
-
     const bool ReadToken(std::string &token, const std::string &delimiterSet, const bool bTrimWhitespaces = true, const bool bRemoveDelimiter = true);
     const bool PeekToken(std::string &token, const std::string &delimiterSet, const bool bTrimWhitespaces = true);
 
     const bool ReadToken(std::string &token, const std::size_t tokenLength);
     const bool PeekToken(std::string &token, const std::size_t tokenLength);
+
+    // LineNumberProvider's functions
+    virtual const int ProvideLineNumber() const;
 };
 
 #endif

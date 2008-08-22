@@ -47,11 +47,6 @@ void TokenStream::Close()
     _streamIterator.Close();
 }
 
-const int TokenStream::LineNumber() const
-{
-    return _streamIterator.LineNumber();
-}
-
 const bool TokenStream::ReadToken(std::string &token, const std::string &delimiterSet, const bool bTrimWhitespaces, const bool bRemoveDelimiter)
 {
     token.clear();
@@ -113,4 +108,10 @@ const bool TokenStream::PeekToken(std::string &token, const std::size_t tokenLen
     const bool bRetVal = ReadToken( token, tokenLength );
     _streamIterator.RestorePosition();
     return bRetVal;
+}
+
+// LineNumberProvider's functions
+const int TokenStream::ProvideLineNumber() const
+{
+    return _streamIterator.ProvideLineNumber();
 }

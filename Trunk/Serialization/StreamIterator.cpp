@@ -128,7 +128,8 @@ void StreamIterator::RestorePosition()
     _positionInfoStack.pop_back();
 }
 
-const int StreamIterator::LineNumber() const
+// LineNumberProvider's functions
+const int StreamIterator::ProvideLineNumber() const
 {
     return _lineNumber;
 }
