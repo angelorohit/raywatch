@@ -96,6 +96,7 @@
 		<Unit filename="Scene\Scene.h" />
 		<Unit filename="Serialization\AddressTranslator.cpp" />
 		<Unit filename="Serialization\AddressTranslator.h" />
+		<Unit filename="Serialization\DefaultValue.h" />
 		<Unit filename="Serialization\Deserializer.cpp" />
 		<Unit filename="Serialization\Deserializer.h" />
 		<Unit filename="Serialization\DeserializerHelper.h" />
