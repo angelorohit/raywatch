@@ -25,6 +25,7 @@
 #include "Deserializer.h"
 #include "DeserializerHelper.h"
 #include "SerializerHelper.h"
+#include "ForEach.h"
 
 // Register with the ObjectFactory
 ObjectFactory_Register(Serializable, AreaLight);
@@ -114,7 +115,7 @@ void AreaLight::AccumulateIlluminationAtSurface(
     Color areaLightSpecular( 0 );
 
     // Accumulate the illumination from all the positions
-    for(VectorList::const_iterator itr = _positions.begin(); itr != _positions.end(); ++itr )
+    FOR_EACH( itr, VectorList, _positions )
     {
         const Vector<float> &lightPosition = (*itr);
 

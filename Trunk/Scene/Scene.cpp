@@ -27,6 +27,7 @@
 #include "Deserializer.h"
 #include "DeserializerHelper.h"
 #include "SerializerHelper.h"
+#include "ForEach.h"
 #include <algorithm>
 #include <limits>
 
@@ -47,15 +48,15 @@ Scene::Scene() :
 Scene::~Scene()
 {
     // Delete all the Primitives
-    for(PrimitiveList::iterator itr = _primitiveList.begin(); itr != _primitiveList.end(); ++itr)
+    FOR_EACH_MUTABLE( itr, PrimitiveList, _primitiveList )
         SafeDeleteScalar( *itr );
 
     // Delete all the Lights
-    for(LightList::iterator itr = _lightList.begin(); itr != _lightList.end(); ++itr)
+    FOR_EACH_MUTABLE( itr, LightList, _lightList )
         SafeDeleteScalar( *itr );
 
     // Delete all the Textures
-    for(TextureList::iterator itr = _textureList.begin(); itr != _textureList.end(); ++itr)
+    FOR_EACH_MUTABLE( itr, TextureList, _textureList )
         SafeDeleteScalar( *itr );
 }
 
@@ -118,7 +119,7 @@ const Primitive *const Scene::FindClosestIntersection(const Ray &ray, Intersecti
     const Primitive *pClosestIntersectedPrimitive = 0;
 
     // Go through all the primitives and see which is the closest one which intersects
-    for(PrimitiveList::const_iterator itr = _primitiveList.begin(); itr != _primitiveList.end(); ++itr)
+    FOR_EACH( itr, PrimitiveList, _primitiveList )
     {
         const Primitive *const pPrimitive = *itr;
 
@@ -136,7 +137,7 @@ const Primitive *const Scene::FindClosestIntersection(const Ray &ray, Intersecti
 const bool Scene::IsOccluded(const Ray &ray, const float &rayLength) const
 {
     // Go through all the primitives (which are not light sources) and see if they intersect the ray
-    for(PrimitiveList::const_iterator itr = _primitiveList.begin(); itr != _primitiveList.end(); ++itr)
+    FOR_EACH( itr, PrimitiveList, _primitiveList )
     {
         const Primitive *const pPrimitive = *itr;
 
@@ -163,7 +164,7 @@ void Scene::GetSurfaceIllumination(
     specular    .Set( 0 );
 
     // Accumulate illumination from all the lights
-    for(LightList::const_iterator itr = _lightList.begin(); itr != _lightList.end(); ++itr)
+    FOR_EACH( itr, LightList, _lightList )
     {
         const Light *const pLight = *itr;
 
@@ -175,7 +176,7 @@ void Scene::GetSurfaceIllumination(
 Texture *const Scene::LoadTexture(const std::string &fileName)
 {
     // See if this texture is already in our list.
-    for(TextureList::const_iterator itr = _textureList.begin(); itr != _textureList.end(); ++itr)
+    FOR_EACH( itr, TextureList, _textureList )
     {
         Texture *const pTexture = (*itr);
 

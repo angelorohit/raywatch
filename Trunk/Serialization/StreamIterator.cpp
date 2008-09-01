@@ -58,7 +58,7 @@ const bool StreamIterator::Open(std::istream &stream)
         // We're done initializing.
         bRetVal = true;
     }
-    END_CODE_BLOCK
+    END_CODE_BLOCK;
 
     if( !bRetVal )
         Close();
