@@ -155,5 +155,7 @@ const bool Serializer::WriteObject(const std::string &name, const Serializable *
     if( defaultValue.Exists() && (value == defaultValue.Get()) )
         return true;
 
-    return WriteObject( name, reinterpret_cast<std::size_t>(value) );
+    const std::size_t address = reinterpret_cast<std::size_t>( value );
+
+    return WriteObject( name, Utility::String::ToString( address ) );
 }

@@ -87,12 +87,27 @@ public:
             return true;
         }
 
-        // Read an unsigned-int object
-        std::size_t valueRead;
+        // Read a string object
+        std::string valueRead;
         if( !ReadObject( name, valueRead ) )
             return false;
 
-        pPointer = reinterpret_cast<T*>(valueRead);
+        Utility::String::TrimWhiteSpaces( valueRead );
+        if( valueRead.size() == 0 )
+        {
+            Log << "Error: An address must be a non-empty string." << endl;
+            return false;
+        }
+
+        // Convert the string into an unsigned-int
+        std::size_t address;
+        if( !Utility::String::FromString( address, valueRead ) )
+        {
+            Log << "Error: '" << valueRead << "' is not a valid address (unsigned-int)." << endl;
+            return false;
+        }
+
+        pPointer = reinterpret_cast<T*>( address );
         return true;
     }
 

@@ -42,10 +42,18 @@ const bool Serializable::Read(Deserializer &d)
 {
     DESERIALIZE_CLASS( object, d, Serializable )
     {
-        std::size_t oldAddress;
-        if( !d.ReadObject( "address", oldAddress, RandomAddress() ) )
+        // Generate a random address
+        Serializable *pDefaultOldThis = reinterpret_cast<Serializable*>( RandomAddress() );
+
+        // Read the old address
+        Serializable *pOldThis = 0;
+        if( !d.ReadObject( "address", pOldThis, DefaultValue<Serializable*>( pDefaultOldThis ) ) )
             break;
 
+        // Convert the old address to an unsigned-int
+        const std::size_t oldAddress = reinterpret_cast<std::size_t>( pOldThis );
+
+        // Register this Serializable's old address with its current one.
         if( !d.Register( oldAddress, this ) )
             break;
     }
@@ -68,9 +76,9 @@ const bool Serializable::Write(Serializer &s) const
 
     return
         s.WriteIndentation()                                                            &&
-        s.WriteString("Serializable { address = ")                                      &&
+        s.WriteString("Serializable { address = \"")                                    &&
         s.WriteString(Utility::String::ToString( reinterpret_cast<std::size_t>(this) )) &&
-        s.WriteLine("; }");
+        s.WriteLine("\"; }");
 }
 
 const bool Serializable::RestorePointers(AddressTranslator &/*t*/)
