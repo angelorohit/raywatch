@@ -71,6 +71,8 @@
 		<Unit filename="Maths\Vector.cpp" />
 		<Unit filename="Maths\Vector.h" />
 		<Unit filename="Misc\CodeBlocks.h" />
+		<Unit filename="Misc\CrcCalculator.cpp" />
+		<Unit filename="Misc\CrcCalculator.h" />
 		<Unit filename="Misc\ForEach.h" />
 		<Unit filename="Misc\ObjectFactory.h" />
 		<Unit filename="Misc\SafeDelete.h" />

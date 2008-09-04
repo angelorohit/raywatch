@@ -269,6 +269,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Misc\CrcCalculator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Misc\CrcCalculator.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Misc\ForEach.h"
 				>
 			</File>

@@ -18,7 +18,7 @@
 #ifndef UTILITY_HEADER
 #define UTILITY_HEADER
 
-// Includes
+#include "CrcCalculator.h"
 #include <string>
 #include <sstream>
 #include <cctype>   // For std::toupper()
@@ -35,6 +35,7 @@ namespace Utility
         const int CaseInsensitiveCompare(const std::string &str1, const std::string &str2);
         void ToUpper(std::string &str);
         void ToLower(std::string &str);
+        const CrcCalculator::CrcType CalculateCrc(const std::string &str);
 
         // Templates
 

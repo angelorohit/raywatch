@@ -16,6 +16,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Utility.h"
+#include "ForEach.h"
 #include <algorithm>
 
 namespace Utility
@@ -89,6 +90,15 @@ namespace Utility
         void ToLower(std::string &str)
         {
             std::transform( str.begin(), str.end(), str.begin(), ToLower<std::string::value_type> );
+        }
+
+        const CrcCalculator::CrcType CalculateCrc(const std::string &str)
+        {
+            CrcCalculator calc;
+            FOR_EACH( itr, std::string, str )
+                calc.Add( *itr );
+
+            return calc.End();
         }
 
     } // String

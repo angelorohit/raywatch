@@ -248,7 +248,7 @@ const bool Material::Read(Deserializer &d)
             !d.ReadObject( "concentration", concentration, 1 )                              ||
             !d.ReadObject( "diffuseMap", pDiffuseMap, DefaultValue<const Texture *>(0) )    ||
             !d.ReadObject( "textureScale", textureScale, 1 )                                )
-            return false;
+            break;
 
         SetColor( color.x, color.y, color.z );
         SetOpacity( opacity );

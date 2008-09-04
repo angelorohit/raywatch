@@ -99,11 +99,18 @@ public:
             return false;
         }
 
-        // Convert the string into an unsigned-int
+        // Convert the string into an address
         std::size_t address;
         if( !Utility::String::FromString( address, valueRead ) )
         {
-            Log << "Error: '" << valueRead << "' is not a valid address (unsigned-int)." << endl;
+            // The string didn't literally contain an address (unsigned-int); it might
+            // be a "named address". So use the CRC of the string as the address.
+            address = Utility::String::CalculateCrc( valueRead );
+        }
+
+        if( address == 0 )
+        {
+            Log << "Error: An address must be a non-zero, positive integer." << endl;
             return false;
         }
 
