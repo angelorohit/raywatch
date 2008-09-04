@@ -21,7 +21,8 @@
 #include "Utility.h"
 
 // Constructor
-Serializable::Serializable()
+Serializable::Serializable() :
+    _serializationDepth( 0 )
 {
 }
 
@@ -63,22 +64,13 @@ const bool Serializable::Read(Deserializer &d)
 
 const bool Serializable::Write(Serializer &s) const
 {
-    // Note: Since Serializable has only one member, we can treat it as a
-    //       special case and write it manually, to improve readability.
+    SERIALIZE_CLASS( object, s, Serializable )
+    {
+        if( !s.WriteObject( "address", this ) )
+            break;
+    }
 
-    //SERIALIZE_CLASS( object, s, Serializable )
-    //{
-    //    if( !s.WriteObject( "address", this ) )
-    //        break;
-    //}
-
-    //return object.WriteResult();
-
-    return
-        s.WriteIndentation()                                                            &&
-        s.WriteString("Serializable { address = \"")                                    &&
-        s.WriteString(Utility::String::ToString( reinterpret_cast<std::size_t>(this) )) &&
-        s.WriteLine("\"; }");
+    return object.WriteResult();
 }
 
 const bool Serializable::RestorePointers(AddressTranslator &/*t*/)

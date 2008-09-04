@@ -18,13 +18,15 @@
 #ifndef DESERIALIZERHELPER_HEADER
 #define DESERIALIZERHELPER_HEADER
 
+#include "AutoCounter.h"
 #include "Deserializer.h"
 #include "Sink.h"
 
 // Helper Macros
 
-#define DESERIALIZE_CLASS(Identifier,DeserializerObject,ClassName)      \
-    ObjectDeserializer Identifier( DeserializerObject, #ClassName );    \
+#define DESERIALIZE_CLASS(Identifier,DeserializerObject,ClassName)                          \
+    const AutoCounter depthCounter( _serializationDepth );                                  \
+    ObjectDeserializer Identifier( DeserializerObject, #ClassName, depthCounter.IsRoot() ); \
     for( Sink(sizeof(ClassName)); Identifier; ++Identifier )
 
 /*
@@ -33,8 +35,8 @@
     for( ; Identifier; ++Identifier )
 */
 
-#define DESERIALIZE_LIST(Identifier,DeserializerObject,ListName)        \
-    ListDeserializer Identifier( DeserializerObject, ListName );        \
+#define DESERIALIZE_LIST(Identifier,DeserializerObject,ListName)    \
+    ListDeserializer Identifier( DeserializerObject, ListName );    \
     for( ; Identifier; ++Identifier )
 
 
@@ -46,16 +48,21 @@ private:
 
     bool _bError;
     bool _bFinished;
+    bool _bReadHeaders;
 
 public:
 // Constructor
-    explicit ObjectDeserializer(Deserializer &d, const std::string &name) :
+    explicit ObjectDeserializer(Deserializer &d, const std::string &name, const bool bReadHeaders) :
         _d( d ),
         _bError( false ),
-        _bFinished( false )
+        _bFinished( false ),
+        _bReadHeaders( bReadHeaders )
     {
-        if( !_d.ReadGroupObjectHeader( name ) )
-            _bError = true;
+        if( _bReadHeaders )
+        {
+            if( !_d.ReadGroupObjectHeader( name ) )
+                _bError = true;
+        }
     }
 
 private:
@@ -74,10 +81,13 @@ public:
     // See if we've reached the end of the object or not
     void operator ++ ()
     {
-        if( _d.ReadGroupObjectFooter() )
-            _bFinished = true;
-        else
-            _bError = true;
+        if( _bReadHeaders )
+        {
+            if( !_d.ReadGroupObjectFooter() )
+                _bError = true;
+        }
+
+        _bFinished = true;
     }
 
     // The result of the read; true if we succeeded, false otherwise

@@ -413,6 +413,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Serialization\AutoCounter.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Serialization\DefaultValue.h"
 				>
 			</File>

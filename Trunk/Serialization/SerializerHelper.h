@@ -18,17 +18,19 @@
 #ifndef SERIALIZERHELPER_HEADER
 #define SERIALIZERHELPER_HEADER
 
+#include "AutoCounter.h"
 #include "Serializer.h"
 #include "Sink.h"
 
 // Helper Macros
 
-#define SERIALIZE_CLASS(Identifier,SerializerObject,ClassName)        \
-    ObjectSerializer Identifier( SerializerObject, #ClassName );      \
+#define SERIALIZE_CLASS(Identifier,SerializerObject,ClassName)                          \
+    const AutoCounter depthCounter( _serializationDepth );                              \
+    ObjectSerializer Identifier( SerializerObject, #ClassName, depthCounter.IsRoot() ); \
     for( Sink(sizeof(ClassName)); Identifier; ++Identifier )
 
-#define SERIALIZE_OBJECT(Identifier,SerializerObject,ObjectName)      \
-    ObjectSerializer Identifier( SerializerObject, ObjectName );      \
+#define SERIALIZE_OBJECT(Identifier,SerializerObject,ObjectName)        \
+    ObjectSerializer Identifier( SerializerObject, ObjectName, true );  \
     for( ; Identifier; ++Identifier )
 
 
@@ -40,18 +42,23 @@ private:
 
     bool _bError;
     bool _bFinished;
+    bool _bWriteHeaders;
 
 public:
 // Constructor
-    explicit ObjectSerializer(Serializer &s, const std::string &name) :
+    explicit ObjectSerializer(Serializer &s, const std::string &name, const bool bWriteHeaders) :
         _s( s ),
         _bError( false ),
-        _bFinished( false )
+        _bFinished( false ),
+        _bWriteHeaders( bWriteHeaders )
     {
-        if( !_s.WriteGroupObjectHeader( name ) )
-            _bError = true;
+        if( _bWriteHeaders )
+        {
+            if( !_s.WriteGroupObjectHeader( name ) )
+                _bError = true;
 
-        _s.Indent();
+            _s.Indent();
+        }
     }
 
 private:
@@ -70,12 +77,15 @@ public:
     // See if we've reached the end of the object or not
     void operator ++ ()
     {
-        _s.Unindent();
+        if( _bWriteHeaders )
+        {
+            _s.Unindent();
 
-        if( _s.WriteGroupObjectFooter() )
-            _bFinished = true;
-        else
-            _bError = true;
+            if( !_s.WriteGroupObjectFooter() )
+                _bError = true;
+        }
+
+        _bFinished = true;
     }
 
     // The result of the write; true if we succeeded, false otherwise

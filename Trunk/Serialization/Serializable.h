@@ -27,6 +27,10 @@ class AddressTranslator;
 
 class Serializable
 {
+// Members
+protected:
+    mutable int _serializationDepth;
+
 protected:
 // Constructor
     explicit Serializable();
