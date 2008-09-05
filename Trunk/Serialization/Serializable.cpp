@@ -32,19 +32,12 @@ Serializable::~Serializable()
 }
 
 // Functions
-const std::size_t Serializable::RandomAddress() const
-{
-    static std::size_t randomAddress = 0;
-    ++randomAddress;
-    return randomAddress;
-}
-
 const bool Serializable::Read(Deserializer &d)
 {
     DESERIALIZE_CLASS( object, d, Serializable )
     {
         // Generate a random address
-        Serializable *pDefaultOldThis = reinterpret_cast<Serializable*>( RandomAddress() );
+        Serializable *pDefaultOldThis = reinterpret_cast<Serializable*>( d.RandomAddress() );
 
         // Read the old address
         Serializable *pOldThis = 0;

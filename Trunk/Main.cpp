@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
     }
 
     // Load the scene from the stream
-    Scene *pScene = dynamic_cast<Scene *>( d.Read() );
+    Scene *pScene = d.Deserialize<Scene>();
     if( !pScene )
     {
         std::cout << "Error: Failed to load Scene from file: " << argv[1] << std::endl;

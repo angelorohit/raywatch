@@ -39,9 +39,6 @@ public:
     virtual ~Serializable();
 
 // Functions
-private:
-    const std::size_t RandomAddress() const;
-
 public:
     virtual const bool Read(Deserializer &d) =0;
     virtual const bool Write(Serializer &s) const =0;

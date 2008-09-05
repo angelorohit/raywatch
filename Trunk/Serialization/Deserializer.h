@@ -58,6 +58,9 @@ private:
     const bool ReadValue(float       &value, const char delimiter);
     const bool ReadValue(bool        &value, const char delimiter);
 
+    // Deserializes a Serializable object
+    Serializable *const Deserialize();
+
 public:
     const bool Open(std::istream &stream);
     void Close();
@@ -118,8 +121,12 @@ public:
         return true;
     }
 
-    // Reads and returns a Serializable
-    Serializable *const Read();
+    // Deserializes a Serializable object
+    template <class T>
+    T *const Deserialize()
+    {
+        return dynamic_cast<T *const>( Deserialize() );
+    }
 };
 
 #endif

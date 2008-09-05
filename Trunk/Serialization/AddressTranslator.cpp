@@ -22,6 +22,7 @@
 // Constructor
 AddressTranslator::AddressTranslator() :
     _associations(),
+    _randomAddress( 0 ),
     Log()
 {
 }
@@ -45,9 +46,16 @@ const bool AddressTranslator::Register(const std::size_t oldAddress, Serializabl
     return false;
 }
 
+// Returns a random unique address
+const std::size_t AddressTranslator::RandomAddress()
+{
+    return ++_randomAddress;
+}
+
 void AddressTranslator::BeginTranslations()
 {
     _associations.clear();
+    _randomAddress = 0;
 }
 
 const bool AddressTranslator::EndTranslations()
@@ -64,8 +72,6 @@ const bool AddressTranslator::EndTranslations()
             break;
         }
     }
-
-    _associations.clear();
 
     return bRetVal;
 }

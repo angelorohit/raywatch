@@ -35,6 +35,8 @@ private:
     typedef std::map<std::size_t, Serializable*> AssocMap;
     AssocMap _associations;
 
+    std::size_t _randomAddress;
+
 public:
     // Note: Should this be in Deserializer instead?
     MessageLog Log;
@@ -55,6 +57,8 @@ private:
     // Note: Used by Serializable
     // Registers a Serializable and it's old address for restoration of pointers later.
     const bool Register(const std::size_t oldAddress, Serializable *const pSerializable);
+    // Returns a random unique address
+    const std::size_t RandomAddress();
 
 protected:
     // Note: Used by Deserializer

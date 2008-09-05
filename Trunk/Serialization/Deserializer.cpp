@@ -373,7 +373,7 @@ const bool Deserializer::ReadObject(const std::string &name, Vector<float> &valu
 }
 
 // Reads and returns a Serializable
-Serializable *const Deserializer::Read()
+Serializable *const Deserializer::Deserialize()
 {
     Serializable *pSerializable = 0;
 
