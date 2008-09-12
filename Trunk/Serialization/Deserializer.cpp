@@ -372,6 +372,50 @@ const bool Deserializer::ReadObject(const std::string &name, Vector<float> &valu
         ReadValue( value.z, ';' );
 }
 
+// Reads a Serializable object
+const bool Deserializer::ReadObject(const std::string &name, Serializable &value)
+{
+    // Read the name and verify it
+    if( !ReadKnownToken( name, '=' ) )
+        return false;
+
+    return value.Read( *this );
+}
+
+// Reads a pointer to a Serializable object
+const bool Deserializer::ReadObject(const std::string &name, Serializable* &pPointer)
+{
+    // Read a string object
+    std::string valueRead;
+    if( !ReadObject( name, valueRead ) )
+        return false;
+
+    Utility::String::TrimWhiteSpaces( valueRead );
+    if( valueRead.size() == 0 )
+    {
+        Log << "Error: An address must be a non-empty string." << endl;
+        return false;
+    }
+
+    // Convert the string into an address
+    std::size_t address;
+    if( !Utility::String::FromString( address, valueRead ) )
+    {
+        // The string didn't literally contain an address (unsigned-int); it might
+        // be a "named address". So use the CRC of the string as the address.
+        address = Utility::String::CalculateCrc( valueRead );
+    }
+
+    if( address == 0 )
+    {
+        Log << "Error: An address must be a non-zero, positive integer." << endl;
+        return false;
+    }
+
+    pPointer = reinterpret_cast<Serializable*>( address );
+    return true;
+}
+
 // Reads and returns a Serializable
 Serializable *const Deserializer::Deserialize()
 {

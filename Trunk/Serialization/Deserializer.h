@@ -22,6 +22,7 @@
 #include "TokenStream.h"
 #include "Vector.h"
 #include "DefaultValue.h"
+#include <cassert>
 
 class Deserializer : public AddressTranslator
 {
@@ -58,6 +59,9 @@ private:
     const bool ReadValue(float       &value, const char delimiter);
     const bool ReadValue(bool        &value, const char delimiter);
 
+    // Reads a pointer to a Serializable object
+    const bool ReadObject(const std::string &name, Serializable* &pPointer);
+
     // Deserializes a Serializable object
     Serializable *const Deserialize();
 
@@ -80,7 +84,10 @@ public:
     const bool ReadObject(const std::string &name, Vector<int>   &value, const DefaultValue<Vector<int> >   &defaultValue = DefaultValue<Vector<int> >()   );
     const bool ReadObject(const std::string &name, Vector<float> &value, const DefaultValue<Vector<float> > &defaultValue = DefaultValue<Vector<float> >() );
 
-    // Templated function to read any pointer type
+    // Reads a Serializable object
+    const bool ReadObject(const std::string &name, Serializable &value);
+
+    // Reads a pointer to an object which 'IS A' Serializable
     template <typename T>
     const bool ReadObject(const std::string &name, T* &pPointer, const DefaultValue<T*> &defaultValue = DefaultValue<T*>() )
     {
@@ -90,34 +97,12 @@ public:
             return true;
         }
 
-        // Read a string object
-        std::string valueRead;
-        if( !ReadObject( name, valueRead ) )
+        Serializable *pSerializable;
+        if( !ReadObject( name, pSerializable ) )
             return false;
 
-        Utility::String::TrimWhiteSpaces( valueRead );
-        if( valueRead.size() == 0 )
-        {
-            Log << "Error: An address must be a non-empty string." << endl;
-            return false;
-        }
-
-        // Convert the string into an address
-        std::size_t address;
-        if( !Utility::String::FromString( address, valueRead ) )
-        {
-            // The string didn't literally contain an address (unsigned-int); it might
-            // be a "named address". So use the CRC of the string as the address.
-            address = Utility::String::CalculateCrc( valueRead );
-        }
-
-        if( address == 0 )
-        {
-            Log << "Error: An address must be a non-zero, positive integer." << endl;
-            return false;
-        }
-
-        pPointer = reinterpret_cast<T*>( address );
+        pPointer = static_cast<T*>( pSerializable );
+        assert( pPointer );
         return true;
     }
 

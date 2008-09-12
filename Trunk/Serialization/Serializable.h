@@ -18,8 +18,6 @@
 #ifndef SERIALIZABLE_HEADER
 #define SERIALIZABLE_HEADER
 
-#include <cstddef>
-
 // Forward Declarations
 class Deserializer;
 class Serializer;

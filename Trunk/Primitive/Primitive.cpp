@@ -44,12 +44,8 @@ const bool Primitive::Read(Deserializer &d)
         if( !Serializable::Read( d ) )
             break;
 
-        // Read the material
-        if( !_material.Read( d ) )
-            break;
-
-        // Read the light pointer
-        if( !d.ReadObject( "light", _pLight, DefaultValue<const Light *>(0) ) )
+        if( !d.ReadObject( "material", _material )                              ||
+            !d.ReadObject( "light", _pLight, DefaultValue<const Light *>(0) )   )
             break;
     }
 
@@ -64,10 +60,8 @@ const bool Primitive::Write(Serializer &s) const
         if( !Serializable::Write( s ) )
             break;
 
-        if( !_material.Write( s ) )
-            break;
-
-        if( !s.WriteObject( "light", _pLight, DefaultValue<const Serializable *>(0) ) )
+        if( !s.WriteObject( "material", _material )                                     ||
+            !s.WriteObject( "light", _pLight, DefaultValue<const Serializable *>(0) )   )
             break;
     }
 

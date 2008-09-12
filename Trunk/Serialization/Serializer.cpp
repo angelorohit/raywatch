@@ -16,11 +16,13 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Serializer.h"
+#include "Serializable.h"
 #include "Utility.h"
 
 // Constructor
 Serializer::Serializer(std::ostream &stream) :
     _indentation( 0 ),
+    _bSuppressNextWriteIndent( false ),
     _stream( stream )
 {
 }
@@ -32,19 +34,15 @@ Serializer::~Serializer()
 
 // Functions
 
-void Serializer::Indent()
-{
-    _indentation += 4;
-}
-
-void Serializer::Unindent()
-{
-    _indentation -= 4;
-}
-
 // Helper functions to write string literals to the stream (useful for writing custom data).
 const bool Serializer::WriteIndentation()
 {
+    if( _bSuppressNextWriteIndent )
+    {
+        _bSuppressNextWriteIndent = false;
+        return true;
+    }
+
     return (_stream << std::string(_indentation, ' ')).good();
 }
 
@@ -58,6 +56,27 @@ const bool Serializer::WriteLine(const std::string &str)
     return (_stream << str << std::endl).good();
 }
 
+void Serializer::SuppressNextWriteIndent()
+{
+    _bSuppressNextWriteIndent = true;
+}
+
+// A base WriteObject function; all other WriteObject functions use this function.
+const bool Serializer::WriteObjectBase(const std::string &name, const std::string &value)
+{
+    return WriteIndentation() && WriteString(name) && WriteString(" = ") && WriteString(value) && WriteLine(";");
+}
+
+void Serializer::Indent()
+{
+    _indentation += 4;
+}
+
+void Serializer::Unindent()
+{
+    _indentation -= 4;
+}
+
 // Helper functions to write group objects
 const bool Serializer::WriteGroupObjectHeader(const std::string &name)
 {
@@ -68,12 +87,6 @@ const bool Serializer::WriteGroupObjectHeader(const std::string &name)
 const bool Serializer::WriteGroupObjectFooter()
 {
     return  WriteIndentation() && WriteLine("}");
-}
-
-// A base WriteObject function; all other WriteObject functions use this function.
-const bool Serializer::WriteObjectBase(const std::string &name, const std::string &value)
-{
-    return WriteIndentation() && WriteString(name) && WriteString(" = ") && WriteString(value) && WriteLine(";");
 }
 
 // Helper functions to write various data types
@@ -150,12 +163,31 @@ const bool Serializer::WriteObject(const std::string &name, const Vector<float> 
     return WriteObjectBase( name, strValue );
 }
 
-const bool Serializer::WriteObject(const std::string &name, const Serializable *const value, const DefaultValue<const Serializable *> &defaultValue)
+// Writes a Serializable object
+const bool Serializer::WriteObject(const std::string &name, const Serializable &value )
+{
+    // Write the variable name
+    if( !WriteIndentation() ||
+        !WriteString(name)  ||
+        !WriteString(" = ") )
+        return false;
+
+    // We want the header to be immediately after the name (without being indented)
+    SuppressNextWriteIndent();
+
+    // Write the value
+    return value.Write( *this );
+}
+
+// Writes a pointer to a Serializable object
+const bool Serializer::WriteObject(
+    const std::string &name,
+    const Serializable *const value,
+    const DefaultValue<const Serializable *> &defaultValue )
 {
     if( defaultValue.Exists() && (value == defaultValue.Get()) )
         return true;
 
     const std::size_t address = reinterpret_cast<std::size_t>( value );
-
     return WriteObject( name, Utility::String::ToString( address ) );
 }
