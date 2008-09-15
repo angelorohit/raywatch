@@ -59,7 +59,7 @@ const bool Serializable::Write(Serializer &s) const
 {
     SERIALIZE_CLASS( object, s, Serializable )
     {
-        if( !s.WriteObject( "address", this ) )
+        if( !s.WriteObject( "address", this, DefaultValue<const Serializable *>() ) )
             break;
     }
 

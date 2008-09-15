@@ -56,6 +56,9 @@ private:
     // A base WriteObject function; all other WriteObject functions use this function.
     const bool WriteObjectBase(const std::string &name, const std::string &value);
 
+    // Writes a pointer to a Serializable object
+    const bool WriteObject(const std::string &name, const Serializable *const pPointer);
+
 public:
     void Indent();
     void Unindent();
@@ -77,11 +80,19 @@ public:
     // Writes a Serializable object
     const bool WriteObject(const std::string &name, const Serializable &value );
 
-    // Writes a pointer to a Serializable object
+    // Writes a pointer to an object which 'IS A' Serializable
+    template <typename T>
     const bool WriteObject(
         const std::string &name,
-        const Serializable *const value,
-        const DefaultValue<const Serializable *> &defaultValue = DefaultValue<const Serializable *>() );
+        const T *const pPointer,
+        const DefaultValue<const T *> &defaultValue = DefaultValue<const T *>() )
+    {
+        if( defaultValue.Exists() && (pPointer == defaultValue.Get()) )
+            return true;
+
+        const Serializable *const pSerializable = pPointer;
+        return WriteObject( name, pSerializable );
+    }
 };
 
 #endif

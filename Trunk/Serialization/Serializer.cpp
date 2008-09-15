@@ -180,14 +180,8 @@ const bool Serializer::WriteObject(const std::string &name, const Serializable &
 }
 
 // Writes a pointer to a Serializable object
-const bool Serializer::WriteObject(
-    const std::string &name,
-    const Serializable *const value,
-    const DefaultValue<const Serializable *> &defaultValue )
+const bool Serializer::WriteObject(const std::string &name, const Serializable *const pPointer)
 {
-    if( defaultValue.Exists() && (value == defaultValue.Get()) )
-        return true;
-
-    const std::size_t address = reinterpret_cast<std::size_t>( value );
+    const std::size_t address = reinterpret_cast<std::size_t>( pPointer );
     return WriteObject( name, Utility::String::ToString( address ) );
 }
