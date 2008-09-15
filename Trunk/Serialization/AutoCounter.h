@@ -51,7 +51,7 @@ private:
 public:
     const bool IsRoot() const
     {
-        assert( _count >= 0 );
+        assert( _count >= 1 );
         return (_count == 1);
     }
 };

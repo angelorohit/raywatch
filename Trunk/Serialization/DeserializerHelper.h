@@ -30,15 +30,20 @@
     for( Sink(sizeof(ClassName)); Identifier; ++Identifier )
 
 /*
-#define DESERIALIZE_OBJECT(Identifier,DeserializerObject,ObjectName)    \
-    ObjectDeserializer Identifier( DeserializerObject, ObjectName );    \
+#define DESERIALIZE_OBJECT(Identifier,DeserializerObject,ObjectName)        \
+    ObjectDeserializer Identifier( DeserializerObject, ObjectName, true );  \
     for( ; Identifier; ++Identifier )
 */
 
-#define DESERIALIZE_LIST(Identifier,DeserializerObject,ListName)    \
-    ListDeserializer Identifier( DeserializerObject, ListName );    \
+#define DESERIALIZE_LIST(Identifier,DeserializerObject,ListName)        \
+    ListDeserializer Identifier( DeserializerObject, ListName, true );  \
     for( ; Identifier; ++Identifier )
 
+/*
+#define DESERIALIZE_NONEMPTY_LIST(Identifier,DeserializerObject,ListName)   \
+    ListDeserializer Identifier( DeserializerObject, ListName, false );     \
+    for( ; Identifier; ++Identifier )
+*/
 
 // Helper class to deserialize a container object
 class ObjectDeserializer
@@ -114,13 +119,16 @@ private:
 
 public:
 // Constructor
-    explicit ListDeserializer(Deserializer &d, const std::string &name) :
+    explicit ListDeserializer(Deserializer &d, const std::string &name, const bool bAllowEmpty) :
         _d( d ),
         _bError( false ),
         _bFinished( false )
     {
         if( !_d.ReadGroupObjectHeader( name ) )
             _bError = true;
+
+        if( bAllowEmpty )
+            operator ++();  // Note: This function is called here for code-reuse. Can this have any side-effects?
     }
 
 private:
