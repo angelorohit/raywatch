@@ -77,12 +77,12 @@ void Light::SetRange(const float &range)
 }
 
 // Serializable's functions
-const bool Light::Read(Deserializer &d)
+const bool Light::Read(Deserializer &d, void *const /*pUserData*/)
 {
     DESERIALIZE_CLASS( object, d, Light )
     {
         // Read the base
-        if( !Serializable::Read( d ) )
+        if( !Serializable::Read( d, 0 ) )
             break;
 
         Color   color;

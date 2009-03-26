@@ -55,7 +55,7 @@ public:
     void SetVertices(const Vector<float> &v1, const Vector<float> &v2, const Vector<float> &v3);
 
     // Serializable's functions
-    virtual const bool Read(Deserializer &d);
+    virtual const bool Read(Deserializer &d, void *const pUserData);
     virtual const bool Write(Serializer &s) const;
 };
 

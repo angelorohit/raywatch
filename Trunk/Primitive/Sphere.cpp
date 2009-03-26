@@ -126,12 +126,12 @@ const Vector<float> Sphere::GetSurfaceNormal(const Vector<float> &position) cons
 }
 
 // Serializable's functions
-const bool Sphere::Read(Deserializer &d)
+const bool Sphere::Read(Deserializer &d, void *const /*pUserData*/)
 {
     DESERIALIZE_CLASS( object, d, Sphere )
     {
         // Read the base
-        if( !Primitive::Read( d ) )
+        if( !Primitive::Read( d, 0 ) )
             break;
 
         Vector<float> centre;

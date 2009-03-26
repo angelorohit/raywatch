@@ -86,7 +86,7 @@ public:
     Texture *const LoadTexture(const std::string &fileName);
 
     // Serializable's functions
-    virtual const bool Read(Deserializer &d);
+    virtual const bool Read(Deserializer &d, void *const pUserData);
     virtual const bool Write(Serializer &s) const;
 };
 

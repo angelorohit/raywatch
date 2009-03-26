@@ -29,11 +29,9 @@
     ObjectDeserializer Identifier( DeserializerObject, #ClassName, depthCounter.IsRoot() ); \
     for( Sink(sizeof(ClassName)); Identifier; ++Identifier )
 
-/*
 #define DESERIALIZE_OBJECT(Identifier,DeserializerObject,ObjectName)        \
     ObjectDeserializer Identifier( DeserializerObject, ObjectName, true );  \
     for( ; Identifier; ++Identifier )
-*/
 
 #define DESERIALIZE_LIST(Identifier,DeserializerObject,ListName)        \
     ListDeserializer Identifier( DeserializerObject, ListName, true );  \

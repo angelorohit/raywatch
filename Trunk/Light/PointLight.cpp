@@ -76,12 +76,12 @@ void PointLight::AccumulateIlluminationAtSurface(
 }
 
 // Serializable's functions
-const bool PointLight::Read(Deserializer &d)
+const bool PointLight::Read(Deserializer &d, void *const /*pUserData*/)
 {
     DESERIALIZE_CLASS( object, d, PointLight )
     {
         // Read the base
-        if( !Light::Read( d ) )
+        if( !Light::Read( d, 0 ) )
             break;
 
         if( !d.ReadObject( "position", _position ) )

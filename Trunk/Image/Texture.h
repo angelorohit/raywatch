@@ -49,7 +49,7 @@ public:
     const Pixel<float> GetPixel(const float &tu, const float &tv) const;
 
     // Serializable's functions
-    virtual const bool Read(Deserializer &d);
+    virtual const bool Read(Deserializer &d, void *const pUserData);
     virtual const bool Write(Serializer &s) const;
 };
 

@@ -215,12 +215,12 @@ const Color Material::GetIllumination(
 }
 
 // Serializable's functions
-const bool Material::Read(Deserializer &d)
+const bool Material::Read(Deserializer &d, void *const /*pUserData*/)
 {
     DESERIALIZE_CLASS( object, d, Material )
     {
         // Read the base
-        if( !Serializable::Read( d ) )
+        if( !Serializable::Read( d, 0 ) )
             break;
 
         Color           color;

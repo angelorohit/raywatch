@@ -103,12 +103,12 @@ void Quad::SetVertices(const Vector<float> &v1, const Vector<float> &v2, const V
 }
 
 // Serializable's functions
-const bool Quad::Read(Deserializer &d)
+const bool Quad::Read(Deserializer &d, void *const /*pUserData*/)
 {
     DESERIALIZE_CLASS( object, d, Quad )
     {
         // Read the base
-        if( !Primitive::Read( d ) )
+        if( !Primitive::Read( d, 0 ) )
             break;
 
         Vector<float> vertex1, vertex2, vertex3;

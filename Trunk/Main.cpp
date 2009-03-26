@@ -149,15 +149,10 @@ int main(int argc, char *argv[])
     }
 
     // Load the scene from the stream
-    Scene *pScene = d.Deserialize<Scene>();
+    Scene *pScene = d.Deserialize<Scene>( 0 );
     if( !pScene )
     {
         std::cout << "Error: Failed to load Scene from file: " << argv[1] << std::endl;
-        
-        // Print all the Log Messages
-        FOR_EACH( itr, MessageLog::MessageList, d.Log.Messages() )
-            std::cout << "(" << (*itr).first << ") " << (*itr).second << std::endl;
-
         return -1;
     }
 

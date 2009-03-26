@@ -100,12 +100,12 @@ void Triangle::SetVertices(const Vector<float> &v1, const Vector<float> &v2, con
 }
 
 // Serializable's functions
-const bool Triangle::Read(Deserializer &d)
+const bool Triangle::Read(Deserializer &d, void *const /*pUserData*/)
 {
     DESERIALIZE_CLASS( object, d, Triangle )
     {
         // Read the base
-        if( !Primitive::Read( d ) )
+        if( !Primitive::Read( d, 0 ) )
             break;
 
         Vector<float> vertex1, vertex2, vertex3;

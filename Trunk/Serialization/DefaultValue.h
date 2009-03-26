@@ -31,9 +31,15 @@ public:
     explicit DefaultValue();
     DefaultValue(const T &value);   // Allow implicit conversions from T
 
-private:
-// Copy Constructor / Assignment Operator
+// Note: When binding an rValue of class type to a reference, the C++ standard requires
+//       the copy constructor of the class to be accessible, even though it might not be
+//       used. So to prevent compiler errors, make copy constructor declarations public,
+//       but don't define them so that their use will atleast trigger a linker error.
+public:
+// Copy Constructor
     DefaultValue(const DefaultValue &);
+private:
+// Assignment Operator
     const DefaultValue &operator =(const DefaultValue &);
 
 // Functions

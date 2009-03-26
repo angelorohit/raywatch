@@ -55,7 +55,7 @@ public:
     virtual const Vector<float> GetSurfaceNormal(const Vector<float> &position) const;
 
     // Serializable's functions
-    virtual const bool Read(Deserializer &d);
+    virtual const bool Read(Deserializer &d, void *const pUserData);
     virtual const bool Write(Serializer &s) const;
 };
 

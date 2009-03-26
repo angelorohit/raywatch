@@ -67,7 +67,7 @@ public:
         Color &specular ) const = 0;
 
     // Serializable's functions
-    virtual const bool Read(Deserializer &d);
+    virtual const bool Read(Deserializer &d, void *const pUserData);
     virtual const bool Write(Serializer &s) const;
 };
 

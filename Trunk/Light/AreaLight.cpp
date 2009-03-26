@@ -148,12 +148,12 @@ void AreaLight::AccumulateIlluminationAtSurface(
 }
 
 // Serializable's functions
-const bool AreaLight::Read(Deserializer &d)
+const bool AreaLight::Read(Deserializer &d, void *const /*pUserData*/)
 {
     DESERIALIZE_CLASS( object, d, AreaLight )
     {
         // Read the base
-        if( !Light::Read( d ) )
+        if( !Light::Read( d, 0 ) )
             break;
 
         Vector<float> vertex1, vertex2, vertex3;

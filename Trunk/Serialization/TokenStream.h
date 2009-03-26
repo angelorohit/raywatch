@@ -31,7 +31,7 @@ public:
 // Constructor
     explicit TokenStream();
 // Destructor
-    ~TokenStream();
+    virtual ~TokenStream();
 
 private:
 // Copy Constructor / Assignment Operator

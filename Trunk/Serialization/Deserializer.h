@@ -20,8 +20,9 @@
 
 #include "AddressTranslator.h"
 #include "TokenStream.h"
-#include "Vector.h"
 #include "DefaultValue.h"
+#include "Vector.h"
+
 #include <cassert>
 
 class Deserializer : public AddressTranslator
@@ -63,7 +64,7 @@ private:
     const bool ReadObject(const std::string &name, Serializable* &pPointer);
 
     // Deserializes a Serializable object
-    Serializable *const Deserialize();
+    Serializable *const Deserialize(void *const pUserData);
 
 public:
     const bool Open(std::istream &stream);
@@ -85,7 +86,7 @@ public:
     const bool ReadObject(const std::string &name, Vector<float> &value, const DefaultValue<Vector<float> > &defaultValue = DefaultValue<Vector<float> >() );
 
     // Reads a Serializable object
-    const bool ReadObject(const std::string &name, Serializable &value);
+    const bool ReadObject(const std::string &name, Serializable &value, void *const pUserData);
 
     // Reads a pointer to an object which 'IS A' Serializable
     template <typename T>
@@ -108,9 +109,9 @@ public:
 
     // Deserializes a Serializable object
     template <class T>
-    T *const Deserialize()
+    T *const Deserialize(void *const pUserData)
     {
-        return dynamic_cast<T *const>( Deserialize() );
+        return dynamic_cast<T *const>( Deserialize(pUserData) );
     }
 };
 

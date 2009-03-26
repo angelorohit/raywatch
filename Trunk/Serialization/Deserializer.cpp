@@ -35,6 +35,10 @@ Deserializer::Deserializer() :
 // Destructor
 Deserializer::~Deserializer()
 {
+    // Dump the contents of the message log to standard output
+    FOR_EACH( itr, MessageLog::MessageList, Log.Messages() )
+        std::cout << "[" << itr->first << "] " << itr->second << std::endl;
+
     Close();
 }
 
@@ -373,13 +377,19 @@ const bool Deserializer::ReadObject(const std::string &name, Vector<float> &valu
 }
 
 // Reads a Serializable object
-const bool Deserializer::ReadObject(const std::string &name, Serializable &value)
+const bool Deserializer::ReadObject(const std::string &name, Serializable &value, void *const pUserData)
 {
     // Read the name and verify it
     if( !ReadKnownToken( name, '=' ) )
         return false;
 
-    return value.Read( *this );
+    if( !value.Read( *this, pUserData ) )
+    {
+        Log << "Error: Failed to read Serializable object: " << name << endl;
+        return false;
+    }
+
+    return true;
 }
 
 // Reads a pointer to a Serializable object
@@ -417,7 +427,7 @@ const bool Deserializer::ReadObject(const std::string &name, Serializable* &pPoi
 }
 
 // Reads and returns a Serializable
-Serializable *const Deserializer::Deserialize()
+Serializable *const Deserializer::Deserialize(void *const pUserData)
 {
     Serializable *pSerializable = 0;
 
@@ -440,8 +450,9 @@ Serializable *const Deserializer::Deserialize()
         AddressTranslator::BeginTranslations();
 
         // Load the object
-        if( !pSerializable->Read( *this ) )
+        if( !pSerializable->Read( *this, pUserData ) )
         {
+            Log << "Error: Failed to read Serializable object: " << objectType << endl;
             SafeDeleteScalar( pSerializable );
             EXIT_CODE_BLOCK;
         }

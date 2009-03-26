@@ -41,7 +41,7 @@ public:
 // Constructor
     explicit StreamIterator();
 // Destructor
-    ~StreamIterator();
+    virtual ~StreamIterator();
 
 private:
 // Copy Constructor / Assignment Operator

@@ -203,12 +203,12 @@ Texture *const Scene::LoadTexture(const std::string &fileName)
 }
 
 // Serializable's functions
-const bool Scene::Read(Deserializer &d)
+const bool Scene::Read(Deserializer &d, void *const /*pUserData*/)
 {
     DESERIALIZE_CLASS( object, d, Scene )
     {
         // Read the base
-        if( !Serializable::Read( d ) )
+        if( !Serializable::Read( d, 0 ) )
             break;
 
         if( !d.ReadObject( "ambientLight", _ambientLight, Color(0) )    ||
@@ -232,7 +232,7 @@ const bool Scene::Read(Deserializer &d)
             }
 
             // Load the object
-            if( !pSerializable->Read( d ) )
+            if( !pSerializable->Read( d, 0 ) )
             {
                 SafeDeleteScalar( pSerializable );
                 break;

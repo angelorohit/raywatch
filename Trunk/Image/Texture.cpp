@@ -68,12 +68,12 @@ const Pixel<float> Texture::GetPixel(const float &tu, const float &tv) const
 
 // Serializable's functions
 
-const bool Texture::Read(Deserializer &d)
+const bool Texture::Read(Deserializer &d, void *const /*pUserData*/)
 {
     DESERIALIZE_CLASS( object, d, Texture )
     {
         // Read the base
-        if( !Serializable::Read( d ) )
+        if( !Serializable::Read( d, 0 ) )
             break;
 
         // Read the texture fileName

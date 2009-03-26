@@ -101,7 +101,7 @@ public:
         const IntersectionInfo  &intersectionInfo ) const;
 
     // Serializable's functions
-    virtual const bool Read(Deserializer &d);
+    virtual const bool Read(Deserializer &d, void *const pUserData);
     virtual const bool Write(Serializer &s) const;
     virtual const bool RestorePointers(AddressTranslator &t);
 };

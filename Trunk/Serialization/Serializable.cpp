@@ -32,7 +32,7 @@ Serializable::~Serializable()
 }
 
 // Functions
-const bool Serializable::Read(Deserializer &d)
+const bool Serializable::Read(Deserializer &d, void *const /*pUserData*/)
 {
     DESERIALIZE_CLASS( object, d, Serializable )
     {

@@ -36,15 +36,15 @@ Primitive::~Primitive()
 }
 
 // Serializable's functions
-const bool Primitive::Read(Deserializer &d)
+const bool Primitive::Read(Deserializer &d, void *const /*pUserData*/)
 {
     DESERIALIZE_CLASS( object, d, Primitive )
     {
         // Read the base
-        if( !Serializable::Read( d ) )
+        if( !Serializable::Read( d, 0 ) )
             break;
 
-        if( !d.ReadObject( "material", _material )                              ||
+        if( !d.ReadObject( "material", _material, 0 )                           ||
             !d.ReadObject( "light", _pLight, DefaultValue<const Light *>(0) )   )
             break;
     }

@@ -38,7 +38,7 @@ public:
 
 // Functions
 public:
-    virtual const bool Read(Deserializer &d) =0;
+    virtual const bool Read(Deserializer &d, void *const pUserData) =0;
     virtual const bool Write(Serializer &s) const =0;
 
     // This will be called by the Deserializer to give this Serializable object a chance to translate
