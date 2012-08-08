@@ -17,3 +17,6 @@ It uses the SDL library for loading images. You will need SDL (http://www.libsdl
 * Texture Mapping for Triangles
 * Spatial Subdivision for improving performance
 * ...
+
+#####Screenshots:#####
+![Cornell's Box](https://lh3.googleusercontent.com/-znaRWYg_7hs/UCJ59HtovHI/AAAAAAAAAfQ/tkNOmWlE5co/s144/012.jpg) ![Caustics](https://lh5.googleusercontent.com/-FyHF1RdPUbw/UCJ5-mP4P3I/AAAAAAAAAfU/YdkvIF_fPA8/s144/016.jpg)
